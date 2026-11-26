@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
@@ -19,9 +20,41 @@ function legalFiles(): Plugin {
   };
 }
 
+// VN-GEN-006: version and commit from the same git commands as scripts/nightly-build.sh (VASTNESS_VERSION, set
+// by the nightly, overrides the version). Injected into the app for the About box and written as build.json.
+function git(...args: string[]): string {
+  try {
+    return execFileSync("git", args, { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim();
+  } catch {
+    return "unknown";
+  }
+}
+
+export function buildInfo() {
+  return {
+    commit: git("rev-parse", "--short=12", "HEAD"),
+    commit_time: git("log", "-1", "--format=%cI", "HEAD"),
+    name: "vastness",
+    version: process.env.VASTNESS_VERSION || git("describe", "--tags", "--exclude", "nightly", "--always"),
+  };
+}
+
+function buildJson(info: ReturnType<typeof buildInfo>): Plugin {
+  return {
+    name: "vastness-build-json",
+    apply: "build",
+    generateBundle() {
+      this.emitFile({ type: "asset", fileName: "build.json", source: JSON.stringify(info) + "\n" });
+    },
+  };
+}
+
+const info = buildInfo();
+
 // VN-GEN-001: a static build. `base` becomes /vastness/ for GitHub Pages in T-007.
 export default defineConfig({
   base: "./",
-  plugins: [react(), legalFiles()],
+  define: { __VASTNESS_BUILD__: JSON.stringify(info) },
+  plugins: [react(), legalFiles(), buildJson(info)],
   worker: { format: "es" },
 });

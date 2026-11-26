@@ -1,0 +1,46 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--backdrop);
+  z-index: 10;
+}
+
+.dialog {
+  max-width: 34rem;
+  max-height: 85vh;
+  overflow: auto;
+  padding: 1.25rem 1.5rem;
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--fg);
+  border: 1px solid var(--border);
+}
+
+.dialog h2 {
+  margin-top: 0;
+}
+
+.dialog h3 {
+  margin-bottom: 0.25rem;
+  font-size: 1rem;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.25rem 1rem;
+}
+
+.facts dt {
+  color: var(--muted);
+}
+
+.facts dd {
+  margin: 0;
+}
+
+.close {
+  margin-top: 1rem;
+}

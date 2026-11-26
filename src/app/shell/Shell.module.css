@@ -1,0 +1,119 @@
+.shell {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    "top top"
+    "side ."
+    "bottom bottom";
+  pointer-events: none;
+}
+
+.view {
+  position: absolute;
+  inset: 0;
+  pointer-events: auto;
+}
+
+.top,
+.side,
+.bottom {
+  position: relative;
+  pointer-events: auto;
+  background: var(--panel);
+  color: var(--fg);
+}
+
+.top {
+  grid-area: top;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.4rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.title {
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.search {
+  flex: 0 1 18rem;
+  margin-left: auto;
+}
+
+.scale {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--muted);
+}
+
+.menuWrap {
+  position: relative;
+}
+
+.menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  margin: 0;
+  padding: 0.25rem 0;
+  list-style: none;
+  min-width: 12rem;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  z-index: 5;
+}
+
+.menu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 0.4rem 0.9rem;
+}
+
+.menu button:hover,
+.menu button:focus-visible {
+  background: var(--hover);
+}
+
+.side {
+  grid-area: side;
+  width: 18rem;
+  overflow: auto;
+  padding: 0.5rem 0.9rem;
+  border-right: 1px solid var(--border);
+}
+
+.side[hidden] {
+  display: none;
+}
+
+.side h2 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.bottom {
+  grid-area: bottom;
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  padding: 0.4rem 0.75rem;
+  border-top: 1px solid var(--border);
+  font-variant-numeric: tabular-nums;
+}

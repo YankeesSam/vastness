@@ -1,0 +1,60 @@
+/* VN-UI-001: dark by default; light by data-theme on <html>. */
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #05070d;
+  --panel: rgb(14 18 28 / 88%);
+  --fg: #e6e9f0;
+  --muted: #9aa3b5;
+  --border: rgb(255 255 255 / 12%);
+  --hover: rgb(255 255 255 / 8%);
+  --backdrop: rgb(0 0 0 / 55%);
+  --accent: #7fb2ff;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f3f5f9;
+  --panel: rgb(255 255 255 / 92%);
+  --fg: #141821;
+  --muted: #535c6e;
+  --border: rgb(0 0 0 / 14%);
+  --hover: rgb(0 0 0 / 6%);
+  --backdrop: rgb(0 0 0 / 35%);
+  --accent: #1d5fd1;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: system-ui, sans-serif;
+  font-size: 14px;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: var(--accent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}

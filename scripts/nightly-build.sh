@@ -54,7 +54,7 @@ if [ -f package.json ]; then
     npm run typecheck
     npm test
   fi
-  npm run build >"$stage/build.log" 2>&1 || { cat "$stage/build.log" >&2; exit 1; }
+  VASTNESS_VERSION="$ver" npm run build >"$stage/build.log" 2>&1 || { cat "$stage/build.log" >&2; exit 1; }
   if [ -f dist/index.html ]; then
     web="$stage/web/vastness-$ver-web"
     mkdir -p "$web"
