@@ -7,19 +7,18 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 
 ## Now
 
-- [ ] NOW T-001 P0 @phase0 slice: project skeleton: package.json (Node 22, `engines` >= 20), TypeScript strict, Vite 7, React 19, Vitest, Prettier, .editorconfig, .gitignore (node_modules, dist, .cache, nightly, test-results, playwright-report), scripts test, typecheck, build, e2e, ephem  req: VN-GEN-001  files: package.json, tsconfig.json, vite.config.ts, vitest.config.ts, index.html, src/main.tsx  test: tests/smoke.test.ts
+- [ ] NOW T-002 P0 @phase0 slice: guard tests: src/core imports no DOM, React, three or `node:*` and uses no window/document/process; no fetch, XMLHttpRequest, WebSocket, EventSource or sendBeacon outside src/app/assets/loader.ts and src/sw.ts; no eval, new Function, string timers or computed import()  req: VN-GEN-002, VN-GEN-003, VN-GEN-004  files: tests/guards.test.ts  test: tests/guards.test.ts
 
 ## Next
 
-- [ ] T-002 P0 @phase0 slice: guard tests: src/core imports no DOM, React, three or `node:*` and uses no window/document/process; no fetch, XMLHttpRequest, WebSocket, EventSource or sendBeacon outside src/app/assets/loader.ts and src/sw.ts; no eval, new Function, string timers or computed import()  req: VN-GEN-002, VN-GEN-003, VN-GEN-004  files: tests/guards.test.ts  test: tests/guards.test.ts
 - [ ] T-003 P0 @phase0 slice: runtime dependency check: allowlist from ADR-0001, licence of each, THIRD_PARTY_NOTICES.txt generated for the bundle  req: VN-GEN-005, VN-GEN-007  files: scripts/check-deps.mjs, THIRD_PARTY_NOTICES.txt  test: tests/check-deps.test.ts
 - [ ] T-004 P0 @phase0 slice: app shell: full-window R3F Canvas with a placeholder Sun, top bar, collapsible side panel, bottom time bar, dark and light themes, About box with version and commit injected at build  req: VN-UI-001, VN-UI-004, VN-GEN-006, VN-GEN-008  files: src/app/App.tsx, src/app/shell/, src/app/about/, vite.config.ts  test: src/app/shell/Shell.test.tsx
 - [ ] T-005 P0 @phase0 slice: Playwright e2e smoke in headless Chromium with SwiftShader WebGL: shell renders, canvas has a WebGL2 context, no request leaves the origin, About shows the commit  req: VN-UI-001, VN-GEN-002  files: playwright.config.ts, e2e/smoke.spec.ts  test: e2e/smoke.spec.ts
 - [ ] T-006 P0 @phase0 slice: CI: .github/workflows/ci.yml (typecheck, unit, build, e2e with Playwright Chromium, npm cache, concurrency cancel); a status badge in README; check-env reports the last run  req: VN-WEB-001  files: .github/workflows/ci.yml, docs/TESTBED.md  test: gh run list --workflow ci.yml --branch main --limit 1 shows success
-- [ ] T-007 P0 @phase0 slice: GitHub Pages: deploy job (actions/upload-pages-artifact + deploy-pages) on main, Vite `base` for the /vastness/ path, scripts/check-pages.sh probes the URL and build.json commit; needs-user: Pages source set to GitHub Actions (and a public repo or paid plan, OI-3)  req: VN-WEB-001  files: .github/workflows/pages.yml, vite.config.ts, scripts/check-pages.sh  test: bash scripts/check-pages.sh
+- [ ] T-007 P0 @phase0 slice: GitHub Pages: deploy job (actions/upload-pages-artifact + deploy-pages) on main, Vite `base` for the /vastness/ path, scripts/check-pages.sh probes the URL and build.json commit; needs-user: Pages source set to GitHub Actions (and a public repo or paid plan; OI-3 answered: GitHub Pages)  req: VN-WEB-001  files: .github/workflows/pages.yml, vite.config.ts, scripts/check-pages.sh  test: bash scripts/check-pages.sh
 - [ ] T-008 P0 @phase0 slice: nightly release (Escapement's pattern): scripts/nightly-build.sh (web zip, docs zip, build.json, SHA256SUMS; deterministic zips), .github/workflows/nightly.yml replacing the `nightly` pre-release on each push to main, scripts/nightly.sh waits for the run at HEAD with gh and checks tag, files and checksums  req: VN-DOC-005, VN-GEN-010  files: scripts/nightly-build.sh, scripts/nightly.sh, .github/workflows/nightly.yml  test: tests/nightly-build.test.ts
 - [ ] T-009 P1 @phase0 slice: LAN deploy: scripts/deploy-web.sh builds and serves dist on port 8770 (seeded; check it against the first real build) and the Windows portproxy note  req: VN-WEB-001  files: scripts/deploy-web.sh, docs/TESTBED.md  test: bash scripts/deploy-web.sh --status
-- [ ] T-010 P1 @phase0 slice: README (what, run, data, licence) and LICENSE per OI-1; a docs test that LICENSE and package.json agree  req: VN-DOC-001, VN-GEN-007  files: README.md, LICENSE, package.json  test: tests/docs.test.ts
+- [ ] T-010 P1 @phase0 slice: README (what, run, data, licence) and LICENSE (Apache-2.0, OI-1) with NOTICE; a docs test that LICENSE, NOTICE and package.json agree  req: VN-DOC-001, VN-GEN-007  files: README.md, LICENSE, NOTICE, package.json  test: tests/docs.test.ts
 
 ## Later
 
@@ -56,7 +55,7 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 
 ### M3 spacecraft
 
-- [ ] T-036 P0 @phase3 slice: catalog schema and data/catalog.json: the twelve spacecraft and the bodies, summaries in our own words, sources, status with as-of date  req: VN-CAT-001, VN-CAT-002  files: data/catalog.json, src/core/catalog/schema.ts  test: src/core/catalog/schema.test.ts
+- [ ] T-036 P0 @phase3 slice: catalog schema and data/catalog.json: the VN-CAT-002 spacecraft (now including JWST) and the bodies, summaries in our own words, sources, status with as-of date  req: VN-CAT-001, VN-CAT-002  files: data/catalog.json, src/core/catalog/schema.ts  test: src/core/catalog/schema.test.ts
 - [ ] T-037 P0 @phase3 slice: `ephem check-ids` against horizons_lookup.api (recorded responses in tests)  req: VN-DAT-008  files: tools/ephem/check-ids.ts  test: tools/ephem/check-ids.test.ts
 - [ ] T-038 P0 @phase3 slice: heliocentric spacecraft ephemerides from launch to the end of predictions, flyby subdivision, misses listed; generate and commit  req: VN-EPH-003, VN-EPH-007  files: tools/ephem/spacecraft.ts, public/ephem/  test: tools/ephem/spacecraft.test.ts
 - [ ] T-039 P1 @phase3 slice: element segments in core: a second segment kind in the format (version bump, docs/EPHEMERIS_FORMAT.md), Chebyshev-fitted osculating elements, Kepler solve to position and velocity, parent-relative composition; tested on synthetic perturbed orbits against a numerical reference  req: VN-EPH-009, VN-EPH-011, VN-EPH-004  files: src/core/ephem/elements.ts, src/core/ephem/format.ts, src/core/ephem/ephemeris.ts, docs/EPHEMERIS_FORMAT.md  test: src/core/ephem/elements.test.ts
@@ -69,7 +68,11 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 - [ ] T-044 P1 @phase3 slice: simple spacecraft model or icon within 10,000 km  req: VN-CAT-006  files: src/scene/spacecraft/Model.tsx  test: e2e/spacecraft.spec.ts
 - [ ] T-045 P0 @phase3 slice: e2e agreement with Horizons: three objects at fixed epochs, panel values against F2 within tolerance  req: VN-INF-005  files: e2e/accuracy.spec.ts  test: e2e/accuracy.spec.ts
 - [ ] T-046 P1 @phase3 slice: streaming spacecraft chunks with a quiet indicator; no blocking after the first frame  req: VN-UI-005  files: src/app/assets/loader.ts  test: src/app/assets/loader.test.ts
-- [ ] T-047 P1 @phase3 slice: `ephem:refresh` and a scheduled workflow that reports moved objects and opens a pull request; needs-user: Settings > Actions > "Allow GitHub Actions to create pull requests"  req: VN-DAT-006  files: tools/ephem/refresh.ts, .github/workflows/refresh.yml  test: tools/ephem/refresh.test.ts
+- [ ] T-047 P1 @phase3 slice: `ephem:refresh` and a scheduled workflow (also `workflow_dispatch` for a manual refresh, OI-7) that reports moved objects and opens a pull request; needs-user: Settings > Actions > "Allow GitHub Actions to create pull requests"  req: VN-DAT-006  files: tools/ephem/refresh.ts, .github/workflows/refresh.yml  test: tools/ephem/refresh.test.ts
+- [ ] T-091 P1 @phase3 slice: ADR-0007 Earth satellites: CelesTrak GP (OMM JSON) by NORAD number at build time, polite and cached; SGP4 (own port of Vallado's reference, or `satellite.js` by amending ADR-0001's allowlist); TEME to J2000 ecliptic; terms in DATA_SOURCES  req: VN-CAT-007, VN-DAT-009  files: docs/adr/0007-earth-satellites.md, docs/DATA_SOURCES.md  test: tests/docs.test.ts
+- [ ] T-092 P1 @phase3 slice: SGP4/SDP4 propagator in the core, checked against Vallado's published test vectors (near-Earth and deep-space, including GEO)  req: VN-CAT-007  files: src/core/sgp4/  test: src/core/sgp4/sgp4.test.ts
+- [ ] T-093 P1 @phase3 slice: tools/gp fetch and data/satellites: ISS, Hubble, Tiangong, a few operational Starlink, GOES-East, GOES-West and other geostationary satellites (the agent picks; user can change via WORKINGLIST); provenance with epoch; ISS checked against Horizons (-125544) for one day  req: VN-DAT-009, VN-CAT-007  files: tools/gp/, data/satellites.json, data/catalog.json  test: tools/gp/gp.test.ts
+- [ ] T-094 P1 @phase3 slice: Earth satellite layer: markers around Earth when the camera is near, epoch age in the panel, illustrative orbit beyond 14 days from epoch  req: VN-CAT-007  files: src/scene/satellites/  test: src/scene/satellites/satellites.test.ts
 
 ### M4 time control and sharing
 
@@ -93,7 +96,7 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 ### M6 visual polish
 
 - [ ] T-061 P0 @phase6 slice: emissive Sun with configurable glow; the Sun as the only light  req: VN-SCN-005  files: src/scene/sun/  test: e2e/visual.spec.ts
-- [ ] T-062 P0 @phase6 slice: textures per OI-8 with tiers and plain fallback; every texture listed with licence and a size budget  req: VN-SCN-006, VN-DOC-002  files: public/textures/, src/scene/bodies/materials.ts, docs/DATA_SOURCES.md  test: tests/assets.test.ts
+- [ ] T-062 P0 @phase6 slice: textures (NASA public domain or CC BY with credit, OI-8) with tiers and plain fallback; every texture listed with licence and a size budget  req: VN-SCN-006, VN-DOC-002  files: public/textures/, src/scene/bodies/materials.ts, docs/DATA_SOURCES.md  test: tests/assets.test.ts
 - [ ] T-063 P1 @phase6 slice: Saturn's rings  req: VN-SCN-006  files: src/scene/bodies/Rings.tsx  test: e2e/visual.spec.ts
 - [ ] T-064 P0 @phase6 slice: star background: bright-star catalog to magnitude 6.5 converted at build time to a binary point set in the ecliptic frame  req: VN-SCN-007  files: tools/stars/build.ts, public/stars.bin, src/scene/stars/  test: tools/stars/build.test.ts
 - [ ] T-065 P2 @phase6 slice: optional dimmable Milky Way image  req: VN-SCN-007  files: src/scene/stars/MilkyWay.tsx  test: e2e/visual.spec.ts
@@ -109,7 +112,7 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 - [ ] T-072 P0 @phase7 slice: quality tiers chosen from the device and in settings  req: VN-PRF-003, VN-UI-003  files: src/core/quality.ts, src/app/settings/  test: src/core/quality.test.ts
 - [ ] T-073 P0 @phase7 slice: render budgets from renderer.info on the reference scene in CI  req: VN-PRF-002  files: e2e/budget.spec.ts, docs/TESTBED.md  test: e2e/budget.spec.ts
 - [ ] T-074 P1 @phase7 slice: touch gestures and bottom sheets under 768 px  req: VN-PRF-005  files: src/scene/camera/Controls.tsx, src/app/shell/  test: e2e/mobile.spec.ts
-- [ ] T-075 P1 @phase7 slice: `?stats` frame-time overlay and the 60 fps demonstration; needs-user: OI-9 reference machine  req: VN-PRF-001  files: src/app/stats/, docs/TESTBED.md  test: e2e/perf.spec.ts
+- [ ] T-075 P1 @phase7 slice: `?stats` frame-time overlay and the 60 fps demonstration; reference machine in docs/TESTBED.md (OI-9 answered; confirm CPU model and panel resolution then)  req: VN-PRF-001  files: src/app/stats/, docs/TESTBED.md  test: e2e/perf.spec.ts
 - [ ] T-076 P1 @phase7 slice: browser matrix: Playwright Firefox and WebKit projects  req: VN-GEN-011  files: playwright.config.ts  test: npm run e2e
 - [ ] T-077 P2 @phase7 slice: preferences only in localStorage, Reset clears them  req: VN-GEN-008, VN-UI-003  files: src/app/settings/  test: src/app/settings/prefs.test.ts
 
@@ -132,4 +135,4 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 
 ## Done
 
-(none yet)
+- [x] T-001 P0 @phase0 slice: project skeleton: package.json (Node 22, `engines` >= 20), TypeScript strict, Vite 7, React 19, Vitest, Prettier, .editorconfig, .gitignore (node_modules, dist, .cache, nightly, test-results, playwright-report), scripts test, typecheck, build, e2e, ephem  req: VN-GEN-001  files: package.json, tsconfig.json, vite.config.ts, vitest.config.ts, index.html, src/main.tsx  test: tests/smoke.test.ts  result: session 1: package.json (Apache-2.0, engines >=20, react 19 only at runtime), strict tsconfig, Vite 7, Vitest 3 projects app/node, Prettier, LICENSE; smoke 4/4, typecheck, build, prettier clean

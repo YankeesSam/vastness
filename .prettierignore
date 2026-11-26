@@ -1,0 +1,18 @@
+# Prose and agent files are hand-formatted; prettier covers code and config.
+*.md
+agent/
+docs/
+LICENSE
+NOTICE
+THIRD_PARTY_NOTICES.txt
+package-lock.json
+testdata/
+public/ephem/
+nightly/
+dist/
+release/
+coverage/
+playwright-report/
+test-results/
+.cache/
+.claude/

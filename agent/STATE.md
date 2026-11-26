@@ -3,14 +3,14 @@ project: vastness
 milestone: M0
 phase: 0
 status: ready
-active_task_id: T-001
-active_task: "P0 @phase0 slice: project skeleton: package.json, TypeScript strict, Vite 7, React 19, Vitest, Prettier, scripts (VN-GEN-001)"
+active_task_id: T-002
+active_task: "P0 @phase0 slice: guard tests: core purity, no network outside the loader and service worker, no dynamic code (VN-GEN-002, VN-GEN-003, VN-GEN-004)"
 next_skill: vastness-execute
-session: 0
-updated: 2026-11-26T17:00:00-05:00
+session: 1
+updated: 2026-11-26T17:06:41-05:00
 branch: main
 last_commit: 14ad2c1
-push: ok
+push: pending
 git_owner: YankeesSam
 git_repo: vastness
 toolchain: "node 22 + npm 10 (floor node 20); Playwright Chromium (SwiftShader WebGL) for e2e"
