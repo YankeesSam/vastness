@@ -13,7 +13,7 @@ Answers to open items: `- [x] W-002 → OI-1 Apache-2.0, VN-GEN-007, T-010 kind:
 ## Inbox
 
 - [x] W-001 → OI-1 (question copied as context for W-002) **OI-1** Licence: MIT (the user's other projects) or Apache-2.0 (as the design document allows)? Default MIT.
-- [ ] kind:note OI-1:  You pick, whichever one is open source but also doesn't allow someone to just take the work uncredited or do a minor 1 line change and call it their original work.
+- [x] W-002 → OI-1 Apache-2.0, VN-GEN-007, T-010 kind:note OI-1:  You pick, whichever one is open source but also doesn't allow someone to just take the work uncredited or do a minor 1 line change and call it their original work.
 - [x] W-003 → OI-3 answered, T-007 kind:note OI-3: Git hub pages works.
 - [x] W-004 → VN-CAT-002 (+JWST), VN-CAT-007, VN-DAT-009, T-091..T-094 kind:note OI-4: More, at least the VN-CAT-002.  lets also pick a few operational Starlink sats, some geosats, and others
 - [x] W-005 → OI-5 default 1900-2100 kept (see HANDOFF notes) kind:note OI-5: Unsure what this question is asking

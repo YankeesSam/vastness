@@ -1,9 +1,9 @@
-# Context (session 2, T-002)
+# Context (session 3, T-003)
 
 - agent/STATE.md
 - agent/PLAN.md
-- docs/architecture/VASTNESS_ARCHITECTURE.md
-- docs/adr/0002-build-time-ephemerides.md
-- docs/adr/0005-hosting-and-privacy.md
-- vitest.config.ts
+- docs/adr/0001-stack.md
+- docs/adr/0006-data-and-asset-licensing.md
+- package.json
 - tests/smoke.test.ts
+- tests/guards.test.ts

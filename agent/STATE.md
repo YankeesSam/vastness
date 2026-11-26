@@ -3,11 +3,11 @@ project: vastness
 milestone: M0
 phase: 0
 status: ready
-active_task_id: T-002
-active_task: "P0 @phase0 slice: guard tests: core purity, no network outside the loader and service worker, no dynamic code (VN-GEN-002, VN-GEN-003, VN-GEN-004)"
+active_task_id: T-003
+active_task: "P0 @phase0 slice: runtime dependency check: allowlist from ADR-0001, licence of each, THIRD_PARTY_NOTICES.txt generated for the bundle (VN-GEN-005, VN-GEN-007)"
 next_skill: vastness-execute
-session: 1
-updated: 2026-11-26T17:06:41-05:00
+session: 2
+updated: 2026-11-26T17:22:30-05:00
 branch: main
 last_commit: 46aa25b
 push: ok
