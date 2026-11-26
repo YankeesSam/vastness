@@ -25,7 +25,9 @@ No unit test touches the network (VN-DAT-007). Only `tools/ephem/record.ts`, `np
 
 ## Budgets (VN-PRF-002, VN-PRF-004)
 
-Set from the first real measurements (T-035, T-073) and only tightened: draw calls, triangles, texture memory on the reference scene; initial download under 1.5 MB compressed; first render under 3 s on simulated fast 4G.
+Set from the first real measurements (T-035, T-073) and only tightened: draw calls, triangles, texture memory on the reference scene; initial download under 1.5 MB compressed (`npm run check-size`, CI); first render under 3 s on simulated fast 4G (e2e/perf.spec.ts, Chrome DevTools "Fast 4G" profile).
+
+First measurements (T-035, session 4, shell with a placeholder Sun): initial download 323 kB compressed (JS 322 kB, of which three.js and React are nearly all); first render 1.0 s on fast 4G in headless Chromium with SwiftShader.
 
 ## Reference machine (VN-PRF-001, OI-9)
 

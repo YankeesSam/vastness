@@ -35,7 +35,8 @@ jobs:
         run: npm test
       - name: Build
         run: npm run build
-      # e2e starts with T-005 (playwright.config.ts); until then the step is skipped.
+      - name: Load budget
+        run: npm run check-size
       - name: Playwright Chromium
         if: hashFiles('playwright.config.ts') != ''
         run: npx playwright install --with-deps chromium

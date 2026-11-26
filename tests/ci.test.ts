@@ -22,6 +22,7 @@ describe("CI workflow (T-006)", () => {
       "npm run format:check",
       "npm test",
       "npm run build",
+      "npm run check-size",
       "npx playwright install --with-deps chromium",
       "npm run e2e",
     ];

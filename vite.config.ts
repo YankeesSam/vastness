@@ -58,4 +58,7 @@ export default defineConfig({
   define: { __VASTNESS_BUILD__: JSON.stringify(info) },
   plugins: [react(), legalFiles(), buildJson(info)],
   worker: { format: "es" },
+  // The real budget is scripts/check-size.mjs (1.5 MB compressed, VN-PRF-004); three.js alone is over Vite's
+  // 500 kB raw default.
+  build: { chunkSizeWarningLimit: 1500 },
 });
