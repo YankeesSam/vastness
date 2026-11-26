@@ -1,4 +1,4 @@
-import { AU_KM } from "../constants";
+import { AU_KM } from "../constants.ts";
 
 // VN-EPH-006: the planet fallback outside the ephemeris coverage. E. M. Standish and J. G. Williams (1992),
 // "Keplerian Elements for Approximate Positions of the Major Planets", Tables 2a and 2b (3000 BC to 3000 AD), as

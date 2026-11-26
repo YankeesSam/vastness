@@ -1,4 +1,4 @@
-import { LEAP_SECONDS } from "./leap-seconds";
+import { LEAP_SECONDS } from "./leap-seconds.ts";
 
 // VN-EPH-001, ADR-0003: the one place UTC, TAI, TT and TDB meet. Inside the core time is TDB seconds since J2000
 // (JD 2451545.0 TDB); TT values here are TT seconds since J2000 (JD 2451545.0 TT). UTC exists as calendar fields

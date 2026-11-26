@@ -1,4 +1,4 @@
-import { AU_KM, C_KM_S, OBLIQUITY_J2000_ARCSEC } from "./constants";
+import { AU_KM, C_KM_S, OBLIQUITY_J2000_ARCSEC } from "./constants.ts";
 
 // ADR-0003: positions are heliocentric ecliptic J2000 (Horizons REF_PLANE=ECLIPTIC, REF_SYSTEM=ICRF) in km, as
 // float64. The scene's y-up mapping exists here and nowhere else.

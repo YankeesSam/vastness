@@ -8,6 +8,7 @@ export default defineConfig({
   test: {
     maxWorkers: "50%",
     testTimeout: 30_000,
+    setupFiles: ["tests/setup-no-network.ts"],
     projects: [
       {
         extends: true,
