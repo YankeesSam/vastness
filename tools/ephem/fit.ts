@@ -24,7 +24,13 @@ export interface Sample {
 }
 
 export interface FitOptions {
+  /** The object's tolerance (VN-EPH-003): a segment over it at the step limit is a miss. */
   toleranceKm: number;
+  /**
+   * Held-out error to subdivide down to (default toleranceKm). The pipeline uses half the tolerance, because the
+   * error between samples can exceed the error at the midpoints (ephem:check found Jupiter 6 % over).
+   */
+  targetKm?: number;
   /** Candidate degrees (default 7..13). */
   degrees?: readonly number[];
   /** Sample intervals per segment before any halving; even (default 64). */
@@ -99,7 +105,7 @@ function fitDegree(s: readonly Sample[], degree: number, o: Required<FitOptions>
     const p = fitPiece(s, i0, i1, degree, o.velocities);
     const mid = i0 + 2 * Math.floor((i1 - i0) / 4);
     const canHalve = mid > i0 && mid < i1 && fitPiece(s, i0, mid, degree, o.velocities) !== undefined;
-    if (p && (p.errorKm <= o.toleranceKm || !canHalve)) {
+    if (p && (p.errorKm <= o.targetKm || !canHalve)) {
       pieces.push(p);
       if (p.errorKm > o.toleranceKm) misses.push({ t0: s[i0]!.t, t1: s[i1]!.t, errorKm: p.errorKm });
       return true;
@@ -132,8 +138,15 @@ const size = (r: FitResult): number => r.segments.length * (r.degree + 1);
  * fit with the fewest coefficients; if none passes, the one with the fewest misses, then the smallest error.
  */
 export function fitAdaptive(samples: readonly Sample[], options: FitOptions): FitResult {
-  const o: Required<FitOptions> = { degrees: DEGREES, initialIntervals: 64, velocities: true, ...options };
+  const o: Required<FitOptions> = {
+    degrees: DEGREES,
+    initialIntervals: 64,
+    velocities: true,
+    targetKm: options.toleranceKm,
+    ...options,
+  };
   if (!(o.toleranceKm > 0)) throw new RangeError("tolerance must be positive");
+  if (!(o.targetKm > 0 && o.targetKm <= o.toleranceKm)) throw new RangeError("target must be in (0, tolerance]");
   if (o.initialIntervals < 4 || o.initialIntervals % 2 !== 0)
     throw new RangeError("initialIntervals must be even, >= 4");
   if (samples.length < 3 || samples.length % 2 === 0) {

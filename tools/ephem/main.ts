@@ -49,6 +49,9 @@ export interface GenerateOptions {
   log?: (line: string) => void;
 }
 
+/** The fit subdivides to this fraction of the tolerance; ephem:check holds the whole tolerance against F2. */
+export const FIT_TARGET_FRACTION = 0.5;
+
 export const CREDIT = "State vectors from the JPL Horizons system (NASA/JPL Solar System Dynamics Group)";
 
 /** TDB seconds since J2000 at 0h TDB on 1 January of `year`. */
@@ -188,7 +191,10 @@ export async function generate(o: GenerateOptions): Promise<Map<string, Uint8Arr
     const chunks: Chunk[] = [];
     for (let year = from; year < to; year += span) {
       const c = await fetchChunk(o, body, year, year + span);
-      const fit = fitAdaptive(c.response.records, { toleranceKm: tolerance });
+      const fit = fitAdaptive(c.response.records, {
+        toleranceKm: tolerance,
+        targetKm: tolerance * FIT_TARGET_FRACTION,
+      });
       o.log?.(
         `${body.name} ${year}: ${c.response.records.length} samples, degree ${fit.degree}, ` +
           `${fit.segments.length} segments, max ${fit.maxErrorKm.toFixed(3)} km, ${fit.misses.length} misses`,

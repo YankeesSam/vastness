@@ -141,3 +141,19 @@ describe("adaptive segment fitting (T-017)", () => {
     expect(() => fitAdaptive([s[1]!, s[0]!, s[2]!], { toleranceKm: 10 })).toThrow(/ascending/);
   });
 });
+
+describe("fit target below the tolerance (T-019 finding)", () => {
+  it("VN-EPH-003: targetKm subdivides further, while misses are still judged against the tolerance", () => {
+    const s = sample(circular, 0, DAY, 2 * 365 + 1);
+    const plain = fitAdaptive(s, { toleranceKm: 0.01, degrees: [7] });
+    const margin = fitAdaptive(s, { toleranceKm: 0.01, targetKm: 0.005, degrees: [7] });
+    expect(margin.segments.length).toBeGreaterThan(plain.segments.length);
+    expect(margin.maxErrorKm).toBeLessThanOrEqual(0.005);
+    // Noise no segment can follow: misses list only what exceeds the tolerance, not the target.
+    const noisy = s.map((p, i) => (i === 101 ? { ...p, x: p.x + 30 } : p));
+    const r = fitAdaptive(noisy, { toleranceKm: 1000, targetKm: 1, degrees: [7] });
+    expect(r.misses).toEqual([]);
+    expect(r.maxErrorKm).toBeGreaterThan(1);
+    expect(() => fitAdaptive(s, { toleranceKm: 10, targetKm: 20 })).toThrow(/target/);
+  });
+});

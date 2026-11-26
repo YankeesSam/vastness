@@ -8,9 +8,9 @@
     { "id": 399, "name": "Earth", "center": 10, "step_hours": 12, "tolerance": "planet" },
     { "id": 301, "name": "Moon", "center": 399, "step_hours": 6, "tolerance": "moon" },
     { "id": 499, "name": "Mars", "center": 10, "step_hours": 12, "tolerance": "planet", "barycenter": 4 },
-    { "id": 599, "name": "Jupiter", "center": 10, "step_hours": 12, "tolerance": "planet", "barycenter": 5 },
-    { "id": 699, "name": "Saturn", "center": 10, "step_hours": 12, "tolerance": "planet", "barycenter": 6 },
-    { "id": 799, "name": "Uranus", "center": 10, "step_hours": 12, "tolerance": "planet", "barycenter": 7 },
-    { "id": 899, "name": "Neptune", "center": 10, "step_hours": 12, "tolerance": "planet", "barycenter": 8 }
+    { "id": 599, "name": "Jupiter", "center": 10, "step_hours": 3, "tolerance": "planet", "barycenter": 5 },
+    { "id": 699, "name": "Saturn", "center": 10, "step_hours": 6, "tolerance": "planet", "barycenter": 6 },
+    { "id": 799, "name": "Uranus", "center": 10, "step_hours": 6, "tolerance": "planet", "barycenter": 7 },
+    { "id": 899, "name": "Neptune", "center": 10, "step_hours": 6, "tolerance": "planet", "barycenter": 8 }
   ]
 }

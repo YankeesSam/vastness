@@ -43,6 +43,19 @@ export function vectorParams(q: VectorQuery): Record<string, string> {
   return out;
 }
 
+/** A state-vector query at listed epochs (JD TDB texts) instead of a start, stop and step: F2 reference samples. */
+export function vectorParamsAt(command: string, center: string, jds: readonly string[]): Record<string, string> {
+  const p = vectorParams({ command, center, start: "", stop: "", step: "" });
+  delete p.START_TIME;
+  delete p.STOP_TIME;
+  delete p.STEP_SIZE;
+  p.TLIST = jds.map((jd) => `'${jd}'`).join(" ");
+  p.TLIST_TYPE = "'JD'";
+  const out: Record<string, string> = {};
+  for (const k of Object.keys(p).sort()) out[k] = p[k]!;
+  return out;
+}
+
 /** Canonical query string (sorted keys, URL-encoded values): the cache key source and the text quoted in errors. */
 export function canonicalQuery(params: Record<string, string>): string {
   return Object.keys(params)
