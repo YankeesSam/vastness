@@ -47,6 +47,7 @@ ADR-0002 (build-time ephemerides) and ADR-0003 (time, frames, units) are the law
 - Held-out points are midpoints between samples; adaptive subdivision halves a segment until the tolerance holds (10 km planets and Moon, 50 km spacecraft) or the step limit is hit, then lists the miss in the manifest. Never loosen a tolerance to get green.
 - Evaluate with the Clenshaw recurrence into a caller-supplied output array; no allocation per call (VN-EPH-005).
 - Moons and planet-bound spacecraft are stored relative to their parent and composed at evaluation (VN-EPH-009).
+- Orbiters can use element segments (VN-EPH-011): Chebyshev fits of osculating elements (a, e, i, node, argument of periapsis, and M - n t so the fitted quantity varies slowly), position from Kepler's equation (Newton iteration, a fixed iteration cap, tested at e near 0 and near 0.9 for CAPSTONE's orbit). The pipeline fits both kinds and keeps the smaller within tolerance; low lunar orbiters need 2 km. Measure the whole-mission size and error before choosing full mission or window; never decide by estimate. Outside the stored span show an illustrative orbit, labelled, never an extrapolated exact position.
 
 ## Binary format and manifest (VN-EPH-004, VN-DAT-005)
 

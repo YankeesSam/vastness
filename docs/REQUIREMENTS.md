@@ -6,6 +6,7 @@ Requirement IDs are stable. A retired requirement is struck through and kept; it
 | Rev | Date | Change |
 |---|---|---|
 | A | 2026-11-26 | Initial baseline, from the Vastness Project Design Document v1.0 (2026-11-26) and the seeding chat; hosted on GitHub (user's choice in the seeding chat) |
+| B | 2026-11-26 | Lunar orbiters stored as orbital elements, measured before choosing full mission or window (seeding chat): VN-EPH-003 adds a 2 km tolerance, VN-EPH-009 reworded, new VN-EPH-011, OI-6 reworded |
 
 ## 1. Purpose
 
@@ -69,13 +70,14 @@ Out of scope (non-goals)
 
 - **VN-EPH-001** (T, M1) Time scales: conversions between UTC, TAI, TT and TDB, with a leap-second table from IERS Bulletin C, the TDB-TT periodic term (error under 30 microseconds), and Julian dates. Leap seconds after the table's last entry are assumed to be zero and the About box says until when the table is known.
 - **VN-EPH-002** (T, M1) Ephemerides are stored as Chebyshev polynomial segments per coordinate (position; velocity is the derivative), fitted to Horizons samples, with segment length chosen adaptively until the error at held-out points (midpoints between samples) is below the object's tolerance.
-- **VN-EPH-003** (T, M1) Fit tolerances: 10 km in position for the planets and the Moon over their coverage; 50 km for spacecraft in cruise; spacecraft segments around flybys, orbit insertions and manoeuvres are subdivided until the same tolerance holds or the sample step limit is reached, and any segment that misses it is listed in the manifest.
+- **VN-EPH-003** (T, M1) Fit tolerances: 10 km in position for the planets and the Moon over their coverage; 50 km for spacecraft in cruise; 2 km for spacecraft in low orbit around the Moon (so none is drawn below the surface); spacecraft segments around flybys, orbit insertions and manoeuvres are subdivided until the same tolerance holds or the sample step limit is reached, and any segment that misses it is listed in the manifest.
 - **VN-EPH-004** (T, M1) An ephemeris file is a compact binary (little-endian float64 coefficients, a fixed header with object ID, coverage, degree and segment table, a format version) with a documented layout (docs/EPHEMERIS_FORMAT.md), and loads without parsing text.
 - **VN-EPH-005** (T, M1) Evaluating an object at a TDB time returns position and velocity in under 2 microseconds on the reference machine (amortised over 1e5 calls) and allocates nothing in steady state.
 - **VN-EPH-006** (T, M1) Planet coverage is 1900-01-01 to 2100-01-01 by default (OI-5). Outside it, planets fall back to the JPL "Keplerian elements for approximate positions of the major planets" model (Standish), and the UI marks those positions approximate.
 - **VN-EPH-007** (T, M3) Spacecraft coverage runs from launch (or the first epoch Horizons has) to the end of Horizons' predictions. Outside it the spacecraft is not drawn and its info panel says why (before launch, beyond the predictions, mission ended).
 - **VN-EPH-008** (A, M1) Accuracy is shown, not assumed: an accuracy report (`npm run ephem:check`) compares every ephemeris against Horizons reference samples not used in the fit (F2) and fails when any object exceeds its tolerance. The report's summary is published with each release.
-- **VN-EPH-009** (T, M3) Moons are stored relative to their planet (the Moon geocentric, later moons planetocentric) and combined at evaluation time; lunar orbiters are stored relative to the Moon for a rolling window around the build date (OI-6).
+- **VN-EPH-009** (T, M3) Moons are stored relative to their planet (the Moon geocentric, later moons planetocentric) and spacecraft orbiting a body relative to that body (Juno to Jupiter, LRO and CAPSTONE to the Moon), and combined at evaluation time.
+- **VN-EPH-011** (T, M3) Orbiters may be stored as element segments instead of position segments: osculating orbital elements relative to the parent (semi-major axis, eccentricity, inclination, node, argument of periapsis, and mean anomaly minus mean motion times time) fitted with Chebyshev polynomials, the position computed by solving Kepler's equation. The pipeline fits both kinds for each orbiter, keeps the smaller that meets the tolerance, and reports size and worst error against Horizons for the whole mission. For lunar orbiters it keeps the whole mission when it fits a 5 MB budget per object, else a window of ±30 days around the build (OI-6); outside the stored span the orbiter is drawn on an illustrative orbit labelled as such, never at an invented exact position.
 - **VN-EPH-010** (T, M1) Ephemeris files are split by object and by time chunk; the app loads the Sun, planets and Moon for the current decade first (under 1 MB) and the rest on demand.
 
 ### 4.4 Scene (SCN)
@@ -189,7 +191,7 @@ Out of scope (non-goals)
 | Voyager 1 | the farthest object; float64 precision at 170 AU; light-time near a day |
 | Parker Solar Probe | perihelia under 0.05 AU at about 190 km/s; segment subdivision |
 | Europa Clipper | gravity assists (Mars 2025, Earth 2026); flyby segments |
-| LRO | a lunar orbiter; the rolling window; Moon-relative storage |
+| LRO | a low lunar orbiter (about 2 h period, 50-100 km altitude); element segments; the 2 km tolerance; full mission or window by measurement |
 
 ## 6. Assumptions and later
 
@@ -204,7 +206,7 @@ Out of scope (non-goals)
 - **OI-3** Hosting: GitHub Pages (the default: same place as the code and CI; chosen over GitLab on 2026-11-26) or Cloudflare Pages or Vercel (the design document's suggestions)? The repository is private at seed; public makes Actions minutes free and Pages available on the free plan, and the design calls for open source.
 - **OI-4** The spacecraft list for 1.0: the twelve in VN-CAT-002, or more or fewer?
 - **OI-5** Planet coverage: 1900-2100 (default) or wider (Horizons offers far more; files grow linearly)?
-- **OI-6** Lunar orbiters: a rolling window (default ±30 days around the build) or a schematic orbit at the Moon?
+- **OI-6** Lunar orbiters: element segments decide by measurement (VN-EPH-011): the whole mission if it fits 5 MB per object at 2 km, else ±30 days around the build with an illustrative orbit outside. **Decided 2026-11-26 (seeding chat)**; open only for the budget and window sizes.
 - **OI-7** Live data: is build-time data refreshed by CI (daily for predictions) enough, or should the app fetch fresh Horizons data through a serverless proxy?
 - **OI-8** Textures: which sources are acceptable (NASA public domain only, or CC BY sets such as Solar System Scope with attribution)?
 - **OI-9** The reference machine for VN-PRF-001: CPU, GPU, browser, display.
