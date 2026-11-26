@@ -5,6 +5,10 @@
   "type": "module",
   "description": "The solar system and its spacecraft in the browser, positioned from NASA/JPL Horizons data",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YankeesSam/vastness.git"
+  },
   "engines": {
     "node": ">=20"
   },

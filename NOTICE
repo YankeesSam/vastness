@@ -1,0 +1,14 @@
+Vastness
+Copyright 2026 YankeesSam (https://github.com/YankeesSam/vastness)
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+Anyone who redistributes Vastness or a work derived from it must include this
+NOTICE file (Apache License 2.0, section 4(d)) and must mark every file they
+changed with a prominent notice saying so (section 4(b)). The licence does not
+grant permission to use the name "Vastness" for a derived work (section 6).
+
+Positions and orbits come from NASA/JPL Solar System Dynamics, Horizons. Every
+data source and asset, with its terms and credit, is listed in
+docs/DATA_SOURCES.md. Third-party packages bundled into the web app are listed
+with their licences in THIRD_PARTY_NOTICES.txt.

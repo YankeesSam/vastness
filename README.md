@@ -4,7 +4,7 @@
 
 Vastness is a free, open-source, browser-based planetarium of the Sun, the planets and the robotic explorers of deep space. Fly from a spacecraft a kilometre away to Voyager 1 at the edge of the heliosphere, move through time, and see distances, light-time and speeds that agree with NASA/JPL Horizons, the system mission navigators use.
 
-Status: **seeded, not yet built.** See [docs/ROADMAP.md](docs/ROADMAP.md).
+Status: **early development (M0, bootstrap).** See [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## How it works
 
@@ -16,7 +16,9 @@ Status: **seeded, not yet built.** See [docs/ROADMAP.md](docs/ROADMAP.md).
 
     npm ci
     npm run dev          # local server
+    npm run build        # static site in dist/
     npm test             # unit tests
+    npm run check-deps   # runtime dependency allowlist and THIRD_PARTY_NOTICES.txt
     npm run e2e          # Playwright
     npm run ephem        # regenerate ephemerides (calls Horizons, cached)
     npm run ephem:check  # accuracy against Horizons reference samples
@@ -27,4 +29,4 @@ Ephemerides: NASA/JPL Solar System Dynamics, Horizons. Every source and its term
 
 ## Licence
 
-MIT unless the open item OI-1 decides otherwise (docs/REQUIREMENTS.md).
+Vastness is open source under the Apache License 2.0: see [LICENSE](LICENSE) and [NOTICE](NOTICE). If you redistribute it or build on it, keep the NOTICE file, mark the files you changed, and give your work its own name. Bundled third-party packages and their licences are listed in [THIRD_PARTY_NOTICES.txt](THIRD_PARTY_NOTICES.txt), which ships with the built app alongside LICENSE and NOTICE.
