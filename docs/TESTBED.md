@@ -36,9 +36,17 @@ Recorded 2026-11-26 from the user (OI-9, W-008):
 | CPU | AMD Ryzen 7 7800X3D |
 | GPU | NVIDIA GeForce RTX 4070 Super |
 | Browser | Chrome (version to record at T-075) |
-| Display | ultrawide panel, typical resolution, assumed 3440x1440 until confirmed |
+| Display | ultrawide panel, 3440x1440 (confirmed by the user) |
 
 VN-PRF-001 is demonstrated at 1920x1080 and at the panel's native resolution.
+
+## Secrets
+
+| Secret | Needed from | Local (pipeline runs on this machine) | CI |
+|---|---|---|---|
+| `NASA_API_KEY` (api.nasa.gov, free) | T-086, M9 (DONKI) | `.env` at the repo root (gitignored), read by tools/ only | Actions secret: `gh secret set NASA_API_KEY` |
+
+Horizons, CelesTrak, CNEOS and SBDB need no key. Actions uses its built-in `GITHUB_TOKEN`. No secret is ever named `VITE_*` (Vite would put it in the bundle) or read under src/ (ADR-0005).
 
 ## Tools
 
