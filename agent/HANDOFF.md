@@ -30,6 +30,6 @@ notes:
   - Pre-1972 UTC uses TAI-UTC = 10 s (approximate, UTC_EXACT_FROM); planet coverage starts 1900, so read-outs before 1972 are UTC-approximate by seconds.
   - T-022 uses Standish Tables 2a/2b (3000 BC to 3000 AD), not Table 1 (1800-2050), since the fallback covers both sides of 1900-2100; values checked against the JPL page. Earth's row is the EM barycentre.
   - Format v1 (VNEP): fixed degree per file, contiguous segments; reader copies via DataView (works at any offset). Manifest schema is in docs/EPHEMERIS_FORMAT.md for T-018.
-  - D-001 (low, env) unchanged.
+  - D-001 (low, env) unchanged. Nightly 44fecbb-nightly ok; LAN http://192.168.1.166:8770/ (200).
 open_defects_blocking: []
 optimizations_applied: [O-007]
