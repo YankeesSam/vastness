@@ -1,14 +1,13 @@
 // Records the F1 fixtures (testdata/horizons): a handful of small Horizons responses, stored byte for byte, that
 // the parser and pipeline tests read instead of the network (VN-DAT-007). Run by hand, rarely:
 //   node --experimental-strip-types --no-warnings tools/ephem/record.ts
-// Serial, at least 1 s apart, with the project User-Agent (VN-DAT-002). Existing fixtures are kept unless --force.
+// Through the polite client (serial, 1 s apart, cached in .cache/horizons). Existing fixtures are kept unless --force.
 
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { queryUrl, vectorParams, type VectorQuery } from "./horizons.ts";
-
-export const USER_AGENT = "vastness-ephemeris-pipeline (+https://github.com/YankeesSam/vastness)";
+import { HorizonsClient } from "./client.ts";
+import { vectorParams, type VectorQuery } from "./horizons.ts";
 
 /** Fixture name -> query. Short spans keep each file to a few dozen lines. */
 export const FIXTURES: Record<string, VectorQuery> = {
@@ -30,17 +29,16 @@ async function main(): Promise<void> {
   const force = process.argv.includes("--force");
   const dir = fileURLToPath(new URL("../../testdata/horizons/", import.meta.url));
   mkdirSync(dir, { recursive: true });
-  let last = 0;
+  const client = new HorizonsClient({
+    cacheDir: fileURLToPath(new URL("../../.cache/horizons/", import.meta.url)),
+    budget: 20,
+  });
   for (const [name, q] of Object.entries(FIXTURES)) {
     const file = join(dir, `${name}.json`);
     if (existsSync(file) && !force) continue;
-    const wait = last + 1100 - Date.now();
-    if (wait > 0) await new Promise((r) => setTimeout(r, wait));
-    last = Date.now();
-    const res = await fetch(queryUrl(vectorParams(q)), { headers: { "User-Agent": USER_AGENT } });
-    const body = await res.text();
-    writeFileSync(file, body);
-    console.log(`${name}: HTTP ${res.status}, ${body.length} bytes`);
+    const r = await client.get(vectorParams(q));
+    writeFileSync(file, r.body);
+    console.log(`${name}: ${r.fromCache ? "cache" : "fetched"}, ${r.body.length} bytes`);
   }
 }
 
