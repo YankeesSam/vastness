@@ -51,9 +51,10 @@ function buildJson(info: ReturnType<typeof buildInfo>): Plugin {
 
 const info = buildInfo();
 
-// VN-GEN-001: a static build. `base` becomes /vastness/ for GitHub Pages in T-007.
+// VN-GEN-001: a static build. Relative base for the LAN server and the nightly zip; the Pages workflow sets
+// VASTNESS_BASE=/vastness/ (T-007).
 export default defineConfig({
-  base: "./",
+  base: process.env.VASTNESS_BASE || "./",
   define: { __VASTNESS_BUILD__: JSON.stringify(info) },
   plugins: [react(), legalFiles(), buildJson(info)],
   worker: { format: "es" },
