@@ -21,9 +21,7 @@ describe("project skeleton (T-001)", () => {
     expect(pkg.private).toBe(true);
     // A static build: `build` runs tsc and vite and nothing that starts a server.
     expect(pkg.scripts?.build).toMatch(/vite build/);
-    // Runtime dependencies are browser libraries only (the full allowlist check is T-003, ADR-0001).
-    const allowed = ["@react-three/fiber", "react", "react-dom", "three", "zustand"];
-    for (const dep of Object.keys(pkg.dependencies ?? {})) expect(allowed, dep).toContain(dep);
+    // Runtime dependencies are checked against ADR-0001 by scripts/check-deps.mjs (tests/check-deps.test.ts).
     const html = read("index.html");
     expect(html).toContain('<div id="root"></div>');
     expect(html).toContain('src="/src/main.tsx"');
@@ -31,7 +29,7 @@ describe("project skeleton (T-001)", () => {
   });
 
   it("VN-GEN-001: the scripts the workflow relies on exist", () => {
-    for (const script of ["dev", "build", "test", "typecheck", "e2e", "ephem", "format:check"]) {
+    for (const script of ["dev", "build", "test", "typecheck", "e2e", "ephem", "format:check", "check-deps"]) {
       expect(pkg.scripts, script).toHaveProperty(script);
     }
   });

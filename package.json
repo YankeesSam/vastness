@@ -18,7 +18,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "e2e": "playwright test",
-    "ephem": "node --experimental-strip-types --no-warnings tools/ephem/main.ts"
+    "ephem": "node --experimental-strip-types --no-warnings tools/ephem/main.ts",
+    "check-deps": "node scripts/check-deps.mjs"
   },
   "dependencies": {
     "react": "^19.3.0",

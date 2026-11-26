@@ -7,7 +7,7 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 
 ## Now
 
-- [ ] NOW T-003 P0 @phase0 slice: runtime dependency check: allowlist from ADR-0001, licence of each, THIRD_PARTY_NOTICES.txt generated for the bundle  req: VN-GEN-005, VN-GEN-007  files: scripts/check-deps.mjs, THIRD_PARTY_NOTICES.txt  test: tests/check-deps.test.ts
+- [ ] NOW T-010 P1 @phase0 slice: README (what, run, data, licence) and LICENSE (Apache-2.0, OI-1) with NOTICE; a docs test that LICENSE, NOTICE and package.json agree  req: VN-DOC-001, VN-GEN-007  files: README.md, LICENSE, NOTICE, package.json  test: tests/docs.test.ts
 
 ## Next
 
@@ -17,7 +17,6 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 - [ ] T-007 P0 @phase0 slice: GitHub Pages: deploy job (actions/upload-pages-artifact + deploy-pages) on main, Vite `base` for the /vastness/ path, scripts/check-pages.sh probes the URL and build.json commit; needs-user: Pages source set to GitHub Actions (and a public repo or paid plan; OI-3 answered: GitHub Pages)  req: VN-WEB-001  files: .github/workflows/pages.yml, vite.config.ts, scripts/check-pages.sh  test: bash scripts/check-pages.sh
 - [ ] T-008 P0 @phase0 slice: nightly release (Escapement's pattern): scripts/nightly-build.sh (web zip, docs zip, build.json, SHA256SUMS; deterministic zips), .github/workflows/nightly.yml replacing the `nightly` pre-release on each push to main, scripts/nightly.sh waits for the run at HEAD with gh and checks tag, files and checksums  req: VN-DOC-005, VN-GEN-010  files: scripts/nightly-build.sh, scripts/nightly.sh, .github/workflows/nightly.yml  test: tests/nightly-build.test.ts
 - [ ] T-009 P1 @phase0 slice: LAN deploy: scripts/deploy-web.sh builds and serves dist on port 8770 (seeded; check it against the first real build) and the Windows portproxy note  req: VN-WEB-001  files: scripts/deploy-web.sh, docs/TESTBED.md  test: bash scripts/deploy-web.sh --status
-- [ ] T-010 P1 @phase0 slice: README (what, run, data, licence) and LICENSE (Apache-2.0, OI-1) with NOTICE; a docs test that LICENSE, NOTICE and package.json agree  req: VN-DOC-001, VN-GEN-007  files: README.md, LICENSE, NOTICE, package.json  test: tests/docs.test.ts
 
 ## Later
 
@@ -136,3 +135,4 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 
 - [x] T-001 P0 @phase0 slice: project skeleton: package.json (Node 22, `engines` >= 20), TypeScript strict, Vite 7, React 19, Vitest, Prettier, .editorconfig, .gitignore (node_modules, dist, .cache, nightly, test-results, playwright-report), scripts test, typecheck, build, e2e, ephem  req: VN-GEN-001  files: package.json, tsconfig.json, vite.config.ts, vitest.config.ts, index.html, src/main.tsx  test: tests/smoke.test.ts  result: session 1: package.json (Apache-2.0, engines >=20, react 19 only at runtime), strict tsconfig, Vite 7, Vitest 3 projects app/node, Prettier, LICENSE; smoke 4/4, typecheck, build, prettier clean
 - [x] T-002 P0 @phase0 slice: guard tests: src/core imports no DOM, React, three or `node:*` and uses no window/document/process; no fetch, XMLHttpRequest, WebSocket, EventSource or sendBeacon outside src/app/assets/loader.ts and src/sw.ts; no eval, new Function, string timers or computed import()  req: VN-GEN-002, VN-GEN-003, VN-GEN-004  files: tests/guards.test.ts  test: tests/guards.test.ts  result: session 2: tests/guards.test.ts (rules proved on synthetic violations, then run over src/ and tools/; comments stripped); 15/15 unit, typecheck, prettier clean
+- [x] T-003 P0 @phase0 slice: runtime dependency check: allowlist from ADR-0001, licence of each, THIRD_PARTY_NOTICES.txt generated for the bundle  req: VN-GEN-005, VN-GEN-007  files: scripts/check-deps.mjs, THIRD_PARTY_NOTICES.txt  test: tests/check-deps.test.ts  result: session 3: scripts/check-deps.mjs (allowlist parsed from ADR-0001, lock-file runtime packages, permissive-licence check, deterministic THIRD_PARTY_NOTICES.txt; `npm run check-deps`), Vite plugin emits the notices into dist; 22/22 unit, typecheck, prettier, build clean
