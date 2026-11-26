@@ -56,6 +56,10 @@ Horizons, CelesTrak, CNEOS and SBDB need no key. Actions uses its built-in `GITH
 | gh | Actions runs, nightly release, Pages |
 | Playwright Chromium | e2e, screenshots (`npx playwright install chromium`) |
 
+## CI
+
+`.github/workflows/ci.yml` runs on every push to main and every pull request (superseded runs are cancelled): `npm ci`, `check-deps`, `typecheck`, `format:check`, `npm test`, `npm run build`, then Playwright Chromium e2e once `playwright.config.ts` exists (T-005). Node 22 with the npm cache. `scripts/check-env.sh` prints the latest run on main; `gh run list --workflow ci.yml --branch main --limit 1` shows it in full.
+
 ## Agent access
 
 The remote is HTTPS (`https://github.com/YankeesSam/vastness.git`); WSL pushes through the repo-local credential helper, the Windows Git Credential Manager (`git config --local credential.helper "/mnt/c/Program\ Files/Git/mingw64/bin/git-credential-manager.exe"`), as Escapement and Breakout do. SSH to github.com is not set up in WSL. If `git push` fails in an agent shell, the handoff records `push: failed` and the user pushes.

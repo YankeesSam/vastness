@@ -1,5 +1,7 @@
 # Vastness
 
+[![CI](https://github.com/YankeesSam/vastness/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/YankeesSam/vastness/actions/workflows/ci.yml)
+
 **The solar system at its true scale, and where our spacecraft are in it.**
 
 Vastness is a free, open-source, browser-based planetarium of the Sun, the planets and the robotic explorers of deep space. Fly from a spacecraft a kilometre away to Voyager 1 at the edge of the heliosphere, move through time, and see distances, light-time and speeds that agree with NASA/JPL Horizons, the system mission navigators use.

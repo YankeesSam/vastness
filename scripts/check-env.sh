@@ -34,6 +34,14 @@ else
   warn deps "no package.json yet (T-001 creates it)"
 fi
 
+if have gh && gh auth status >/dev/null 2>&1; then
+  ci="$(cd "$root" && timeout 20 gh run list --workflow ci.yml --branch main --limit 1 --json status,conclusion,headSha --jq '.[0] | "\(.status) \(.conclusion) \(.headSha[0:7])"' 2>/dev/null || true)"
+  case "$ci" in
+    "completed success "*) ok ci "last run on main: ${ci#completed }" ;;
+    "") warn ci "no CI run found (T-006)" ;;
+    *) warn ci "last run on main: $ci" ;;
+  esac
+fi
 if [ -d "$root/.cache/horizons" ]; then ok cache "$(find "$root/.cache/horizons" -type f | wc -l) cached Horizons responses"; else warn cache "no Horizons cache yet (T-016)"; fi
 if [ -f "$root/public/ephem/manifest.json" ]; then ok ephem "manifest present"; else warn ephem "no generated ephemerides yet (T-020)"; fi
 
