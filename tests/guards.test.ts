@@ -8,7 +8,7 @@ import { describe, expect, it } from "vitest";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 
-/** Source files under `dir` (repo-relative, forward slashes), tests excluded. */
+/** Source files under `dir` (repo-relative, forward slashes), tests and benchmarks excluded. */
 function sources(dir: string): string[] {
   const abs = join(root, dir);
   if (!existsSync(abs)) return [];
@@ -17,7 +17,7 @@ function sources(dir: string): string[] {
     for (const name of readdirSync(d).sort()) {
       const p = join(d, name);
       if (statSync(p).isDirectory()) walk(p);
-      else if (/\.(ts|tsx|mts|js|mjs)$/.test(name) && !/\.(test|spec)\.tsx?$/.test(name)) {
+      else if (/\.(ts|tsx|mts|js|mjs)$/.test(name) && !/\.(test|spec|bench)\.tsx?$/.test(name)) {
         out.push(relative(root, p).split(sep).join("/"));
       }
     }

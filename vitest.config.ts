@@ -16,6 +16,7 @@ export default defineConfig({
           name: "app",
           environment: "jsdom",
           include: ["src/app/**/*.test.ts", "src/app/**/*.test.tsx", "src/scene/**/*.test.tsx"],
+          benchmark: { include: ["src/app/**/*.bench.ts", "src/scene/**/*.bench.ts"] },
         },
       },
       {
@@ -25,6 +26,7 @@ export default defineConfig({
           environment: "node",
           include: ["src/**/*.test.ts", "tools/**/*.test.ts", "tests/**/*.test.ts"],
           exclude: ["src/app/**", "**/node_modules/**"],
+          benchmark: { include: ["src/**/*.bench.ts", "tools/**/*.bench.ts"], exclude: ["src/app/**", "src/scene/**"] },
         },
       },
     ],

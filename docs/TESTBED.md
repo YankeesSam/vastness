@@ -21,7 +21,7 @@ No unit test touches the network (VN-DAT-007). Only `tools/ephem/record.ts`, `np
 | Format | `npx prettier --check .` | every task |
 | e2e and screenshots | `npm run e2e` | tasks touching src/app or src/scene |
 | Accuracy | `npm run ephem:check` | tasks touching tools/ephem, data/, public/ephem |
-| Benchmarks | `npx vitest bench` | T-023 and evaluation changes |
+| Benchmarks | `npm run bench` | T-023 and evaluation changes; first run (session 7, this machine, F3 2020s): Earth state 67 ns, Moon geocentric 71 ns, Moon heliocentric (composed) 143 ns per call; budget 2 µs (VN-EPH-005) |
 
 ## Budgets (VN-PRF-002, VN-PRF-004)
 

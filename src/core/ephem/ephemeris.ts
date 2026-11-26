@@ -1,5 +1,4 @@
-import { evaluateSegment } from "./chebyshev.ts";
-import { findSegment, readEphemeris, type EphemerisFile } from "./format.ts";
+import { readEphemeris, type EphemerisFile } from "./format.ts";
 
 // VN-EPH-005, VN-EPH-009, VN-EPH-010: the runtime ephemeris. It reads the manifest's chunk index, loads chunk files
 // through an injected loader (the app passes its own-origin asset loader; tests pass files from disk), evaluates
@@ -53,6 +52,8 @@ interface Body {
   /** Index of the parent body in `bodies`, -1 for the origin. */
   parent: number;
   chunks: ChunkSlot[];
+  /** Chunk starts, then the last chunk's end: the chunk search table. */
+  starts: Float64Array;
   /** Scratch for composing this body's parent state. */
   scratch: Float64Array;
 }
@@ -114,7 +115,18 @@ export function createEphemeris(manifest: EphemerisManifest, loader: ChunkLoader
         throw new RangeError(`object ${o.id}: chunks ${chunks[i - 1]!.file} and ${chunks[i]!.file} are not contiguous`);
       }
     }
-    return { id: o.id, name: o.name, origin: o.origin === true, parent: -1, chunks, scratch: new Float64Array(6) };
+    const starts = new Float64Array(chunks.length + (chunks.length > 0 ? 1 : 0));
+    chunks.forEach((c, i) => (starts[i] = c.start));
+    if (chunks.length > 0) starts[chunks.length] = chunks[chunks.length - 1]!.end;
+    return {
+      id: o.id,
+      name: o.name,
+      origin: o.origin === true,
+      parent: -1,
+      chunks,
+      starts,
+      scratch: new Float64Array(6),
+    };
   });
   sorted.forEach((o, i) => {
     const b = bodies[i]!;
@@ -174,39 +186,84 @@ export function createEphemeris(manifest: EphemerisManifest, loader: ChunkLoader
     }
   }
 
-  function relative(b: Body, t: number, out: Float64Array, o: number): EvalStatus {
+  // VN-EPH-005: the hot path. V8 passes numbers between functions as tagged values, so a float64 handed to a call it
+  // does not inline is boxed, which allocates. The time therefore travels in `clock[0]`, and chunk search, segment
+  // search and the Clenshaw recurrence are written out in this one function; only objects and small integers cross
+  // a call boundary.
+  const clock = new Float64Array(1);
+
+  function relative(b: Body, out: Float64Array, o: number): EvalStatus {
     if (b.origin) {
-      out.fill(0, o, o + 6);
+      for (let k = 0; k < 6; k++) out[o + k] = 0;
       return "ok";
     }
-    const c = findChunk(b.chunks, t);
-    if (c < 0) return "outside";
-    const slot = b.chunks[c]!;
+    const t = clock[0]!;
+    const starts = b.starts;
+    const nc = starts.length - 1; // starts holds every chunk start plus the last end
+    if (nc < 1 || !(t >= starts[0]!) || !(t <= starts[nc]!)) return "outside";
+    let lo = 0;
+    let hi = nc - 1;
+    while (lo < hi) {
+      const mid = (lo + hi + 1) >> 1;
+      if (starts[mid]! <= t) lo = mid;
+      else hi = mid - 1;
+    }
+    const slot = b.chunks[lo]!;
     if (slot.state !== LOADED) {
-      if (slot.state === EMPTY) {
-        request(b.id, slot).catch(() => {
-          /* reported through the status */
-        });
-      }
+      if (slot.state === EMPTY) requestQuietly(b.id, slot);
       return slot.state === FAILED ? "error" : "loading";
     }
     const f = slot.data!;
-    const s = findSegment(f, t);
-    if (s < 0) return "outside";
+    const t0 = f.t0;
+    let s = 0;
+    let e = f.segmentCount - 1;
+    while (s < e) {
+      const mid = (s + e + 1) >> 1;
+      if (t0[mid]! <= t) s = mid;
+      else e = mid - 1;
+    }
+    const a0 = t0[s]!;
+    const span = f.t1[s]! - a0;
+    const tau = (2 * (t - a0)) / span - 1;
+    const velScale = 2 / span;
     const n = f.degree + 1;
-    evaluateSegment(f.coeffs, s * 3 * n, n, f.t0[s]!, f.t1[s]!, t, out, o);
+    const coeffs = f.coeffs;
+    const tau2 = 2 * tau;
+    for (let axis = 0; axis < 3; axis++) {
+      const base = (s * 3 + axis) * n;
+      let b1 = 0;
+      let b2 = 0;
+      let d1 = 0;
+      let d2 = 0;
+      for (let k = n - 1; k >= 1; k--) {
+        const b0 = coeffs[base + k]! + tau2 * b1 - b2;
+        const d0 = 2 * b1 + tau2 * d1 - d2;
+        b2 = b1;
+        b1 = b0;
+        d2 = d1;
+        d1 = d0;
+      }
+      out[o + axis] = coeffs[base]! + tau * b1 - b2;
+      out[o + 3 + axis] = (b1 + tau * d1 - d2) * velScale;
+    }
     return "ok";
   }
 
-  function compose(b: Body, t: number, out: Float64Array, o: number): EvalStatus {
-    const st = relative(b, t, out, o);
-    if (st !== "ok" || b.parent < 0) return st;
-    const p = bodies[b.parent]!;
-    if (p.origin) return "ok";
+  function requestQuietly(objectId: number, slot: ChunkSlot): void {
+    request(objectId, slot).catch(() => {
+      /* reported through the status */
+    });
+  }
+
+  function compose(b: Body, out: Float64Array, o: number): EvalStatus {
+    const st = relative(b, out, o);
+    if (st !== "ok") return st;
     const tmp = b.scratch;
-    const ps = compose(p, t, tmp, 0);
-    if (ps !== "ok") return ps;
-    for (let k = 0; k < 6; k++) out[o + k] = out[o + k]! + tmp[k]!;
+    for (let p = b.parent; p >= 0 && !bodies[p]!.origin; p = bodies[p]!.parent) {
+      const ps = relative(bodies[p]!, tmp, 0);
+      if (ps !== "ok") return ps;
+      for (let k = 0; k < 6; k++) out[o + k] = out[o + k]! + tmp[k]!;
+    }
     return "ok";
   }
 
@@ -235,7 +292,13 @@ export function createEphemeris(manifest: EphemerisManifest, loader: ChunkLoader
       for (const id of which ?? ids) collect(body(id), t, acc, owners);
       await Promise.all([...acc].map((s) => (s.state === LOADED ? undefined : request(owners.get(s)!, s))));
     },
-    relativeState: (id, t, out, offset = 0) => relative(body(id), t, out, offset),
-    state: (id, t, out, offset = 0) => compose(body(id), t, out, offset),
+    relativeState(id, t, out, offset = 0) {
+      clock[0] = t;
+      return relative(body(id), out, offset);
+    },
+    state(id, t, out, offset = 0) {
+      clock[0] = t;
+      return compose(body(id), out, offset);
+    },
   };
 }
