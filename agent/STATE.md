@@ -3,14 +3,14 @@ project: vastness
 milestone: M1
 phase: 1
 status: ready
-active_task_id: T-015
-active_task: "P0 @phase1 slice: Horizons query builder and response parser (JSON envelope, $$SOE/$$EOE CSV vectors, header fields, error texts); record F1 once with tools/ephem/record.ts (the only live fetch in the task) (VN-DAT-001, VN-DAT-004, VN-DAT-007)"
+active_task_id: T-021
+active_task: "P0 @phase1 slice: runtime ephemeris in core: chunk index, injected loader, lazy chunks, body tree composition (Moon relative to Earth) (VN-EPH-005, VN-EPH-009, VN-EPH-010)"
 next_skill: vastness-execute
-session: 5
-updated: 2026-11-26T19:40:00-05:00
+session: 6
+updated: 2026-11-26T18:39:19-05:00
 branch: main
-last_commit: 5555177
-push: ok
+last_commit: 1492275
+push: pending
 git_owner: YankeesSam
 git_repo: vastness
 toolchain: "node 22 + npm 10 (floor node 20); Playwright Chromium (SwiftShader WebGL) for e2e"

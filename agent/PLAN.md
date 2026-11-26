@@ -7,17 +7,16 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 
 ## Now
 
+- [ ] NOW T-021 P0 @phase1 slice: runtime ephemeris in core: chunk index, injected loader, lazy chunks, body tree composition (Moon relative to Earth)  req: VN-EPH-005, VN-EPH-009, VN-EPH-010  files: src/core/ephem/ephemeris.ts  test: src/core/ephem/ephemeris.test.ts
 
 ## Next
 
+- [ ] T-024 P1 @phase1 slice: docs/DATA_SOURCES.md (Horizons credit, IERS, constants) and a test that every file under data/ and public/ephem/ is listed  req: VN-DOC-002  files: docs/DATA_SOURCES.md  test: tests/docs.test.ts
+- [ ] T-023 P1 @phase1 slice: evaluation benchmark (vitest bench) for the 2 microsecond budget and a zero-allocation check  req: VN-EPH-005  files: src/core/ephem/ephemeris.bench.ts  test: src/core/ephem/ephemeris.bench.ts
 
 ## Later
 
 ### M1 ephemeris and time
-
-- [ ] T-021 P0 @phase1 slice: runtime ephemeris in core: chunk index, injected loader, lazy chunks, body tree composition (Moon relative to Earth)  req: VN-EPH-005, VN-EPH-009, VN-EPH-010  files: src/core/ephem/ephemeris.ts  test: src/core/ephem/ephemeris.test.ts
-- [ ] T-023 P1 @phase1 slice: evaluation benchmark (vitest bench) for the 2 microsecond budget and a zero-allocation check  req: VN-EPH-005  files: src/core/ephem/ephemeris.bench.ts  test: src/core/ephem/ephemeris.bench.ts
-- [ ] T-024 P1 @phase1 slice: docs/DATA_SOURCES.md (Horizons credit, IERS, constants) and a test that every file under data/ and public/ephem/ is listed  req: VN-DOC-002  files: docs/DATA_SOURCES.md  test: tests/docs.test.ts
 
 ### M2 scene and camera
 
