@@ -12,7 +12,7 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 ## Next
 
 - [ ] T-005 P0 @phase0 slice: Playwright e2e smoke in headless Chromium with SwiftShader WebGL: shell renders, canvas has a WebGL2 context, no request leaves the origin, About shows the commit  req: VN-UI-001, VN-GEN-002  files: playwright.config.ts, e2e/smoke.spec.ts  test: e2e/smoke.spec.ts
-- [ ] T-007 P0 @phase0 slice: GitHub Pages: deploy job (actions/upload-pages-artifact + deploy-pages) on main, Vite `base` for the /vastness/ path, scripts/check-pages.sh probes the URL and build.json commit; needs-user: Pages source set to GitHub Actions (and a public repo or paid plan; OI-3 answered: GitHub Pages)  req: VN-WEB-001  files: .github/workflows/pages.yml, vite.config.ts, scripts/check-pages.sh  test: bash scripts/check-pages.sh
+- [ ] T-007 P0 @phase0 slice: GitHub Pages: deploy job (actions/upload-pages-artifact + deploy-pages) on main, Vite `base` for the /vastness/ path, scripts/check-pages.sh probes the URL and build.json commit; Pages source is GitHub Actions and the repo is public (done by the user, session 3; OI-3: GitHub Pages)  req: VN-WEB-001  files: .github/workflows/pages.yml, vite.config.ts, scripts/check-pages.sh  test: bash scripts/check-pages.sh
 
 ## Later
 

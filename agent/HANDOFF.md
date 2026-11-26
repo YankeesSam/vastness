@@ -26,12 +26,12 @@ notes:
   - Batch session (user asked for 4-6 tasks in one area): release/licensing tooling T-003, T-010, T-006, T-008, T-009, one commit each.
   - check-deps parses the allowlist from ADR-0001's Runtime dependencies line; adding a runtime dep changes package-lock, so THIRD_PARTY_NOTICES.txt goes stale until `node scripts/check-deps.mjs --write`.
   - Vite plugin `legalFiles` emits LICENSE, NOTICE, THIRD_PARTY_NOTICES.txt into dist; nightly-build.sh fails if any is missing.
-  - NOTICE credits "YankeesSam" (GitHub handle); swap in a real name if wanted.
+  - NOTICE credits "YankeesSam"; the user confirmed it stays.
   - CI and Nightly use actions v7 (as Escapement). CI e2e steps are gated on playwright.config.ts (T-005 turns them on).
   - nightly: ok 84d52a0-nightly (web zip, docs zip, THIRD_PARTY_NOTICES.txt, build.json, SHA256SUMS); later commits are control files only.
   - T-004 should read the commit for the About box from the same source as nightly build.json (git short=12, commit time).
-  - LAN: local and windows localhost 200; LAN 000. needs-user (admin PowerShell): netsh interface portproxy add v4tov4 listenaddress=<LAN address, 192.168.x> listenport=8770 connectaddress=127.0.0.1 connectport=8770, plus the firewall rule in TESTBED.
-  - T-007 needs-user: the repo is public now; still set Settings > Pages > Source to GitHub Actions.
+  - LAN: portproxy for 8770 added by the user; http://192.168.1.166:8770/ answers 200.
+  - T-007 unblocked: the repo is public and Pages build_type is workflow (gh api repos/YankeesSam/vastness/pages).
   - D-001 (low, env) unchanged.
 open_defects_blocking: []
 optimizations_applied: [O-007]
