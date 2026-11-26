@@ -1,10 +1,10 @@
-# Context (session 5, batch T-011 T-012 T-013 T-014 T-022)
+# Context (session 6, T-015)
 
 - agent/STATE.md
 - agent/PLAN.md
 - .claude/skills/vastness-ephemeris/SKILL.md
-- docs/adr/0003-time-frames-units.md
-- tests/guards.test.ts
-- vitest.config.ts
+- docs/EPHEMERIS_FORMAT.md
 - src/core/time/scales.ts
 - src/core/ephem/chebyshev.ts
+- docs/DATA_SOURCES.md
+- vitest.config.ts

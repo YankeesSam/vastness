@@ -2,14 +2,14 @@ schema: 1
 project: vastness
 milestone: M1
 phase: 1
-status: running
-active_task_id: T-011
-active_task: "P0 @phase1 slice: time scales: UTC <-> TAI with the IERS Bulletin C leap-second table, TT, TDB (periodic term), Julian dates, ISO parse and format; reference values from the Astronomical Almanac and IERS (VN-EPH-001)"
+status: ready
+active_task_id: T-015
+active_task: "P0 @phase1 slice: Horizons query builder and response parser (JSON envelope, $$SOE/$$EOE CSV vectors, header fields, error texts); record F1 once with tools/ephem/record.ts (the only live fetch in the task) (VN-DAT-001, VN-DAT-004, VN-DAT-007)"
 next_skill: vastness-execute
 session: 5
-updated: 2026-11-26T19:00:00-05:00
+updated: 2026-11-26T19:40:00-05:00
 branch: main
-last_commit: 8722712
+last_commit: 5555177
 push: ok
 git_owner: YankeesSam
 git_repo: vastness
