@@ -66,9 +66,11 @@ The remote is HTTPS (`https://github.com/YankeesSam/vastness.git`); WSL pushes t
 
 ## Web app on the LAN
 
-Dev only. The handoff runs `bash scripts/deploy-web.sh` every session once T-004 has landed: it builds, copies `dist/` to `~/.local/state/vastness-web/site` and serves it with `python3 -m http.server` on every interface at port 8770 (`VASTNESS_WEB_PORT`), then prints the URLs with their HTTP status. `--status`, `--stop`, `--no-build` as in Escapement.
+Dev only. The handoff runs `bash scripts/deploy-web.sh` every session (checked against the first real build in session 3, T-009): it builds, copies `dist/` to `~/.local/state/vastness-web/site` and serves it with `python3 -m http.server` on every interface at port 8770 (`VASTNESS_WEB_PORT`), then prints the URLs with their HTTP status. `--status`, `--stop`, `--no-build` as in Escapement.
 
 One-time Windows step for LAN access under WSL2 NAT, in an administrator PowerShell:
 
     netsh interface portproxy add v4tov4 listenaddress=<windows lan address> listenport=8770 connectaddress=127.0.0.1 connectport=8770
     New-NetFirewallRule -DisplayName "Vastness web app" -Direction Inbound -Protocol TCP -LocalPort 8770 -Action Allow -Profile Private,Domain
+
+Until that step is done the script reports `windows: http://localhost:8770/ (200)` and `lan: ... (000)`; the app is still reachable from the Windows host itself. Check what is proxied with `netsh interface portproxy show v4tov4`.
