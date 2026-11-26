@@ -70,6 +70,7 @@ describe("app shell", () => {
     expect(text).toContain(buildInfo.commit);
     expect(text).toMatch(/Horizons retrieval/);
     expect(text).toMatch(/Leap-second table/);
+    expect(text).toMatch(/Bulletin C 72.*known until 2027-06-28/); // VN-EPH-001
     expect(text).toMatch(/Apache-2\.0/);
     expect(text).toMatch(/NASA\/JPL Horizons/);
     const hrefs = [...about.querySelectorAll("a")].map((a) => a.getAttribute("href"));

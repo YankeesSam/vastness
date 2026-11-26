@@ -1,9 +1,10 @@
 import { useEffect, useRef } from "react";
+import { LEAP_SECONDS_SOURCE, LEAP_SECONDS_VALID_UNTIL } from "../../core/time/leap-seconds";
 import { buildInfo } from "../build-info";
 import styles from "./About.module.css";
 
-// VN-UI-004: version, commit, data dates, licences, attributions. The data dates fill in once the ephemeris
-// manifest (T-018) and the leap-second table (T-011) exist.
+// VN-UI-004: version, commit, data dates, licences, attributions. The Horizons date fills in once the ephemeris
+// manifest (T-018) exists.
 export function About({ onClose }: { onClose: () => void }) {
   const closeRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
@@ -38,7 +39,9 @@ export function About({ onClose }: { onClose: () => void }) {
           <dt>Horizons retrieval</dt>
           <dd>no ephemerides generated yet</dd>
           <dt>Leap-second table</dt>
-          <dd>not yet included</dd>
+          <dd>
+            {LEAP_SECONDS_SOURCE}, known until {LEAP_SECONDS_VALID_UNTIL}
+          </dd>
         </dl>
         <h3>Licences</h3>
         <p>

@@ -2,12 +2,12 @@ schema: 1
 project: vastness
 milestone: M1
 phase: 1
-status: ready
+status: running
 active_task_id: T-011
 active_task: "P0 @phase1 slice: time scales: UTC <-> TAI with the IERS Bulletin C leap-second table, TT, TDB (periodic term), Julian dates, ISO parse and format; reference values from the Astronomical Almanac and IERS (VN-EPH-001)"
 next_skill: vastness-execute
-session: 4
-updated: 2026-11-26T18:10:00-05:00
+session: 5
+updated: 2026-11-26T19:00:00-05:00
 branch: main
 last_commit: 8722712
 push: ok
