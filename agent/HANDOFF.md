@@ -20,8 +20,8 @@ do_not_read:
   - docs/architecture/VASTNESS_ARCHITECTURE.md
   - node_modules/, dist/, public/ephem/, .cache/, testdata/
 tests: pass (vitest 15/15: tests/smoke.test.ts 4, tests/guards.test.ts 11; e2e none yet)
-commit: pending
-push: pending
+commit: b9cbe2f
+push: ok
 notes:
   - Inbox: W-002 (OI-1) checked off; already resolved as Apache-2.0 in session 1. No new items.
   - T-002 guards are regex over comment-stripped source; each rule is proved on synthetic violations, and planted bad files in src/core and src/app turned the tree tests red before removal.
