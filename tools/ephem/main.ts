@@ -1,0 +1,315 @@
+// VN-DAT-005, VN-EPH-010, VN-GEN-010: `npm run ephem`. For every body in data/bodies.json and every chunk (a
+// decade), fetch state vectors through the polite client, check the header is what was asked for, fit adaptive
+// Chebyshev segments, write one binary file per body and chunk, and a manifest with provenance. With a warm cache
+// two runs give byte-identical output: sorted keys, fixed rounding, LF, and no clock other than the retrieval date
+// the cache recorded from each response.
+//
+//   npm run ephem [-- --offline] [--budget=N] [--from=1900] [--to=2100] [--out=public/ephem]
+
+import { createHash } from "node:crypto";
+import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { FORMAT_VERSION, writeEphemeris } from "../../src/core/ephem/format.ts";
+import { J2000_JD, SECONDS_PER_DAY, calendarToJd } from "../../src/core/time/scales.ts";
+import { HorizonsClient, type CachedResponse } from "./client.ts";
+import { TOLERANCE_KM, fitAdaptive, type FitResult } from "./fit.ts";
+import { HorizonsError, parseVectors, vectorParams, type VectorResponse } from "./horizons.ts";
+
+export interface BodySpec {
+  id: number;
+  name: string;
+  /** The frame origin (the Sun): no file, always at zero. */
+  origin?: boolean;
+  center?: number;
+  /** Sample step; must divide 12 h so every chunk has an even number of intervals. */
+  step_hours?: number;
+  tolerance?: keyof typeof TOLERANCE_KM;
+  /** Barycentre to fall back to when Horizons has no ephemeris for the planet centre over a chunk. */
+  barycenter?: number;
+}
+
+export interface BodiesFile {
+  coverage: { from_year: number; to_year: number };
+  chunk_years: number;
+  bodies: BodySpec[];
+}
+
+export interface Fetcher {
+  get(params: Record<string, string>): Promise<CachedResponse>;
+}
+
+export interface GenerateOptions {
+  bodies: BodiesFile;
+  client: Fetcher;
+  /** Limit to these body IDs (tests and partial runs). */
+  only?: readonly number[];
+  fromYear?: number;
+  toYear?: number;
+  log?: (line: string) => void;
+}
+
+export const CREDIT = "State vectors from the JPL Horizons system (NASA/JPL Solar System Dynamics Group)";
+
+/** TDB seconds since J2000 at 0h TDB on 1 January of `year`. */
+export function yearStart(year: number): number {
+  return (calendarToJd(year, 1, 1, 0) - J2000_JD) * SECONDS_PER_DAY;
+}
+
+const round = (x: number, digits: number): number => Number(x.toFixed(digits));
+
+/** JSON with keys sorted at every level, two-space indent, LF and a final newline. */
+export function stableStringify(value: unknown): string {
+  const sort = (v: unknown): unknown => {
+    if (Array.isArray(v)) return v.map(sort);
+    if (v && typeof v === "object") {
+      const o = v as Record<string, unknown>;
+      return Object.fromEntries(
+        Object.keys(o)
+          .sort()
+          .filter((k) => o[k] !== undefined)
+          .map((k) => [k, sort(o[k])]),
+      );
+    }
+    return v;
+  };
+  return `${JSON.stringify(sort(value), null, 2)}\n`;
+}
+
+/** The `(id)` at the end of a Horizons header name, e.g. "Earth (399)" -> 399. */
+function headerId(name: string): number | undefined {
+  const m = /\((-?\d+)\)\s*$/.exec(name);
+  return m ? Number(m[1]) : undefined;
+}
+
+function checkHeader(r: VectorResponse, command: number, center: number, query: string): void {
+  const h = r.header;
+  const bad = (what: string): never => {
+    throw new HorizonsError("format", `header ${what} (target "${h.target}", centre "${h.center}")`, query);
+  };
+  if (headerId(h.target) !== command) bad(`target is not ${command}`);
+  if (headerId(h.center) !== center) bad(`centre is not ${center}`);
+  if (h.frame !== "Ecliptic of J2000.0") bad(`frame is "${h.frame}"`);
+  if (h.timeScale !== "TDB") bad(`time scale is "${h.timeScale}"`);
+}
+
+interface Chunk {
+  year: number;
+  endYear: number;
+  start: number;
+  end: number;
+  fit: FitResult;
+  query: Record<string, string>;
+  retrieved: string;
+  source: string;
+  command: number;
+}
+
+async function fetchChunk(
+  o: GenerateOptions,
+  body: BodySpec,
+  year: number,
+  endYear: number,
+): Promise<Omit<Chunk, "fit"> & { response: VectorResponse }> {
+  const center = body.center!;
+  const step = body.step_hours!;
+  const start = yearStart(year);
+  const end = yearStart(endYear);
+  const attempt = async (command: number) => {
+    const query = vectorParams({
+      command: String(command),
+      center: `500@${center}`,
+      start: `${year}-01-01`,
+      stop: `${endYear}-01-01`,
+      step: `${step * 60} m`,
+    });
+    const res = await o.client.get(query);
+    const response = parseVectors(res.body, res.query);
+    checkHeader(response, command, center, res.query);
+    const recs = response.records;
+    const expected = Math.round((end - start) / (step * 3600)) + 1;
+    if (recs.length !== expected || recs[0]!.t !== start || recs.at(-1)!.t !== end) {
+      throw new HorizonsError(
+        "format",
+        `expected ${expected} records from ${start} to ${end}, got ${recs.length} from ${recs[0]!.t} to ${recs.at(-1)!.t}`,
+        res.query,
+      );
+    }
+    return {
+      year,
+      endYear,
+      start,
+      end,
+      query,
+      retrieved: res.retrieved,
+      source: response.header.source,
+      command,
+      response,
+    };
+  };
+  try {
+    return await attempt(body.id);
+  } catch (e) {
+    if (!(e instanceof HorizonsError && e.kind === "no-ephemeris" && body.barycenter !== undefined)) throw e;
+    o.log?.(`${body.name} ${year}: no ephemeris for ${body.id}, using barycentre ${body.barycenter}`);
+    return attempt(body.barycenter);
+  }
+}
+
+function validateBody(b: BodySpec): void {
+  if (b.origin) return;
+  if (b.center === undefined || b.tolerance === undefined || b.step_hours === undefined) {
+    throw new RangeError(`body ${b.id} needs center, step_hours and tolerance`);
+  }
+  if (!(TOLERANCE_KM[b.tolerance] > 0)) throw new RangeError(`body ${b.id}: unknown tolerance "${b.tolerance}"`);
+  if (!(b.step_hours > 0) || !Number.isInteger(12 / b.step_hours)) {
+    throw new RangeError(`body ${b.id}: step_hours must divide 12`);
+  }
+}
+
+/** Generates every output file, keyed by its path relative to the output folder. */
+export async function generate(o: GenerateOptions): Promise<Map<string, Uint8Array>> {
+  const from = o.fromYear ?? o.bodies.coverage.from_year;
+  const to = o.toYear ?? o.bodies.coverage.to_year;
+  const span = o.bodies.chunk_years;
+  if (!Number.isInteger(span) || span < 1 || (to - from) % span !== 0) {
+    throw new RangeError(`coverage ${from}..${to} is not a whole number of ${span}-year chunks`);
+  }
+  const files = new Map<string, Uint8Array>();
+  const objects: unknown[] = [];
+  const bodies = [...o.bodies.bodies].filter((b) => !o.only || o.only.includes(b.id)).sort((a, b) => a.id - b.id);
+  for (const body of bodies) {
+    validateBody(body);
+    if (body.origin) {
+      objects.push({ id: body.id, name: body.name, origin: true });
+      continue;
+    }
+    const tolerance = TOLERANCE_KM[body.tolerance!];
+    const chunks: Chunk[] = [];
+    for (let year = from; year < to; year += span) {
+      const c = await fetchChunk(o, body, year, year + span);
+      const fit = fitAdaptive(c.response.records, { toleranceKm: tolerance });
+      o.log?.(
+        `${body.name} ${year}: ${c.response.records.length} samples, degree ${fit.degree}, ` +
+          `${fit.segments.length} segments, max ${fit.maxErrorKm.toFixed(3)} km, ${fit.misses.length} misses`,
+      );
+      chunks.push({ ...c, fit });
+    }
+    const chunkEntries = chunks.map((c) => {
+      const bytes = writeEphemeris({
+        objectId: body.id,
+        centerId: body.center!,
+        degree: c.fit.degree,
+        segments: c.fit.segments,
+      });
+      const file = `${body.id}/${c.year}.bin`;
+      files.set(file, bytes);
+      return {
+        file,
+        coverage: { start: c.start, end: c.end, start_tdb: `${c.year}-01-01`, end_tdb: `${c.endYear}-01-01` },
+        bytes: bytes.byteLength,
+        sha256: createHash("sha256").update(bytes).digest("hex"),
+        degree: c.fit.degree,
+        segments: c.fit.segments.length,
+        max_error_km: round(c.fit.maxErrorKm, 4),
+        retrieved: c.retrieved,
+        target: c.command,
+        start_time: c.query.START_TIME,
+        stop_time: c.query.STOP_TIME,
+      };
+    });
+    const worst = chunks.reduce((a, b) => (b.fit.maxErrorKm > a.fit.maxErrorKm ? b : a));
+    const template = Object.fromEntries(
+      Object.entries(chunks[0]!.query).filter(([k]) => k !== "START_TIME" && k !== "STOP_TIME" && k !== "COMMAND"),
+    );
+    objects.push({
+      id: body.id,
+      name: body.name,
+      center: body.center,
+      query: { ...template, COMMAND: `'${body.id}'` },
+      retrieved: chunks
+        .map((c) => c.retrieved)
+        .sort()
+        .at(-1),
+      source: [...new Set(chunks.map((c) => c.source))].sort().join("; "),
+      coverage: {
+        start: chunks[0]!.start,
+        end: chunks.at(-1)!.end,
+        start_tdb: `${from}-01-01`,
+        end_tdb: `${to}-01-01`,
+      },
+      chunks: chunkEntries,
+      tolerance_km: tolerance,
+      max_error_km: {
+        km: round(worst.fit.maxErrorKm, 4),
+        epoch: worst.fit.maxErrorEpoch,
+        jd_tdb: (J2000_JD + worst.fit.maxErrorEpoch / SECONDS_PER_DAY).toFixed(6),
+      },
+      misses: chunks.flatMap((c) => c.fit.misses.map((m) => ({ t0: m.t0, t1: m.t1, error_km: round(m.errorKm, 4) }))),
+      fallbacks: chunkEntries.filter((c) => c.target !== body.id).map((c) => ({ file: c.file, target: c.target })),
+    });
+  }
+  const manifest = {
+    format_version: FORMAT_VERSION,
+    frame: "ecliptic J2000 (Horizons REF_PLANE=ECLIPTIC, REF_SYSTEM=ICRF), geometric; km; TDB seconds since J2000",
+    credit: CREDIT,
+    chunk_years: span,
+    objects,
+  };
+  files.set("manifest.json", new TextEncoder().encode(stableStringify(manifest)));
+  return files;
+}
+
+/** Writes the files and removes stale chunk files the run did not produce. */
+export function writeOutputs(outDir: string, files: Map<string, Uint8Array>): void {
+  mkdirSync(outDir, { recursive: true });
+  const keep = new Set(files.keys());
+  for (const entry of readdirSync(outDir, { recursive: true, withFileTypes: true })) {
+    if (!entry.isFile() || !entry.name.endsWith(".bin")) continue;
+    const rel = join(entry.parentPath, entry.name)
+      .slice(outDir.length)
+      .replace(/^[\\/]/, "")
+      .split("\\")
+      .join("/");
+    if (!keep.has(rel)) rmSync(join(entry.parentPath, entry.name));
+  }
+  for (const [rel, bytes] of [...files].sort(([a], [b]) => (a < b ? -1 : 1))) {
+    const path = join(outDir, rel);
+    mkdirSync(dirname(path), { recursive: true });
+    writeFileSync(path, bytes);
+  }
+}
+
+async function main(): Promise<void> {
+  const arg = (name: string): string | undefined =>
+    process.argv.find((a) => a.startsWith(`--${name}=`))?.slice(name.length + 3);
+  const root = fileURLToPath(new URL("../../", import.meta.url));
+  const bodies = JSON.parse(readFileSync(join(root, "data/bodies.json"), "utf8")) as BodiesFile;
+  const budget = arg("budget");
+  const client = new HorizonsClient({
+    cacheDir: join(root, ".cache/horizons"),
+    offline: process.argv.includes("--offline"),
+    ...(budget ? { budget: Number(budget) } : {}),
+  });
+  const from = arg("from");
+  const to = arg("to");
+  const files = await generate({
+    bodies,
+    client,
+    ...(from ? { fromYear: Number(from) } : {}),
+    ...(to ? { toYear: Number(to) } : {}),
+    log: (line) => console.error(line),
+  });
+  const out = resolve(root, arg("out") ?? "public/ephem");
+  writeOutputs(out, files);
+  console.error(`wrote ${files.size} files to ${out}; ${client.requests} requests, ${client.cacheHits} cache hits`);
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  try {
+    await main();
+  } catch (e) {
+    console.error(`ephem: ${e instanceof Error ? e.message : String(e)}`);
+    process.exit(1);
+  }
+}

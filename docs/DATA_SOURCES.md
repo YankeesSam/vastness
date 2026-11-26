@@ -10,5 +10,6 @@ Every data set and asset Vastness ships or uses, with its terms (ADR-0006, VN-DO
 | IERS Bulletin C (https://www.iers.org/, Leap_Second.dat) | leap seconds (Bulletin C 72, file expires 2027-06-28) | public | src/core/time/leap-seconds.ts | 2026-11-26 |
 | JPL "Keplerian Elements for Approximate Positions of the Major Planets" (Standish and Williams 1992, Tables 2a and 2b, https://ssd.jpl.nasa.gov/planets/approx_pos.html) | fallback outside coverage, 3000 BC to 3000 AD | public, published by JPL with the author's permission | src/core/ephem/kepler-approx.ts | 2026-11-26 |
 | IAU 2012 B2 (au), IAU 2015 B3 (solar radius), IAU WGCCRE 2015 (Archinal et al. 2018, mean radii), JPL DE440 (Park et al. 2021, GM) | radii, GM, constants | public, cited per value | src/core/constants.ts | 2026-11-26 |
+| Vastness (this project) | data/bodies.json: which bodies, centres, sample steps and tolerances the pipeline generates | Apache-2.0 (this repository) | tools/ephem/main.ts | 2026-11-26 |
 | Textures | planet and Moon surfaces, Saturn's rings | NASA public domain or CC BY with credit (OI-8) | public/textures | (T-062) |
 | Bright-star catalog | background stars | per T-064 | public/stars.bin | (T-064) |

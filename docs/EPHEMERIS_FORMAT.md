@@ -42,24 +42,29 @@ For a time t in segment [t0, t1]: tau = (2t - t0 - t1) / (t1 - t0); each axis is
 
 ## Manifest
 
-`public/ephem/manifest.json`, written by `npm run ephem` (T-018) with sorted keys and no timestamps beyond the retrieval date. One entry per object:
+`public/ephem/manifest.json`, written by `npm run ephem` (`tools/ephem/main.ts`) from `data/bodies.json`, with keys sorted at every level, two-space indent, LF, and no timestamps beyond the retrieval dates. Chunk files are `public/ephem/<id>/<first year>.bin`, one per object and chunk (`chunk_years`, a decade), so the app loads the current decade first (VN-EPH-010; a 2020s decade of the Sun, planets and Moon is about 0.5 MB).
+
+Top level: `format_version`, `frame`, `credit` (JPL Horizons), `chunk_years`, `objects` (ascending ID). The frame origin (the Sun) is `{ id, name, origin: true }` with no files. Every other object:
 
 | Key | Meaning |
 |---|---|
-| `id` | Horizons ID |
-| `center` | Horizons ID of the centre |
-| `query` | the Horizons query parameters used, sorted |
-| `retrieved` | UTC date (YYYY-MM-DD) from the cached response's own date |
-| `source` | the ephemeris source line from the Horizons response header (e.g. the DE solution) |
-| `coverage` | `[start, end]` in TDB seconds since J2000 and as ISO dates |
-| `chunks` | files, each with its coverage, byte size and SHA-256 |
+| `id`, `name` | Horizons ID and name |
+| `center` | Horizons ID of the centre the file is relative to |
+| `query` | the Horizons query parameters used, sorted, without START_TIME and STOP_TIME (those are per chunk) |
+| `retrieved` | latest UTC date (YYYY-MM-DD) among the chunks, from each cached response's own Date header |
+| `source` | the `{source: ...}` of the response header's target line (e.g. DE441), distinct values joined by `; ` |
+| `coverage` | `start`, `end` in TDB seconds since J2000 and `start_tdb`, `end_tdb` as dates |
+| `chunks` | per file: `file`, `coverage`, `bytes`, `sha256`, `degree`, `segments`, `max_error_km`, `retrieved`, `start_time`, `stop_time`, `target` (the Horizons ID actually queried) |
 | `tolerance_km` | the object's fit tolerance (VN-EPH-003) |
-| `max_error_km` | the largest error achieved at held-out points, with its epoch |
-| `misses` | segments that did not reach the tolerance at the step limit, with their error |
+| `max_error_km` | `km`, `epoch` (TDB s) and `jd_tdb` of the largest error at held-out points |
+| `misses` | segments that did not reach the tolerance at the step limit: `t0`, `t1`, `error_km` |
+| `fallbacks` | chunks where Horizons had no ephemeris for the planet centre and the barycentre was used: `file`, `target` |
+
+Before fitting, the pipeline checks that the response's target, centre, frame (Ecliptic of J2000.0) and time scale (TDB) are what was asked for, and that the records run from the chunk start to its end at the requested step; anything else stops the run.
 
 ## Fitting method
 
-1. Sample the object from Horizons (geometric state vectors, TDB) over the span.
-2. For each segment, fit each axis by least squares (Householder QR) to the position samples, with the velocity samples as extra rows scaled to position units over the segment. Degree 7..13, chosen by held-out error, not by the residuals at the fitted points.
+1. Sample the object from Horizons (geometric state vectors, TDB) over each chunk at `step_hours` (a divisor of 12 h, so every chunk has an even number of intervals). Even-indexed samples are fitted; odd-indexed ones, the midpoints, are held out.
+2. For each segment, fit each axis by least squares (Householder QR) to the position samples, with the velocity samples as extra rows scaled to position units over the segment. Each degree 7..13 is fitted adaptively and the passing one with the fewest coefficients is kept (one degree per file); acceptance is by held-out error, not by the residuals at the fitted points (`tools/ephem/fit.ts`).
 3. Check the fit at held-out points, the midpoints between samples. If the error exceeds the object's tolerance (10 km planets and Moon, 50 km spacecraft in cruise, 2 km low lunar orbiters), halve the segment and repeat, down to the sample step limit; a segment that still misses is listed in `misses`.
 4. `npm run ephem:check` compares every file with reference samples not used in the fit (F2) and fails above tolerance (VN-EPH-008).
