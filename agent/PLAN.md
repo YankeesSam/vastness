@@ -112,7 +112,7 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 - [ ] T-072 P0 @phase7 slice: quality tiers chosen from the device and in settings  req: VN-PRF-003, VN-UI-003  files: src/core/quality.ts, src/app/settings/  test: src/core/quality.test.ts
 - [ ] T-073 P0 @phase7 slice: render budgets from renderer.info on the reference scene in CI  req: VN-PRF-002  files: e2e/budget.spec.ts, docs/TESTBED.md  test: e2e/budget.spec.ts
 - [ ] T-074 P1 @phase7 slice: touch gestures and bottom sheets under 768 px  req: VN-PRF-005  files: src/scene/camera/Controls.tsx, src/app/shell/  test: e2e/mobile.spec.ts
-- [ ] T-075 P1 @phase7 slice: `?stats` frame-time overlay and the 60 fps demonstration; reference machine in docs/TESTBED.md (OI-9 answered; confirm CPU model and panel resolution then)  req: VN-PRF-001  files: src/app/stats/, docs/TESTBED.md  test: e2e/perf.spec.ts
+- [ ] T-075 P1 @phase7 slice: `?stats` frame-time overlay and the 60 fps demonstration; reference machine in docs/TESTBED.md (OI-9 answered; confirm the panel resolution then)  req: VN-PRF-001  files: src/app/stats/, docs/TESTBED.md  test: e2e/perf.spec.ts
 - [ ] T-076 P1 @phase7 slice: browser matrix: Playwright Firefox and WebKit projects  req: VN-GEN-011  files: playwright.config.ts  test: npm run e2e
 - [ ] T-077 P2 @phase7 slice: preferences only in localStorage, Reset clears them  req: VN-GEN-008, VN-UI-003  files: src/app/settings/  test: src/app/settings/prefs.test.ts
 

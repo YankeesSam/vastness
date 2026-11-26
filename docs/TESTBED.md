@@ -33,7 +33,7 @@ Recorded 2026-11-26 from the user (OI-9, W-008):
 
 | Item | Value |
 |---|---|
-| CPU | "7300x3d" as written by the user (AMD Ryzen X3D; exact model to confirm) |
+| CPU | AMD Ryzen 7 7800X3D |
 | GPU | NVIDIA GeForce RTX 4070 Super |
 | Browser | Chrome (version to record at T-075) |
 | Display | ultrawide panel, typical resolution, assumed 3440x1440 until confirmed |

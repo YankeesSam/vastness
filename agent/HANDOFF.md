@@ -23,7 +23,7 @@ commit: 46aa25b
 push: ok
 notes:
   - Inbox W-001..W-009 processed: OI-1 Apache-2.0, OI-3 Pages, OI-4 JWST + Earth satellites (VN-CAT-007, VN-DAT-009, T-091..T-094), OI-5 default 1900-2100 kept, OI-7 workflow_dispatch refresh (T-047), OI-8 NASA PD + CC BY, OI-9 TESTBED, OI-10 confirmed; REQUIREMENTS rev C.
-  - OI-9: the user wrote "7300x3d"; confirm the exact CPU and the panel resolution (assumed 3440x1440) by T-075.
+  - OI-9: CPU confirmed AMD Ryzen 7 7800X3D; confirm the panel resolution (assumed 3440x1440) by T-075.
   - T-001 added LICENSE (Apache-2.0 text); T-010 still adds NOTICE, README and the docs test.
   - The `ephem` script points at tools/ephem/main.ts, which T-018 creates.
   - D-001 (low, env): vitest 3 dev-only audit advisories; upgrade to vitest 5 together with Escapement.
