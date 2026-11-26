@@ -22,7 +22,7 @@ do_not_read:
   - node_modules/, dist/, nightly/, public/ephem/ (read manifest.json keys only), .cache/, testdata/, THIRD_PARTY_NOTICES.txt
 tests: pass (vitest 137/137: + horizons 10, client 10, fit 9, main 7, check 6; ephem:check 9/9 objects pass; build and check-size ok)
 commit: 1492275
-push: pending
+push: ok
 notes:
   - Batch session (user asked for 4-6 tasks in one area): the M1 Horizons pipeline T-015..T-020, one commit each.
   - Live Horizons use this session (pipeline only, serial, cached in .cache/horizons): F1 6, smoke 13, F2 27 + 1 TLIST probe, full run 171 requests.
@@ -31,6 +31,6 @@ notes:
   - A 100-epoch TLIST URL drew HTTP 502; F2 is recorded in TLIST requests of 40. The client retries only 503 and network errors, by design.
   - src/core relative imports now carry .ts so tools/ runs under node --experimental-strip-types; keep that for new core files the pipeline imports.
   - tests/setup-no-network.ts makes the global fetch throw in every vitest project (VN-DAT-007).
-  - D-001 (low, env) unchanged.
+  - D-001 (low, env) unchanged. Nightly 837adba-nightly ok; LAN http://192.168.1.166:8770/ (200).
 open_defects_blocking: []
 optimizations_applied: []
