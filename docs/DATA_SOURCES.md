@@ -1,6 +1,6 @@
 # Data sources
 
-Every data set and asset Vastness ships or uses, with its terms (ADR-0006, VN-DOC-002). A test (T-024) fails when a file under data/, public/ephem/ or public/textures/ is not listed here.
+Every data set and asset Vastness ships or uses, with its terms (ADR-0006, VN-DOC-002). A test (`tests/docs.test.ts`, T-024) fails when a file under data/, testdata/, public/ephem/ or public/textures/ is not named here by its path or a parent directory, when a row lacks a column or a retrieval date (or the task that will add it), when a source file named here is missing, or when the Horizons credit and retrieval dates disagree with public/ephem/manifest.json.
 
 | Source | Provides | Terms | Used as | Retrieved |
 |---|---|---|---|---|
@@ -13,3 +13,13 @@ Every data set and asset Vastness ships or uses, with its terms (ADR-0006, VN-DO
 | Vastness (this project) | data/bodies.json: which bodies, centres, sample steps and tolerances the pipeline generates | Apache-2.0 (this repository) | tools/ephem/main.ts | 2026-11-26 |
 | Textures | planet and Moon surfaces, Saturn's rings | NASA public domain or CC BY with credit (OI-8) | public/textures | (T-062) |
 | Bright-star catalog | background stars | per T-064 | public/stars.bin | (T-064) |
+
+## Credits
+
+Shown in the app's About panel and in release notes, and carried in public/ephem/manifest.json (`credit`):
+
+- State vectors from the JPL Horizons system (NASA/JPL Solar System Dynamics Group)
+- Leap seconds from IERS Bulletin C (International Earth Rotation and Reference Systems Service)
+- Approximate planet positions outside the stored span from E. M. Standish and J. G. Williams, "Keplerian Elements for Approximate Positions of the Major Planets", JPL Solar System Dynamics
+
+Horizons output is produced by NASA/JPL and is not subject to copyright in the United States; JPL asks that it be credited to the Horizons system. Neither NASA nor JPL endorses Vastness, and nothing in the app uses their logos.
