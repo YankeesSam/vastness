@@ -19,8 +19,8 @@ do_not_read:
   - docs/ROADMAP.md (only the current milestone section)
   - node_modules/, dist/, public/ephem/, .cache/, testdata/
 tests: pass (vitest 4/4: tests/smoke.test.ts; e2e none yet)
-commit: see git log
-push: pending
+commit: 46aa25b
+push: ok
 notes:
   - Inbox W-001..W-009 processed: OI-1 Apache-2.0, OI-3 Pages, OI-4 JWST + Earth satellites (VN-CAT-007, VN-DAT-009, T-091..T-094), OI-5 default 1900-2100 kept, OI-7 workflow_dispatch refresh (T-047), OI-8 NASA PD + CC BY, OI-9 TESTBED, OI-10 confirmed; REQUIREMENTS rev C.
   - OI-9: the user wrote "7300x3d"; confirm the exact CPU and the panel resolution (assumed 3440x1440) by T-075.
