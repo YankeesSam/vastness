@@ -4,7 +4,7 @@ Every data set and asset Vastness ships or uses, with its terms (ADR-0006, VN-DO
 
 | Source | Provides | Terms | Used as | Retrieved |
 |---|---|---|---|---|
-| NASA/JPL Horizons, Solar System Dynamics (https://ssd.jpl.nasa.gov/horizons/) | state vectors of the Sun, planets, Moon and spacecraft | US Government work; credit JPL Horizons | public/ephem via tools/ephem (ADR-0002); recorded responses in testdata/horizons (F1, tools/ephem/record.ts); held-out reference samples in testdata/reference (F2, `npm run ephem:check -- --record`) | F1 and F2 2026-11-26; public/ephem (T-020) |
+| NASA/JPL Horizons, Solar System Dynamics (https://ssd.jpl.nasa.gov/horizons/) | state vectors of the Sun, planets, Moon and spacecraft | US Government work; credit JPL Horizons | public/ephem via tools/ephem (ADR-0002); recorded responses in testdata/horizons (F1, tools/ephem/record.ts); held-out reference samples in testdata/reference (F2, `npm run ephem:check -- --record`) | F1, F2 and public/ephem 2026-11-26 |
 | CelesTrak GP data (https://celestrak.org/NORAD/elements/) | Earth satellite elements (OMM JSON) by NORAD number | check and record terms in T-091; credit CelesTrak | data/satellites via tools/gp (ADR-0007, VN-DAT-009) | (T-093) |
 | JPL Horizons lookup API | ID verification | as above | tools/ephem check-ids only | (T-037) |
 | IERS Bulletin C (https://www.iers.org/, Leap_Second.dat) | leap seconds (Bulletin C 72, file expires 2027-06-28) | public | src/core/time/leap-seconds.ts | 2026-11-26 |
