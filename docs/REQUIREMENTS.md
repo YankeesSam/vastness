@@ -1,12 +1,13 @@
 # Vastness requirements
 
-Document VN-SRS-001, revision A (draft), 2026-11-26.
+Document VN-SRS-001, revision C (draft), 2026-11-26.
 Requirement IDs are stable. A retired requirement is struck through and kept; its ID is never reused.
 
 | Rev | Date | Change |
 |---|---|---|
 | A | 2026-11-26 | Initial baseline, from the Vastness Project Design Document v1.0 (2026-11-26) and the seeding chat; hosted on GitHub (user's choice in the seeding chat) |
 | B | 2026-11-26 | Lunar orbiters stored as orbital elements, measured before choosing full mission or window (seeding chat): VN-EPH-003 adds a 2 km tolerance, VN-EPH-009 reworded, new VN-EPH-011, OI-6 reworded |
+| C | 2026-11-26 | Open items answered through WORKINGLIST (W-001..W-009): OI-1 Apache-2.0 (VN-GEN-007), OI-3 GitHub Pages, OI-4 list is a minimum plus JWST (VN-CAT-002) and Earth satellites (new VN-CAT-007, VN-DAT-009), OI-5 default kept, OI-7 build time plus a manual refresh run (VN-DAT-006), OI-8 NASA public domain and CC BY with credit, OI-9 reference machine recorded (VN-PRF-001), OI-10 order confirmed |
 
 ## 1. Purpose
 
@@ -37,7 +38,7 @@ Out of scope (non-goals)
 - **TDB** is the time scale of the ephemerides; **UTC** is the time scale shown to the user (ADR-0003). **J2000** is 2000-01-01T12:00:00 TDB.
 - **Frame:** positions are heliocentric (Sun centre, Horizons `500@10`) in the ecliptic and mean equinox of J2000, km and km/s, unless a requirement says otherwise (ADR-0003).
 - **The core:** `src/core`, pure TypeScript shared by the app, the workers and the data pipeline: no DOM, no React, no Node API, no three.js.
-- **Reference machine:** the user's desktop as recorded in docs/TESTBED.md (OI-9).
+- **Reference machine:** the user's desktop as recorded in docs/TESTBED.md (OI-9, answered).
 
 ## 4. Requirements
 
@@ -49,7 +50,7 @@ Out of scope (non-goals)
 - **VN-GEN-004** (T, M0) The core shall not import the DOM, React, three.js or any Node API (guard test on imports and globals).
 - **VN-GEN-005** (T, M0) Runtime dependencies are only those ADR-0001 names; a check script fails on any other entry in `dependencies` and lists each one's licence.
 - **VN-GEN-006** (T, M0) The version (git tag at build time) and the commit are shown in the About box and in `build.json`.
-- **VN-GEN-007** (I, M0) Vastness is open source under the licence OI-1 settles (MIT by default). Third-party notices for every bundled package ship with the app.
+- **VN-GEN-007** (I, M0) Vastness is open source under the Apache License 2.0 (OI-1): LICENSE and a NOTICE file at the root credit the author, the NOTICE must travel with any copy or derivative, modified files must say they were changed, and the licence grants no use of the Vastness name. Third-party notices for every bundled package ship with the app.
 - **VN-GEN-008** (T, M0) No cookies, no local storage of anything identifying; preferences in `localStorage` only (theme, units, quality, last view), cleared by a Reset command.
 - **VN-GEN-009** (T, M8) A strict Content Security Policy (`default-src 'self'`, `connect-src 'self'`, no inline script) is set and checked by an e2e test.
 - **VN-GEN-010** (T, M1) Build outputs are deterministic: the same inputs give byte-identical ephemeris files, manifests and app bundles (sorted keys, LF, no build timestamps except the commit time).
@@ -62,9 +63,10 @@ Out of scope (non-goals)
 - **VN-DAT-003** (T, M1) Every raw Horizons response is cached on disk (`.cache/horizons/`, gitignored) keyed by a hash of its query; a rerun with a warm cache makes no request. `--offline` fails instead of fetching.
 - **VN-DAT-004** (T, M1) The response parser handles the JSON envelope and the `$$SOE`/`$$EOE` vector table, reports Horizons errors (unknown ID, no ephemeris for the span, ambiguous name) with the query that caused them, and records the header fields that matter: target name, centre, frame, time scale, ephemeris or trajectory source.
 - **VN-DAT-005** (T, M1) Each generated ephemeris carries provenance in the manifest: Horizons query, retrieval date (UTC, date only), source named in the response header, coverage, fit tolerance achieved.
-- **VN-DAT-006** (T, M3) A refresh job (`npm run ephem:refresh`, also a scheduled GitHub Actions workflow that opens a pull request) regenerates spacecraft ephemerides whose predictions may have changed and reports which objects moved by more than the fit tolerance since the last commit.
+- **VN-DAT-006** (T, M3) A refresh job (`npm run ephem:refresh`, also a scheduled GitHub Actions workflow that opens a pull request, and can also be run by hand with `workflow_dispatch`, OI-7) regenerates spacecraft ephemerides whose predictions may have changed and reports which objects moved by more than the fit tolerance since the last commit.
 - **VN-DAT-007** (T, M1) Tests never touch the network: unit tests use the recorded responses in testdata/horizons (F1); a test setup makes `fetch` throw.
 - **VN-DAT-008** (T, M3) Catalog object IDs are verified against the Horizons lookup API (`horizons_lookup.api`) by the pipeline's `check-ids` command, and a mismatch fails it.
+- **VN-DAT-009** (T, M3) The pipeline fetches CelesTrak GP elements (OMM JSON) for the Earth satellites by NORAD catalog number, as politely as Horizons (VN-DAT-002) and cached the same way (VN-DAT-003), and records provenance: element epoch, retrieval date, source (ADR-0007). The refresh job (VN-DAT-006) refreshes them.
 
 ### 4.3 Ephemeris and time (EPH)
 
@@ -103,11 +105,12 @@ Out of scope (non-goals)
 ### 4.6 Catalog and spacecraft (CAT)
 
 - **VN-CAT-001** (T, M3) A catalog file (`data/catalog.json`, schema-checked) lists each object: Horizons ID, names, type, parent, launch date, mission status with an "as of" date, agency, one-paragraph summary in our own words, primary science goals, source links, colour and marker priority.
-- **VN-CAT-002** (T, M3) The initial spacecraft are Voyager 1, Voyager 2, New Horizons, Parker Solar Probe, Juno, Europa Clipper, JUICE, Lucy, Psyche, OSIRIS-APEX, LRO and CAPSTONE (OI-4 may change the list).
+- **VN-CAT-002** (T, M3) The initial spacecraft are Voyager 1, Voyager 2, New Horizons, Parker Solar Probe, Juno, Europa Clipper, JUICE, Lucy, Psyche, OSIRIS-APEX, LRO, CAPSTONE and the James Webb Space Telescope (at Sun-Earth L2). The list is a minimum (OI-4); Earth satellites are VN-CAT-007.
 - **VN-CAT-003** (T, M3) A searchable object list grouped by type (Sun and planets, moons, spacecraft), with type-ahead by any name; Enter selects and flies to.
 - **VN-CAT-004** (T, M3) Spacecraft trails: the past trajectory as a solid line and the predicted one dashed, over an adjustable range (default 1 year back, 1 year ahead; up to the whole coverage), sampled adaptively by curvature so flybys stay smooth.
 - **VN-CAT-005** (T, M3) Clicking or tapping a marker selects the object; picking uses screen-space distance to markers so a sub-pixel object can be picked.
 - **VN-CAT-006** (T, M3) Spacecraft are drawn as markers at every scale and as a simple model or icon when the camera is within 10,000 km.
+- **VN-CAT-007** (T, M3) Earth satellites (OI-4): the ISS, Hubble, Tiangong, a few operational Starlink satellites, geostationary satellites (GOES-East, GOES-West and others), and a few others the catalog names by NORAD number. They are propagated in the app with SGP4 from build-time GP elements (VN-DAT-009), drawn as an Earth-centred layer when the camera is near Earth, and the panel shows the element epoch; more than 14 days from the epoch a satellite is drawn on an illustrative orbit labelled as such.
 
 ### 4.7 Info panel (INF)
 
@@ -152,7 +155,7 @@ Out of scope (non-goals)
 
 ### 4.12 Performance and mobile (PRF)
 
-- **VN-PRF-001** (D, M7) 60 fps on the reference machine with the reference scene (all planets, all catalog spacecraft with 2-year trails, labels, stars) at 1080p.
+- **VN-PRF-001** (D, M7) 60 fps on the reference machine with the reference scene (all planets, all catalog spacecraft with 2-year trails, labels, stars) at 1080p and at the reference display's native resolution (OI-9, docs/TESTBED.md).
 - **VN-PRF-002** (T, M7) Deterministic budgets checked in CI from `renderer.info` on the reference scene: draw calls, triangles and texture memory under the limits in docs/TESTBED.md.
 - **VN-PRF-003** (T, M7) Quality tiers (low, medium, high) chosen automatically from the device (pixel ratio cap, texture size, trail sample count, star count), changeable in settings; the low tier keeps 30 fps on a mid-range phone (D).
 - **VN-PRF-004** (T, M2) First render under 3 s on a simulated fast 4G connection; initial download (JS, CSS, first ephemeris chunk) under 1.5 MB compressed; textures and spacecraft data load after the first frame.
@@ -201,13 +204,13 @@ Out of scope (non-goals)
 
 ## 7. Open items
 
-- **OI-1** Licence: MIT (the user's other projects) or Apache-2.0 (as the design document allows)? Default MIT.
+- **OI-1** Licence: MIT (the user's other projects) or Apache-2.0 (as the design document allows)? Default MIT. **Answered 2026-11-26 (W-002):** Apache-2.0. The user wants open source that keeps the credit and stops a one-line change being passed off as original; Apache-2.0 requires the copyright and NOTICE to be kept and changed files to be marked, and grants no trademark. No open source licence forbids reuse; a copyleft licence (GPL/AGPL) would additionally force derivatives to publish their source, which the user may still choose.
 - **OI-2** Domain: which of vastness.space, thevastness.space, solarvastness.space is available and bought? Until then the GitHub Pages address.
-- **OI-3** Hosting: GitHub Pages (the default: same place as the code and CI; chosen over GitLab on 2026-11-26) or Cloudflare Pages or Vercel (the design document's suggestions)? The repository is private at seed; public makes Actions minutes free and Pages available on the free plan, and the design calls for open source.
-- **OI-4** The spacecraft list for 1.0: the twelve in VN-CAT-002, or more or fewer?
-- **OI-5** Planet coverage: 1900-2100 (default) or wider (Horizons offers far more; files grow linearly)?
+- **OI-3** Hosting: GitHub Pages (the default: same place as the code and CI; chosen over GitLab on 2026-11-26) or Cloudflare Pages or Vercel (the design document's suggestions)? The repository is private at seed; public makes Actions minutes free and Pages available on the free plan, and the design calls for open source. **Answered 2026-11-26 (W-003):** GitHub Pages. Making the repository public (or a paid plan) stays a user action before T-007.
+- **OI-4** The spacecraft list for 1.0: the twelve in VN-CAT-002, or more or fewer? **Answered 2026-11-26 (W-004):** at least VN-CAT-002, plus some operational Starlink, geostationary and other satellites: JWST joins VN-CAT-002; Earth satellites are VN-CAT-007 and VN-DAT-009 (ADR-0007, T-091..T-094). The agent picks the exact satellites in T-093; the user may change them through WORKINGLIST.
+- **OI-5** Planet coverage: 1900-2100 (default) or wider (Horizons offers far more; files grow linearly)? **Answered 2026-11-26 (W-005):** the user was unsure what it asks; it is how many years of planet positions are stored. The default 1900-2100 stands; outside it planets use the approximate model, marked approximate. It can be widened later at the cost of larger files.
 - **OI-6** Lunar orbiters: element segments decide by measurement (VN-EPH-011): the whole mission if it fits 5 MB per object at 2 km, else ±30 days around the build with an illustrative orbit outside. **Decided 2026-11-26 (seeding chat)**; open only for the budget and window sizes.
-- **OI-7** Live data: is build-time data refreshed by CI (daily for predictions) enough, or should the app fetch fresh Horizons data through a serverless proxy?
-- **OI-8** Textures: which sources are acceptable (NASA public domain only, or CC BY sets such as Solar System Scope with attribution)?
-- **OI-9** The reference machine for VN-PRF-001: CPU, GPU, browser, display.
-- **OI-10** Milestone order: is docs/ROADMAP.md's order right (data first, then the scene, spacecraft, time, scale, polish, accessibility and performance, release, expansion)?
+- **OI-7** Live data: is build-time data refreshed by CI (daily for predictions) enough, or should the app fetch fresh Horizons data through a serverless proxy? **Answered 2026-11-26 (W-006):** build-time data refreshed by CI is enough for now; a manual refresh is wanted later: the refresh workflow also runs on `workflow_dispatch` (T-047). An in-app refresh would need the proxy and a new ADR.
+- **OI-8** Textures: which sources are acceptable (NASA public domain only, or CC BY sets such as Solar System Scope with attribution)? **Answered 2026-11-26 (W-007):** NASA public domain and CC BY sets (such as Solar System Scope) are acceptable, with attribution wherever required.
+- **OI-9** The reference machine for VN-PRF-001: CPU, GPU, browser, display. **Answered 2026-11-26 (W-008):** "7300x3d" CPU (as written by the user), NVIDIA RTX 4070 Super, Chrome, an ultrawide panel at its typical resolution (recorded as 3440x1440 until confirmed). Details in docs/TESTBED.md.
+- **OI-10** Milestone order: is docs/ROADMAP.md's order right (data first, then the scene, spacecraft, time, scale, polish, accessibility and performance, release, expansion)? **Answered 2026-11-26 (W-009):** the roadmap order is confirmed.

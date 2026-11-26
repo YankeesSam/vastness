@@ -29,7 +29,16 @@ Set from the first real measurements (T-035, T-073) and only tightened: draw cal
 
 ## Reference machine (VN-PRF-001, OI-9)
 
-To be recorded by the user: CPU, GPU, browser and version, display resolution.
+Recorded 2026-11-26 from the user (OI-9, W-008):
+
+| Item | Value |
+|---|---|
+| CPU | "7300x3d" as written by the user (AMD Ryzen X3D; exact model to confirm) |
+| GPU | NVIDIA GeForce RTX 4070 Super |
+| Browser | Chrome (version to record at T-075) |
+| Display | ultrawide panel, typical resolution, assumed 3440x1440 until confirmed |
+
+VN-PRF-001 is demonstrated at 1920x1080 and at the panel's native resolution.
 
 ## Tools
 

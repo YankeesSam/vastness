@@ -1,6 +1,6 @@
 # Roadmap
 
-Milestones in dependency order: the data and the time model first, headless and fully tested, because every pixel stands on them; then the scene and camera that make the MVP; then the spacecraft, time, scale and education that make the experience; then polish, accessibility and performance; then release and expansion. The order is open to the user (OI-10). Tasks live in agent/PLAN.md; requirements in docs/REQUIREMENTS.md.
+Milestones in dependency order: the data and the time model first, headless and fully tested, because every pixel stands on them; then the scene and camera that make the MVP; then the spacecraft, time, scale and education that make the experience; then polish, accessibility and performance; then release and expansion. The user confirmed the order (OI-10, 2026-11-26). Tasks live in agent/PLAN.md; requirements in docs/REQUIREMENTS.md.
 
 Mapping to the design document's phases: Phase 1 MVP = M0..M3 (the design's "simple spacecraft markers" arrive with real trajectories in M3). Phase 2 Core Experience = M4..M5. Phase 3 Polish and Expansion = M6..M9.
 
@@ -43,10 +43,11 @@ Mapping to the design document's phases: Phase 1 MVP = M0..M3 (the design's "sim
 **Goal:** the deep-space fleet with real trajectories and mission information. With M3 the MVP is complete.
 
 - **Exit criteria:**
-  - The twelve catalog spacecraft have verified IDs, ephemerides within tolerance (flyby segments listed when they miss) and catalog entries (VN-CAT-001, 002, VN-DAT-008, VN-EPH-007, 009).
+  - The VN-CAT-002 spacecraft have verified IDs, ephemerides within tolerance (flyby segments listed when they miss) and catalog entries (VN-CAT-001, 002, VN-DAT-008, VN-EPH-007, 009).
   - Trails past and predicted, adjustable range; markers pickable at any scale; models up close (VN-CAT-004..006).
   - Search and object list; spacecraft info panel; values agree with Horizons in the e2e check (VN-CAT-003, VN-INF-003, 005).
-  - The refresh job runs as a scheduled workflow and opens a pull request with the changes (VN-DAT-006).
+  - The refresh job runs as a scheduled workflow (and by hand) and opens a pull request with the changes (VN-DAT-006).
+  - Earth satellites (ISS, Hubble, Tiangong, Starlink, geostationary) propagated with SGP4 from build-time GP elements (VN-CAT-007, VN-DAT-009).
 
 ## M4 Time control and sharing
 

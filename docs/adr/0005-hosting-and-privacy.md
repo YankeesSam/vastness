@@ -1,6 +1,6 @@
 # ADR-0005 Hosting and privacy
 
-Status: accepted (2026-11-26, seed; hosting details wait on OI-2 and OI-3).
+Status: accepted (2026-11-26, seed; OI-3 answered 2026-11-26: GitHub Pages; the domain waits on OI-2).
 
 ## Context
 

@@ -37,7 +37,7 @@ PLAN.md is the live task queue; docs/ROADMAP.md holds milestone goals and exit c
 
 0 bootstrap (M0), 1 ephemeris and time (M1), 2 scene and camera (M2), 3 spacecraft (M3, completes the MVP), 4 time control and sharing (M4), 5 scale and education (M5), 6 visual polish (M6), 7 accessibility, mobile, performance (M7), 8 release 1.0 (M8), 9 expansion (M9).
 
-The order is the seed's and open to the user (OI-10). The one hard dependency: nothing in M2..M9 that draws or reports a position starts before M1's accuracy check passes. M6 polish may start early on request, but textures need OI-8.
+The order is confirmed by the user (OI-10, 2026-11-26). The one hard dependency: nothing in M2..M9 that draws or reports a position starts before M1's accuracy check passes. M6 polish may start early on request; textures follow OI-8 (NASA public domain or CC BY with credit).
 
 ## Output
 
