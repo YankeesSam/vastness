@@ -1,15 +1,15 @@
 schema: 1
 project: vastness
-milestone: M0
-phase: 0
-status: running
-active_task_id: T-004
-active_task: "P0 @phase0 slice: app shell: full-window R3F Canvas with a placeholder Sun, top bar, collapsible side panel, bottom time bar, dark and light themes, About box with version and commit injected at build (VN-UI-001, VN-UI-004, VN-GEN-006, VN-GEN-008)"
+milestone: M1
+phase: 1
+status: ready
+active_task_id: T-011
+active_task: "P0 @phase1 slice: time scales: UTC <-> TAI with the IERS Bulletin C leap-second table, TT, TDB (periodic term), Julian dates, ISO parse and format; reference values from the Astronomical Almanac and IERS (VN-EPH-001)"
 next_skill: vastness-execute
 session: 4
-updated: 2026-11-26T18:00:00-05:00
+updated: 2026-11-26T18:10:00-05:00
 branch: main
-last_commit: d762219
+last_commit: 8722712
 push: ok
 git_owner: YankeesSam
 git_repo: vastness

@@ -1,10 +1,8 @@
-# Context (session 4, batch T-004 T-005 T-007 T-035: app shell and web delivery)
+# Context (session 5, T-011)
 
 - agent/STATE.md
 - agent/PLAN.md
-- vite.config.ts
-- src/main.tsx
-- index.html
+- .claude/skills/vastness-ephemeris/SKILL.md
+- docs/adr/0003-time-frames-units.md
 - tests/guards.test.ts
-- scripts/nightly-build.sh
-- .github/workflows/ci.yml
+- vitest.config.ts
