@@ -14,6 +14,7 @@ import {
 import { coverageState, reasonText } from "../../scene/spacecraft/coverage";
 import { parseUtc } from "../../core/time/scales";
 import { loadEphemeris } from "../assets/loader";
+import { isSafeUrl, type CatalogObject } from "../../core/catalog/schema";
 import { CATALOG_BY_ID, launchTdb } from "../catalog";
 import { viewStore } from "../store/view";
 import styles from "./InfoPanel.module.css";
@@ -47,6 +48,77 @@ function compute(eph: Ephemeris, id: number, t: number, body: Float64Array, eart
   const b = eph.state(EARTH, t, earth);
   if (a === "ok" && b === "ok") return { status: "ok", r: readouts(body, earth, createReadout()) };
   return a === "loading" || b === "loading" ? { status: "loading" } : { status: "none" };
+}
+
+const STATE_TEXT = { operating: "Operating", ended: "Ended", unclear: "Unclear" } as const;
+
+// VN-INF-003: the mission facts from the catalog. Links open in a new tab with rel="noopener noreferrer"; only
+// https URLs are rendered (the catalog checker already insists, this is the second guard).
+function Mission({ o }: { o: CatalogObject }) {
+  const links = o.sources.filter((s) => isSafeUrl(s.url));
+  return (
+    <section className={styles.mission} aria-labelledby="mission-heading">
+      <h4 id="mission-heading" className={styles.section}>
+        Mission
+      </h4>
+      <dl className={styles.readouts}>
+        {o.launch && (
+          <>
+            <dt>Launch</dt>
+            <dd>{o.launch}</dd>
+          </>
+        )}
+        {o.status && (
+          <>
+            <dt>Status</dt>
+            <dd>
+              {STATE_TEXT[o.status.state]} (as of {o.status.as_of})
+              {o.status.note && (
+                <small className={styles.note} data-status-note>
+                  {o.status.note}
+                </small>
+              )}
+            </dd>
+          </>
+        )}
+        {o.agency && (
+          <>
+            <dt>Agency</dt>
+            <dd>{o.agency}</dd>
+          </>
+        )}
+      </dl>
+      <p className={styles.summary}>{o.summary}</p>
+      {o.goals.length > 0 && (
+        <>
+          <h4 id="goals-heading" className={styles.section}>
+            Science goals
+          </h4>
+          <ul className={styles.list} aria-labelledby="goals-heading">
+            {o.goals.map((g) => (
+              <li key={g}>{g}</li>
+            ))}
+          </ul>
+        </>
+      )}
+      {links.length > 0 && (
+        <>
+          <h4 id="sources-heading" className={styles.section}>
+            Sources
+          </h4>
+          <ul className={styles.list} aria-labelledby="sources-heading">
+            {links.map((s) => (
+              <li key={s.url}>
+                <a href={s.url} target="_blank" rel="noopener noreferrer">
+                  {s.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </section>
+  );
 }
 
 export interface InfoPanelProps {
@@ -90,6 +162,7 @@ export function InfoPanel({ selection, units, onUnits, ephemeris }: InfoPanelPro
     return <p data-muted>Select an object to see its details.</p>;
   }
   const isEarth = selection === EARTH;
+  const entry = CATALOG_BY_ID.get(selection);
   return (
     <div>
       <h3 className={styles.name}>{name}</h3>
@@ -124,6 +197,7 @@ export function InfoPanel({ selection, units, onUnits, ephemeris }: InfoPanelPro
               : "No position at this time."}
         </p>
       )}
+      {entry?.type === "spacecraft" && <Mission o={entry} />}
       <label className={styles.units}>
         Units{" "}
         <select aria-label="Distance units" value={units} onChange={(e) => onUnits(e.target.value as DistanceUnit)}>

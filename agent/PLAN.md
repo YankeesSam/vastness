@@ -7,7 +7,7 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 
 ## Now
 
-- [ ] NOW T-043 P0 @phase3 slice: spacecraft info panel: launch, status with as-of, agency, summary, goals, safe links  req: VN-INF-003  files: src/app/info/  test: src/app/info/InfoPanel.test.tsx
+- [x] T-043 P0 @phase3 slice: spacecraft info panel: launch, status with as-of, agency, summary, goals, safe links  req: VN-INF-003  files: src/app/info/  test: src/app/info/InfoPanel.test.tsx
 
 ## Next
 

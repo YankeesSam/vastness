@@ -85,6 +85,39 @@ describe("info panel", () => {
     expect((await screen.findByText(/beyond Horizons' predictions/)).textContent).toMatch(/end on 2031-11-16/);
   });
 
+  it("VN-INF-003: a spacecraft adds launch, status with its as-of date, agency, summary, goals and safe links", async () => {
+    viewStore.getState().setTime(0);
+    render(<InfoPanel selection={-170} units="km" onUnits={() => {}} ephemeris={Promise.resolve(fakeEphemeris())} />);
+    const mission = await screen.findByRole("region", { name: "Mission" });
+    expect(mission.textContent).toContain("Launch2021-12-25");
+    expect(mission.textContent).toContain("Operating (as of 2026-11-26)");
+    expect(mission.textContent).toContain("NASA, ESA and CSA");
+    expect(mission.textContent).toMatch(/6\.5 m segmented gold mirror/);
+    const goals = screen.getByRole("list", { name: "Science goals" });
+    expect(goals.querySelectorAll("li").length).toBe(3);
+    const links = screen.getByRole("list", { name: "Sources" }).querySelectorAll("a");
+    expect(links.length).toBe(2);
+    for (const a of links) {
+      expect(a.getAttribute("href")).toMatch(/^https:\/\//);
+      expect(a.getAttribute("target")).toBe("_blank");
+      expect(a.getAttribute("rel")).toBe("noopener noreferrer");
+    }
+    expect(links[0]!.textContent).toBe("NASA Science: Webb");
+  });
+
+  it("VN-INF-003: an unclear status shows its note", async () => {
+    render(<InfoPanel selection={-61} units="km" onUnits={() => {}} ephemeris={Promise.resolve(fakeEphemeris())} />);
+    const mission = await screen.findByRole("region", { name: "Mission" });
+    expect(mission.textContent).toMatch(/Unclear \(as of \d{4}-\d{2}-\d{2}\)/);
+    expect(mission.querySelector("[data-status-note]")?.textContent?.length).toBeGreaterThan(10);
+  });
+
+  it("VN-INF-003: a planet has no mission section", async () => {
+    render(<InfoPanel selection={499} units="km" onUnits={() => {}} ephemeris={Promise.resolve(fakeEphemeris())} />);
+    await screen.findByLabelText("Read-outs");
+    expect(screen.queryByRole("region", { name: "Mission" })).toBeNull();
+  });
+
   it("VN-INF-001: nothing selected asks for a selection", () => {
     render(<InfoPanel selection={null} units="km" onUnits={() => {}} ephemeris={Promise.resolve(fakeEphemeris())} />);
     expect(screen.getByText(/select an object/i)).toBeTruthy();

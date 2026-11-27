@@ -37,3 +37,33 @@
   gap: 0.5rem;
   font-size: 0.85rem;
 }
+
+.mission {
+  margin: 0 0 0.75rem;
+}
+
+.section {
+  margin: 0.6rem 0 0.3rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.summary {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.list {
+  margin: 0 0 0.5rem;
+  padding-left: 1.1rem;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.list a {
+  color: var(--accent);
+}
