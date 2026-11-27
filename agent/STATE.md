@@ -3,11 +3,11 @@ project: vastness
 milestone: M3
 phase: 3
 status: ready
-active_task_id: T-093
-active_task: "P1 @phase3 slice: tools/gp fetch and data/satellites: ISS, Hubble, Tiangong, a few operational Starlink, GOES-East, GOES-West and other geostationary satellites (the agent picks; user can change via WORKINGLIST); provenance with epoch; ISS checked against Horizons (-125544) for one day  req: VN-DAT-009, VN-CAT-007  files: tools/gp/, data/satellites.json, data/catalog.json  test: tools/gp/gp.test.ts"
+active_task_id: T-097
+active_task: "T-097 LRO whole mission under 5 MB (non-singular elements, format v3); WIP in git stash"
 next_skill: vastness-execute
-session: 12
-updated: 2026-11-27T00:11:30-05:00
+session: 13
+updated: 2026-11-27T09:00:00-05:00
 branch: main
 last_commit: 73a0dfa
 push: ok

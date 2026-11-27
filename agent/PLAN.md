@@ -7,11 +7,10 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 
 ## Now
 
-- [ ] NOW T-093 P1 @phase3 slice: tools/gp fetch and data/satellites: ISS, Hubble, Tiangong, a few operational Starlink, GOES-East, GOES-West and other geostationary satellites (the agent picks; user can change via WORKINGLIST); provenance with epoch; ISS checked against Horizons (-125544) for one day  req: VN-DAT-009, VN-CAT-007  files: tools/gp/, data/satellites.json, data/catalog.json  test: tools/gp/gp.test.ts  note: decide how satellites get catalog IDs first (NORAD numbers are not Horizons IDs; ISS is -125544 in Horizons); SGP4 and TEME frames are in src/core/sgp4 (T-092)
 
 ## Next
 
-- [ ] T-097 P2 @phase3 slice: LRO whole mission under 5 MB: element segments that hold through near-circular years (2009-2011) and seam arcs under 22 s (2026), e.g. non-singular elements (e cos w, e sin w, mean argument of latitude) or a per-segment degree, format v3; measured 5.70 MB in session 12 (positions 1.0-1.8 MB/yr in those years, elements ~65 KB/yr otherwise)  req: VN-EPH-011  files: src/core/ephem/elements.ts, src/core/ephem/format.ts, tools/ephem/orbiters.ts, docs/EPHEMERIS_FORMAT.md  test: tools/ephem/orbiters.test.ts
+- [ ] NOW T-097 P2 @phase3 slice: LRO whole mission under 5 MB: element segments that hold through near-circular years (2009-2011) and seam arcs under 22 s (2026), e.g. non-singular elements (e cos w, e sin w, mean argument of latitude) or a per-segment degree, format v3; measured 5.70 MB in session 12 (positions 1.0-1.8 MB/yr in those years, elements ~65 KB/yr otherwise)  req: VN-EPH-011  files: src/core/ephem/elements.ts, src/core/ephem/format.ts, tools/ephem/orbiters.ts, docs/EPHEMERIS_FORMAT.md  test: tools/ephem/orbiters.test.ts
 - [ ] T-047 P1 @phase3 slice: `ephem:refresh` and a scheduled workflow (also `workflow_dispatch` for a manual refresh, OI-7) that reports moved objects and opens a pull request; needs-user: Settings > Actions > "Allow GitHub Actions to create pull requests"  req: VN-DAT-006  files: tools/ephem/refresh.ts, .github/workflows/refresh.yml  test: tools/ephem/refresh.test.ts
 
 ## Later
@@ -24,7 +23,6 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 
 ### M3 spacecraft
 
-- [ ] T-094 P1 @phase3 slice: Earth satellite layer: markers around Earth when the camera is near, epoch age in the panel, illustrative orbit beyond 14 days from epoch  req: VN-CAT-007  files: src/scene/satellites/  test: src/scene/satellites/satellites.test.ts
 
 ### M4 time control and sharing
 
@@ -87,6 +85,9 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 - [ ] T-088 P2 @phase9 slice: command light-time animation to and from a spacecraft  req: VN-EXT-004  files: src/scene/signal/  test: src/scene/signal/signal.test.ts
 
 ## Done
+
+- [x] T-093 Earth satellites from CelesTrak GP (tools/gp, data/satellites.json, 13 satellites, ISS vs Horizons radial 0.25 / cross 0.13 / along 22.7 km); session 13; 265cf3f
+- [x] T-094 Earth satellite layer (withSatellites, markers near Earth, panel element age, illustrative beyond 14 d); session 13; 953f298
 
 - [x] T-089 P1 @phase3 slice: orbiters in the pipeline: Juno at Jupiter, LRO and CAPSTONE at the Moon; fit position and element segments, keep the smaller within tolerance (2 km lunar), report size and worst error for the whole mission, full mission within 5 MB per object else ±30 days; generate and commit  req: VN-EPH-003, VN-EPH-009, VN-EPH-011  files: tools/ephem/orbiters.ts, public/ephem/  test: tools/ephem/orbiters.test.ts  result: session 12: tools/ephem/orbiters.ts + data/orbiters.json, fit.ts element mode; parts split at capture, both kinds fitted, misses refit at 1 min, seams placed to 1 s; CAPSTONE 584 KB max 3.9 km and Juno 538 KB max 49.9 km whole mission (Juno stays positions: elements miss at perijove), LRO measured 5.70 MB so build +-30 d (288 KB); ephem:check 22/22, vitest 339, e2e 23; 838bfca
 - [x] T-090 P1 @phase3 slice: illustrative orbit for an orbiter outside its stored span (typical orbit from the nearest stored elements, marker moving at the right period, labelled illustrative in the scene and the panel)  req: VN-EPH-011, VN-EPH-007  files: src/core/ephem/illustrative.ts, src/scene/spacecraft/  test: src/core/ephem/illustrative.test.ts  result: session 12: src/core/ephem/illustrative.ts, ephemeris.illustrative()/illustrativeEdge(), tools/ephem/edges.ts (edges in the manifest), worldPositions flag, label tag, no model or trail, panel note; e2e CAPSTONE after 2026-08-14 and LRO before its window; 06203ac
