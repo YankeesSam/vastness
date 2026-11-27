@@ -1,7 +1,7 @@
 schema: 1
 from_session: 9
 to_session: 10
-completed: [T-029, T-028, T-032, T-033, T-034]
+completed: [T-029, T-028, T-032, T-033, T-034, T-095]
 failed: []
 next_task_id: T-036
 next_task: "P0 @phase3 slice: catalog schema and data/catalog.json: the VN-CAT-002 spacecraft (now including JWST) and the bodies, summaries in our own words, sources, status with as-of date  req: VN-CAT-001, VN-CAT-002"
@@ -25,7 +25,8 @@ push: ok
 notes:
   - Batch session (user asked for 4-6 tasks in one area): the rest of M2 (scene). T-029 labels, T-028 orbits (+ follow-up), T-032 picking, T-033 info panel, T-034 reference views; one commit each. M2 exit criteria all met; milestone now M3.
   - Screen layout: Markers (scene/labels) projects every body each frame into ScreenFrame (x, y, ok, radiusPx, label sizes); labels and picking read it. Labels are DOM spans measured once. Canvas attrs added: data-labels (names shown), data-orbits (orbits with every sample).
-  - Orbits: Ephemeris.peek(id, t) evaluates loaded chunks without requesting any. Samples within 1 yr of now use state() (may load); further out loaded chunks, else Standish approximate elements, so outer orbits do not pull ~4 MB of chunks. User may prefer full-ephemeris orbits loaded in the background: say so in WORKINGLIST.
+  - Orbits (T-095, user): Horizons data only, no approximations (REQUIREMENTS rev D; kepler-approx removed). Before the first complete frame paths use peek (no loads); after it they load their chunks (~2 MB more for the outer planets). A period that would run past 1900-2100 slides inside it (Neptune in 2026: 1935-2100). Outside the coverage a planet is not drawn; the UI reason is still to do (VN-EPH-006).
+  - User wants moons (T-084 widened, consider pulling forward after M3) and topographic maps over the bodies (T-062 widened).
   - Snapshot baselines CREATED with --update-snapshots (new F5): e2e/scale.spec.ts-snapshots (earth-moon, inner, outer, 150au, jitter), maxDiffPixelRatio 0.002. They were made locally (WSL, SwiftShader); if CI renders differently, regenerate them from a CI artifact, do not loosen.
   - Jitter: identical still loads give identical frames; a 1 m move changes 2 px by 1 level; the check allows 10 px.
   - Playwright: perf.spec and camera.spec run in project "timed" after the rest, 1 worker. With 10+ specs in parallel SwiftShader contention pushed first render to >3 s and fly-to past 4.5 s; alone they are 2.0 s and 3.8 s.

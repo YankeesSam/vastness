@@ -1,6 +1,6 @@
 # Vastness requirements
 
-Document VN-SRS-001, revision C (draft), 2026-11-26.
+Document VN-SRS-001, revision D (draft), 2026-11-26.
 Requirement IDs are stable. A retired requirement is struck through and kept; its ID is never reused.
 
 | Rev | Date | Change |
@@ -8,6 +8,7 @@ Requirement IDs are stable. A retired requirement is struck through and kept; it
 | A | 2026-11-26 | Initial baseline, from the Vastness Project Design Document v1.0 (2026-11-26) and the seeding chat; hosted on GitHub (user's choice in the seeding chat) |
 | B | 2026-11-26 | Lunar orbiters stored as orbital elements, measured before choosing full mission or window (seeding chat): VN-EPH-003 adds a 2 km tolerance, VN-EPH-009 reworded, new VN-EPH-011, OI-6 reworded |
 | C | 2026-11-26 | Open items answered through WORKINGLIST (W-001..W-009): OI-1 Apache-2.0 (VN-GEN-007), OI-3 GitHub Pages, OI-4 list is a minimum plus JWST (VN-CAT-002) and Earth satellites (new VN-CAT-007, VN-DAT-009), OI-5 default kept, OI-7 build time plus a manual refresh run (VN-DAT-006), OI-8 NASA public domain and CC BY with credit, OI-9 reference machine recorded (VN-PRF-001), OI-10 order confirmed |
+| D | 2026-11-26 | User (session 9): positions and orbits come only from Horizons data, never approximated. VN-EPH-006 reworded (no Standish fallback: outside coverage a planet is not drawn and the UI says why), VN-SCN-002 adds that every orbit sample is ephemeris data, loaded after the first render. VN-SCN-006 adds public topographic maps; VN-SCN-008 widens to the major moons of every planet |
 
 ## 1. Purpose
 
@@ -75,7 +76,7 @@ Out of scope (non-goals)
 - **VN-EPH-003** (T, M1) Fit tolerances: 10 km in position for the planets and the Moon over their coverage; 50 km for spacecraft in cruise; 2 km for spacecraft in low orbit around the Moon (so none is drawn below the surface); spacecraft segments around flybys, orbit insertions and manoeuvres are subdivided until the same tolerance holds or the sample step limit is reached, and any segment that misses it is listed in the manifest.
 - **VN-EPH-004** (T, M1) An ephemeris file is a compact binary (little-endian float64 coefficients, a fixed header with object ID, coverage, degree and segment table, a format version) with a documented layout (docs/EPHEMERIS_FORMAT.md), and loads without parsing text.
 - **VN-EPH-005** (T, M1) Evaluating an object at a TDB time returns position and velocity in under 2 microseconds on the reference machine (amortised over 1e5 calls) and allocates nothing in steady state.
-- **VN-EPH-006** (T, M1) Planet coverage is 1900-01-01 to 2100-01-01 by default (OI-5). Outside it, planets fall back to the JPL "Keplerian elements for approximate positions of the major planets" model (Standish), and the UI marks those positions approximate.
+- **VN-EPH-006** (T, M1) Planet coverage is 1900-01-01 to 2100-01-01 by default (OI-5). Nothing is approximated: outside the coverage a planet (and its orbit) is not drawn and the UI says that no data is stored for that time. (Rev D; before it, a Standish approximate-elements fallback.)
 - **VN-EPH-007** (T, M3) Spacecraft coverage runs from launch (or the first epoch Horizons has) to the end of Horizons' predictions. Outside it the spacecraft is not drawn and its info panel says why (before launch, beyond the predictions, mission ended).
 - **VN-EPH-008** (A, M1) Accuracy is shown, not assumed: an accuracy report (`npm run ephem:check`) compares every ephemeris against Horizons reference samples not used in the fit (F2) and fails when any object exceeds its tolerance. The report's summary is published with each release.
 - **VN-EPH-009** (T, M3) Moons are stored relative to their planet (the Moon geocentric, later moons planetocentric) and spacecraft orbiting a body relative to that body (Juno to Jupiter, LRO and CAPSTONE to the Moon), and combined at evaluation time.
@@ -85,13 +86,13 @@ Out of scope (non-goals)
 ### 4.4 Scene (SCN)
 
 - **VN-SCN-001** (T, M2) The Sun, the eight planets and the Moon are drawn at their ephemeris positions for the current time, with their true mean radii from the IAU/NASA constants table (src/core/constants, sources cited).
-- **VN-SCN-002** (T, M2) Orbits of the planets are drawn as paths sampled from the ephemeris (not ellipses) over one orbital period centred on the current time, faded with distance from the current position.
+- **VN-SCN-002** (T, M2) Orbits of the planets and the Moon are drawn as paths sampled from the ephemeris (Horizons data, never ellipses or approximate elements) over one orbital period centred on the current time, slid to stay inside the coverage when the centred period would leave it, and faded with distance from the current position. Chunks the paths need beyond those for the current time load after the first render.
 - **VN-SCN-003** (T, M2) Every object has a screen-space marker and label that stay readable at any distance, declutter by priority when they overlap, and can be hidden (VN-SCL-001).
 - **VN-SCN-004** (T, M2) The renderer uses a floating origin and a logarithmic depth buffer (ADR-0004) so that objects from 1 m to 200 AU from the camera render without z-fighting or jitter; positions are kept in float64 on the CPU and made camera-relative before reaching the GPU.
 - **VN-SCN-005** (T, M6) The Sun is an emissive sphere with a glow whose brightness and size are configurable; the Sun is the only light source and lights bodies by distance.
-- **VN-SCN-006** (T, M6) Planet and Moon textures (2k by default, 4k on the high quality tier) and Saturn's rings, with sources and licences in docs/DATA_SOURCES.md; plain coloured spheres when textures are off or not yet loaded.
+- **VN-SCN-006** (T, M6) Planet and Moon textures (2k by default, 4k on the high quality tier) and Saturn's rings, plus topographic maps (shaded relief or colour-coded elevation from public NASA, USGS or NOAA data, for example MOLA for Mars, LOLA for the Moon, ETOPO for Earth) that can be switched on over the bodies, with sources and licences in docs/DATA_SOURCES.md; plain coloured spheres when textures are off or not yet loaded.
 - **VN-SCN-007** (T, M6) A background sky of real stars (a bright-star catalog to magnitude 6.5, positions in the same frame) and an optional Milky Way image, both dimmable.
-- **VN-SCN-008** (T, M9) Dwarf planets (Ceres, Pluto, Eris, Haumea, Makemake) and major moons of Jupiter and Saturn as optional layers.
+- **VN-SCN-008** (T, M9) Dwarf planets (Ceres, Pluto, Eris, Haumea, Makemake) and the major moons of every planet (Mars, Jupiter, Saturn, Uranus, Neptune, Pluto), positioned from Horizons data like the planets, as optional layers.
 
 ### 4.5 Camera (CAM)
 
@@ -208,7 +209,7 @@ Out of scope (non-goals)
 - **OI-2** Domain: which of vastness.space, thevastness.space, solarvastness.space is available and bought? Until then the GitHub Pages address.
 - **OI-3** Hosting: GitHub Pages (the default: same place as the code and CI; chosen over GitLab on 2026-11-26) or Cloudflare Pages or Vercel (the design document's suggestions)? The repository is private at seed; public makes Actions minutes free and Pages available on the free plan, and the design calls for open source. **Answered 2026-11-26 (W-003):** GitHub Pages. Making the repository public (or a paid plan) stays a user action before T-007.
 - **OI-4** The spacecraft list for 1.0: the twelve in VN-CAT-002, or more or fewer? **Answered 2026-11-26 (W-004):** at least VN-CAT-002, plus some operational Starlink, geostationary and other satellites: JWST joins VN-CAT-002; Earth satellites are VN-CAT-007 and VN-DAT-009 (ADR-0007, T-091..T-094). The agent picks the exact satellites in T-093; the user may change them through WORKINGLIST.
-- **OI-5** Planet coverage: 1900-2100 (default) or wider (Horizons offers far more; files grow linearly)? **Answered 2026-11-26 (W-005):** the user was unsure what it asks; it is how many years of planet positions are stored. The default 1900-2100 stands; outside it planets use the approximate model, marked approximate. It can be widened later at the cost of larger files.
+- **OI-5** Planet coverage: 1900-2100 (default) or wider (Horizons offers far more; files grow linearly)? **Answered 2026-11-26 (W-005):** the user was unsure what it asks; it is how many years of planet positions are stored. The default 1900-2100 stands; outside it (rev D) planets are not drawn; before rev D they used the approximate model, marked approximate. It can be widened later at the cost of larger files.
 - **OI-6** Lunar orbiters: element segments decide by measurement (VN-EPH-011): the whole mission if it fits 5 MB per object at 2 km, else ±30 days around the build with an illustrative orbit outside. **Decided 2026-11-26 (seeding chat)**; open only for the budget and window sizes.
 - **OI-7** Live data: is build-time data refreshed by CI (daily for predictions) enough, or should the app fetch fresh Horizons data through a serverless proxy? **Answered 2026-11-26 (W-006):** build-time data refreshed by CI is enough for now; a manual refresh is wanted later: the refresh workflow also runs on `workflow_dispatch` (T-047). An in-app refresh would need the proxy and a new ADR.
 - **OI-8** Textures: which sources are acceptable (NASA public domain only, or CC BY sets such as Solar System Scope with attribution)? **Answered 2026-11-26 (W-007):** NASA public domain and CC BY sets (such as Solar System Scope) are acceptable, with attribution wherever required.

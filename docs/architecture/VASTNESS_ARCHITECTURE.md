@@ -30,7 +30,7 @@ Short by design. Decisions are in docs/adr; requirements in docs/REQUIREMENTS.md
 | Path | Holds | May import |
 |---|---|---|
 | `src/core/time` | UTC/TAI/TT/TDB, leap seconds, clock | core only |
-| `src/core/ephem` | Chebyshev, binary format, ephemeris evaluation and composition, Standish fallback | core only |
+| `src/core/ephem` | Chebyshev, binary format, ephemeris evaluation and composition (no approximate fallback, rev D) | core only |
 | `src/core/frames.ts`, `constants.ts` | frame and axis conversion, constants with sources | core only |
 | `src/core/camera`, `scale`, `labels`, `trails`, `orbits`, `share`, `catalog`, `readouts.ts`, `quality.ts` | pure maths and data for the interface | core only |
 | `src/scene` | R3F components, shaders, picking | core, three, @react-three/fiber, react |

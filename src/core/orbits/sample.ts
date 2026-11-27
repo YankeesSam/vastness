@@ -1,6 +1,7 @@
-// VN-SCN-002: orbit paths sampled from the ephemeris (not ellipses) over one period centred on the current time,
-// faded with distance (in time along the orbit) from the current position, and resampled as time moves. Pure: the
-// scene passes an evaluator. Allocates nothing per call.
+// VN-SCN-002: orbit paths sampled from the ephemeris (not ellipses) over one period centred on the current time (slid
+// to stay inside the data coverage), faded with distance (in time along the orbit) from the current position, and
+// resampled as time moves. Pure: the scene passes an evaluator and a window. Allocates nothing per call when given a
+// window.
 
 /**
  * Sidereal orbital periods, days: NASA GSFC Planetary Fact Sheet (D. R. Williams), "Sidereal orbit period", and the
@@ -56,13 +57,44 @@ export function orbitFade(u: number): number {
   return 0.12 + 0.78 * (1 - c) * (1 - c);
 }
 
-/** Samples one period P (s) centred on t: sample i at t - P/2 + i P/(n-1), so the ends meet. */
-export function sampleOrbit(evaluate: Evaluate, t: number, periodS: number, s: OrbitSamples): void {
-  const step = periodS / (s.n - 1);
-  const t0 = t - periodS / 2;
+export interface OrbitWindow {
+  /** Start of the sampled span, TDB s. */
+  t0: number;
+  /** Length of the sampled span, s: one period, or the whole coverage when that is shorter. */
+  span: number;
+}
+
+/**
+ * VN-SCN-002, VN-EPH-006: the span to sample for an orbit of period P at time t, given the data coverage
+ * [start, end]: one period centred on t, slid to stay inside the coverage (never extrapolated). False when t is
+ * outside the coverage (no orbit is drawn).
+ */
+export function orbitWindow(t: number, periodS: number, start: number, end: number, out: OrbitWindow): boolean {
+  if (!(t >= start && t <= end)) return false;
+  const span = Math.min(periodS, end - start);
+  let t0 = t - span / 2;
+  if (t0 < start) t0 = start;
+  if (t0 + span > end) t0 = end - span;
+  out.t0 = t0;
+  out.span = span;
+  return true;
+}
+
+/**
+ * Samples an orbit of period P (s) at time t over `range` (default: one period centred on t): n samples from t0 to
+ * t0 + span, so for a full period the ends meet. The fade is measured from t in units of half a period.
+ */
+export function sampleOrbit(
+  evaluate: Evaluate,
+  t: number,
+  periodS: number,
+  s: OrbitSamples,
+  range: OrbitWindow = { t0: t - periodS / 2, span: periodS },
+): void {
+  const step = range.span / (s.n - 1);
   let missing = 0;
   for (let i = 0; i < s.n; i++) {
-    const ti = t0 + i * step;
+    const ti = range.t0 + i * step;
     if (evaluate(ti, s.pos, 3 * i)) s.ok[i] = 1;
     else {
       s.ok[i] = 0;

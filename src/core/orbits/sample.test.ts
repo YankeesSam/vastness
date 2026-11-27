@@ -5,6 +5,7 @@ import {
   ORBIT_PERIOD_DAYS,
   ORBIT_SAMPLES,
   orbitFade,
+  orbitWindow,
   sampleOrbit,
   splitDouble,
   type Evaluate,
@@ -82,6 +83,39 @@ describe("orbit sampling", () => {
     expect(ORBIT_PERIOD_DAYS[399]).toBeCloseTo(365.256, 2);
     expect(ORBIT_PERIOD_DAYS[899]! / 365.25).toBeCloseTo(164.8, 0);
     expect(ORBIT_PERIOD_DAYS[301]).toBeCloseTo(27.3217, 3);
+  });
+});
+
+describe("orbit window", () => {
+  const w = { t0: 0, span: 0 };
+  it("VN-SCN-002: one period centred on now while that fits inside the coverage", () => {
+    expect(orbitWindow(100, 165, 0, 200, w)).toBe(true);
+    expect(w).toEqual({ t0: 17.5, span: 165 });
+  });
+
+  it("VN-SCN-002, VN-EPH-006: slid to stay inside the coverage, never past it (Neptune in 2026: 165 years of 1900-2100)", () => {
+    expect(orbitWindow(126, 165, 0, 200, w)).toBe(true);
+    expect(w).toEqual({ t0: 35, span: 165 });
+    expect(orbitWindow(50, 165, 0, 200, w)).toBe(true);
+    expect(w).toEqual({ t0: 0, span: 165 });
+  });
+
+  it("VN-SCN-002: a period longer than the coverage is drawn over the whole coverage only", () => {
+    expect(orbitWindow(50, 300, 0, 200, w)).toBe(true);
+    expect(w).toEqual({ t0: 0, span: 200 });
+  });
+
+  it("VN-EPH-006: no orbit when now is outside the coverage", () => {
+    expect(orbitWindow(201, 165, 0, 200, w)).toBe(false);
+    expect(orbitWindow(-1, 165, 0, 200, w)).toBe(false);
+  });
+
+  it("VN-SCN-002: sampling a slid window keeps the fade measured from now", () => {
+    const s = createOrbitSamples(5);
+    orbitWindow(9, 8, 0, 10, w); // t0 = 2: samples at 2, 4, 6, 8, 10
+    sampleOrbit(circle(1, 8), 9, 8, s, w);
+    expect(s.alpha[3]).toBeCloseTo(orbitFade(1 / 4));
+    expect(s.alpha[0]).toBeCloseTo(orbitFade(7 / 4));
   });
 });
 
