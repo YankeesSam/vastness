@@ -12,6 +12,7 @@ import { Labels } from "./labels/Labels";
 import { Markers } from "./labels/Markers";
 import { createScreenFrame } from "./labels/screen";
 import { Orbits } from "./orbits/Orbits";
+import { SpacecraftModels } from "./spacecraft/Model";
 import { Trails } from "./trails/Trails";
 import { Picker } from "./Picker";
 import { createRig, RigContext } from "./rig";
@@ -111,6 +112,7 @@ export function SceneView() {
           <Bodies frame={frame} />
           <Orbits eph={eph} frame={frame} />
           <Trails eph={eph} frame={frame} />
+          <SpacecraftModels frame={frame} />
           <Markers frame={frame} screen={screen} />
           <Picker screen={screen} />
           <ReadyMarker

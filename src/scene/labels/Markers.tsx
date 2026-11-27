@@ -22,6 +22,7 @@ import {
 import type { BodyFrame } from "../bodies/Bodies";
 import { CATALOG_BY_ID } from "../../app/catalog";
 import { SCENE_OBJECTS } from "../bodies/positions";
+import { drawnRadiusKm } from "../spacecraft/model";
 import { colourOf } from "../colours";
 import { toCamera } from "../origin";
 import { useRig } from "../rig";
@@ -135,7 +136,10 @@ export function Markers({ frame, screen }: { frame: BodyFrame; screen: ScreenFra
         b.kind === "body"
           ? bodyPriority(b.id, st.selection === b.id)
           : (CATALOG_BY_ID.get(b.id)?.priority ?? 0) + (st.selection === b.id ? 1000 : 0);
-      screen.radiusPx[i] = pixelRadius(b.radiusKm, Math.hypot(x, y, z), fov, size.height);
+      const dist = Math.hypot(x, y, z);
+      // VN-CAT-006: within model range a spacecraft is drawn at least icon-sized, and its marker gives way to it.
+      const drawn = b.kind === "spacecraft" ? drawnRadiusKm(dist, fov, size.height) : b.radiusKm;
+      screen.radiusPx[i] = pixelRadius(drawn, dist, fov, size.height);
       if (st.layers.markers && markerShown(screen.radiusPx[i]!)) {
         screen.marker[i] = 1;
         pos.setXYZ(k, x, y, z);
