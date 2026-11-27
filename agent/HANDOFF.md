@@ -29,5 +29,6 @@ notes:
   - New dev dependency: @axe-core/playwright (T-069 named axe-core). Dark, light, contrast and large text pass WCAG 2.2 AA tags.
   - Preferences: theme, largeText, units, zone, sky in `vastness.prefs`; layers and quality are not saved (links carry layers; quality tiers are T-072).
   - No visual baselines changed.
+  - nightly 08012fc-nightly ok; LAN http://192.168.1.166:8770/ (200)
 open_defects_blocking: []
 optimizations_applied: []
