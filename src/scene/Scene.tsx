@@ -5,8 +5,8 @@ import { clipPlanes, toCamera } from "./origin";
 import { useRig } from "./rig";
 
 // VN-SCN-004, VN-CAM-004: frame order. Negative priorities run in order before R3F renders (a positive one would
-// take over rendering): the clock, then the camera rig, then the camera at the origin, then the objects.
-export const PRIORITY = { clock: -4, rig: -3, camera: -2, objects: -1 } as const;
+// take over rendering): the clock, then the body states, then the camera rig, then the camera at the origin, then the objects.
+export const PRIORITY = { clock: -5, states: -4, rig: -3, camera: -2, objects: -1 } as const;
 
 /**
  * The three.js camera stays at the render origin, looks at the focus (camera-relative), and its near and far

@@ -12,7 +12,7 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 ## Next
 
 - [x] T-026 P0 @phase2 slice: floating origin: float64 world positions, camera-relative float32 each frame, logarithmic depth buffer, adaptive near and far  req: VN-SCN-004, VN-CAM-004  files: src/scene/origin.ts, src/scene/Scene.tsx  test: src/scene/origin.test.ts
-- [ ] T-027 P0 @phase2 slice: Sun, planets and Moon as plain spheres with true radii at ephemeris positions  req: VN-SCN-001  files: src/scene/bodies/Bodies.tsx  test: src/scene/bodies/bodies.test.ts
+- [x] T-027 P0 @phase2 slice: Sun, planets and Moon as plain spheres with true radii at ephemeris positions  req: VN-SCN-001  files: src/scene/bodies/Bodies.tsx  test: src/scene/bodies/bodies.test.ts
 - [ ] T-028 P0 @phase2 slice: orbit paths sampled from the ephemeris over one period, faded with distance from the current position, resampled as time moves  req: VN-SCN-002  files: src/core/orbits/sample.ts, src/scene/orbits/  test: src/core/orbits/sample.test.ts
 - [ ] T-029 P0 @phase2 slice: screen-space markers and labels with priority declutter (pure layout in core)  req: VN-SCN-003  files: src/core/labels/declutter.ts, src/scene/labels/  test: src/core/labels/declutter.test.ts
 - [ ] T-030 P0 @phase2 slice: camera controller: orbit, pan, exponential zoom by mouse, wheel and touch, basic keys; math in core  req: VN-CAM-001  files: src/core/camera/orbit.ts, src/scene/camera/Controls.tsx  test: src/core/camera/orbit.test.ts

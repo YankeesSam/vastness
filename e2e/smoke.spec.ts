@@ -22,6 +22,7 @@ test.describe("smoke", () => {
 
     const canvas = page.locator("canvas");
     await expect(canvas).toHaveAttribute("data-scene-ready", "1", { timeout: 20_000 });
+    await expect(canvas).toHaveAttribute("data-bodies", "10"); // VN-SCN-001: Sun, eight planets, Moon placed
     const webgl2 = await canvas.evaluate(
       (c: HTMLCanvasElement) => c.getContext("webgl2") instanceof WebGL2RenderingContext,
     );
