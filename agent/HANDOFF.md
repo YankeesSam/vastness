@@ -1,36 +1,36 @@
 schema: 1
-from_session: 9
-to_session: 10
-completed: [T-029, T-028, T-032, T-033, T-034, T-095]
+from_session: 10
+to_session: 11
+completed: [T-036, T-038, T-040, T-041, T-042]
 failed: []
-next_task_id: T-036
-next_task: "P0 @phase3 slice: catalog schema and data/catalog.json: the VN-CAT-002 spacecraft (now including JWST) and the bodies, summaries in our own words, sources, status with as-of date  req: VN-CAT-001, VN-CAT-002"
+next_task_id: T-043
+next_task: "P0 @phase3 slice: spacecraft info panel: launch, status with as-of, agency, summary, goals, safe links  req: VN-INF-003"
 next_skill: vastness-execute
 read_next:
   - agent/STATE.md
   - agent/PLAN.md
-  - src/core/constants.ts
-  - src/scene/colours.ts
-  - src/core/labels/declutter.ts
   - src/app/info/InfoPanel.tsx
-  - data/
+  - src/app/info/InfoPanel.test.tsx
+  - src/app/catalog.ts
+  - src/core/catalog/schema.ts
+  - src/scene/spacecraft/coverage.ts
 do_not_read:
   - docs/REQUIREMENTS.md (grep VN-* IDs instead)
   - docs/ROADMAP.md (only the current milestone section)
   - docs/architecture/VASTNESS_ARCHITECTURE.md
+  - data/catalog.json (read through src/app/catalog.ts; grep for one entry)
   - node_modules/, dist/, nightly/, public/ephem/ (read manifest.json keys only), .cache/, testdata/, test-results/, e2e/*-snapshots/, THIRD_PARTY_NOTICES.txt
-tests: pass (vitest 250/250; e2e 15/15; typecheck, prettier, check-size 337 kB clean)
-commit: 901ebcd
+tests: pass (vitest 303/303; e2e 18/18; ephem:check 19/19; typecheck, prettier clean)
+commit: 3c576d8
 push: ok
 notes:
-  - Batch session (user asked for 4-6 tasks in one area): the rest of M2 (scene). T-029 labels, T-028 orbits (+ follow-up), T-032 picking, T-033 info panel, T-034 reference views; one commit each. M2 exit criteria all met; milestone now M3.
-  - Screen layout: Markers (scene/labels) projects every body each frame into ScreenFrame (x, y, ok, radiusPx, label sizes); labels and picking read it. Labels are DOM spans measured once. Canvas attrs added: data-labels (names shown), data-orbits (orbits with every sample).
-  - Orbits (T-095, user): Horizons data only, no approximations (REQUIREMENTS rev D; kepler-approx removed). Before the first complete frame paths use peek (no loads); after it they load their chunks (~2 MB more for the outer planets). A period that would run past 1900-2100 slides inside it (Neptune in 2026: 1935-2100). Outside the coverage a planet is not drawn; the UI reason is still to do (VN-EPH-006).
-  - User wants moons (T-084 widened, consider pulling forward after M3) and topographic maps over the bodies (T-062 widened).
-  - Snapshot baselines CREATED with --update-snapshots (new F5): e2e/scale.spec.ts-snapshots (earth-moon, inner, outer, 150au, jitter), maxDiffPixelRatio 0.002. They were made locally (WSL, SwiftShader); if CI renders differently, regenerate them from a CI artifact, do not loosen.
-  - Jitter: identical still loads give identical frames; a 1 m move changes 2 px by 1 level; the check allows 10 px.
-  - Playwright: perf.spec and camera.spec run in project "timed" after the rest, 1 worker. With 10+ specs in parallel SwiftShader contention pushed first render to >3 s and fly-to past 4.5 s; alone they are 2.0 s and 3.8 s.
-  - Selection only highlights and raises label priority; it does not fly (object list still selects and flies). Unit pref covers distances (km, AU, mi); UTC/local time pref is still to do with the time bar (M4).
-  - D-001 (low, env) unchanged. CI 45922245862 green (screenshot baselines hold on CI). Nightly 0c41d82-nightly ok; LAN http://192.168.1.166:8770/ (200).
+  - Batch session (user asked for 4-6 tasks in one area): the M3 spacecraft slice. T-036 catalog, T-038 ephemerides, T-040 markers, T-041 trails, T-042 object list; one commit each.
+  - Horizons' merged spacecraft trajectories have seams (position jumps between source files, up to 1.97 million km for Psyche on 2027-03-01); the pipeline cuts them and lists them in the manifest (seams, 23 in all). Refinement goes down to 1 min (Europa Clipper's 25 km Europa flybys); 0 misses.
+  - Statuses as of 2026-11-26 from web search, not NASA confirmation for all: Juno "unclear" (extended mission ended 2025-09-30 on paper, still flying in 2026), CAPSTONE "ended" (June 2026). User may correct via WORKINGLIST.
+  - "Predicted" trail = after the simulation time (dashed); "past" = before it. Default 1 year each way; choices 30 d, 1 y, 5 y, whole coverage.
+  - Juno, LRO and CAPSTONE are in the catalog and list but have no ephemeris yet (T-089): the panel says "No trajectory ... loaded yet".
+  - First render on fast 4G rose to 2.5 s (budget 3 s): spacecraft chunks at now (about 0.6 MB) load before the first frame. T-046 should stream them after it.
+  - Snapshot baseline e2e/scale.spec.ts-snapshots/jitter updated with --update-snapshots: a spacecraft marker is now in that view (the diff was that one dot); the other four views stayed within tolerance.
+  - Top-bar search is now the real type-ahead; it opens the side panel and filters its list.
 open_defects_blocking: []
 optimizations_applied: []
