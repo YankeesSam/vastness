@@ -19,7 +19,7 @@ do_not_read:
   - public/ephem, public/stars.bin, public/textures, testdata, .cache, dist
 tests: pass (vitest 513; e2e chromium 64/64 at 4 workers; timed camera VN-CAM-006 fails at ~1.7 s, D-005; typecheck, prettier, check-deps, check-size clean)
 commit: 031886d
-push: pending
+push: ok
 notes:
   - Session 19 batch at the user's request, scene bodies and trails: D-004, D-002, T-098, T-062, T-099 (+D-003). T-097 still stashed ("T-097 WIP").
   - D-004: trail sampler is worst-first (heap) with a quarter-point bend test; an incomplete resample never replaces a complete drawn trail; retries every 10 frames while chunks load.
@@ -28,3 +28,4 @@ notes:
   - T-062: Solar System Scope 2k maps (CC BY 4.0, OI-8 names them), referer header required (tools/textures/fetch.ts). Loaded above 6 px drawn radius, released below 2 px; 4k tier not shipped (64 MB budget). New layer "textures", fragment letter u: links made before this session open with textures off. Topography split to T-111 (USGS mosaics are 1-13 GB).
   - T-099: shadows gated by eclipsePossible (CPU), so the per-pixel maths runs only in eclipse seasons. Baselines: saturn.png updated (Saturn's shadow on the rings, D-003), lunar-eclipse-2025.png and solar-eclipse-2024.png new (cameras from the Sun's side). Umbra is black: no refraction reddening of the eclipsed Moon.
   - e2e: SwiftShader saturated 16 cores at 8 workers once textures landed; playwright.config.ts uses 4 workers locally (CI 50%); full run ~3.7 min. D-005: reduced-motion cut 1.7 s vs 1.5 s, also at d0f5a97; user: revisit later.
+  - nightly 2090325-nightly ok; LAN http://192.168.1.166:8770/ (200)
