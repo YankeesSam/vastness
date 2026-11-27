@@ -18,8 +18,8 @@ do_not_read:
   - docs/architecture/VASTNESS_ARCHITECTURE.md
   - public/ephem, public/stars.bin, testdata, .cache, dist
 tests: pass (vitest 447; e2e 43/43; typecheck, prettier, check-deps, check-size clean)
-commit: pending
-push: pending
+commit: 673abe3
+push: ok
 notes:
   - Session 16 batch at the user's request: M6 sky and Sun (T-061, T-063, T-064, T-066). T-097 still stashed (`git stash list`: "T-097 WIP").
   - T-065 (Milky Way) is needs-user: svs.gsfc.nasa.gov answers 403 to curl, even with a browser User-Agent and Referer. Save milkyway_2020_4k.exr from a browser into .cache/milkyway/ (URL in PLAN).
@@ -29,6 +29,7 @@ notes:
   - Saturn's rings come from published radii and optical depths, not an image; no shadows (D-003).
   - F5 baselines (scale.spec) unchanged and still pass: the glow adds under 0.2% of pixels there.
   - e2e: stars cost about 15% of a SwiftShader frame (23 to 20 fps); the three multi-page specs (presets, jitter, share) are now test.slow() after timing out under 16 workers.
+  - nightly 673abe3-nightly ok; LAN http://192.168.1.166:8770/ (200)
   - New visual baselines for your review: e2e/visual.spec.ts-snapshots/ (presets, sun, saturn).
 open_defects_blocking: []
 optimizations_applied: []
