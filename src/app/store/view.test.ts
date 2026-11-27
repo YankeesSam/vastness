@@ -55,7 +55,7 @@ describe("view store", () => {
     expect(store.getState().targetSeq).toBe(2);
     s.select(null);
     expect(store.getState().selection).toBeNull();
-    expect(store.getState().layers).toEqual({ bodies: true, labels: true, markers: true, orbits: true });
+    expect(store.getState().layers).toEqual({ bodies: true, labels: true, markers: true, orbits: true, trails: true });
     s.setLayer("orbits", false);
     expect(store.getState().layers.orbits).toBe(false);
     expect(store.getState().layers.labels).toBe(true);
