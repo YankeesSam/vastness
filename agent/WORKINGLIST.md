@@ -27,3 +27,6 @@ Answers to open items: `- [x] W-002 → OI-1 Apache-2.0, VN-GEN-007, T-010 kind:
 - [x] W-012 → T-096 pulled to Next kind:feature the spacecraft with 3D models where possible
 - [x] W-013 → VN-SCN-010, T-099 (absorbs D-003) kind:feature planets should cast a shadow, for example Saturn on its rings, Earth on the Moon
 - [x] W-014 → VN-EXT-001 widened, VN-EXT-005..007; T-086 to Next, T-100, T-101, T-102 kind:feature space weather depicted as a storm, with mass and energy (CDAW), and NOAA measured near-Earth solar wind; after rotation, textures and shadows (session 18 chat)
+- [x] W-015 → VN-EXT-008..011, T-103..T-106 in Next kind:feature yes to USGS place names, Helioviewer real Sun, Minor Planet Center asteroid belt (kept optimized), SPICE spacecraft attitude (session 18 chat)
+- [x] W-016 → VN-EXT-012..015, T-107..T-110 in M9 kind:feature confirmed later milestone additions: Deep Space Network Now, NASA CDAWeb / HAPI, Exoplanet Archive, comets
+- [x] W-017 → PLAN Later "Revisit" (P2 notes) kind:note revisit later: NASA GIBS, NASA EPIC, SWPC aurora oval, JPL Sentry, Scout and Fireball, Gaia, NASA Image and Video Library, Launch Library 2
