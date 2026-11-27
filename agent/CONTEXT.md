@@ -1,10 +1,10 @@
-# Context (session 8, T-025)
+# Context (session 8, batch T-025 T-026 T-027 T-030 T-031)
 
-- agent/STATE.md
 - agent/PLAN.md
-- docs/adr/0001-stack.md
 - src/core/ephem/ephemeris.ts
 - src/core/time/scales.ts
-- src/app/App.tsx
-- src/app/prefs.ts
-- package.json
+- src/core/constants.ts
+- src/core/frames.ts
+- src/scene/SceneView.tsx
+- src/app/shell/Shell.tsx
+- src/app/shell/TimeBar.tsx

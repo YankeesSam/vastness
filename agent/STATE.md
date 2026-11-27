@@ -2,12 +2,12 @@ schema: 1
 project: vastness
 milestone: M2
 phase: 2
-status: ready
+status: running
 active_task_id: T-025
 active_task: "P0 @phase2 slice: view store (Zustand): simulation time in TDB seconds, selection, camera target, layers; frame clock advances time (VN-TIM-004)"
 next_skill: vastness-execute
-session: 7
-updated: 2026-11-26T19:05:54-05:00
+session: 8
+updated: 2026-11-26T20:00:00-05:00
 branch: main
 last_commit: ad912b7
 push: ok

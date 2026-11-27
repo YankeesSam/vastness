@@ -3,6 +3,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "../App";
 import { buildInfo } from "../build-info";
 import { PREFS_KEY } from "../prefs";
+import { viewStore } from "../store/view";
+import { parseUtc } from "../../core/time/scales";
 
 // WebGL is not available in jsdom; the 3D view is covered by the e2e smoke test (T-005).
 vi.mock("../../scene/SceneView", () => ({ SceneView: () => <div data-testid="scene" /> }));
@@ -79,16 +81,18 @@ describe("app shell", () => {
     expect(screen.queryByRole("dialog")).toBeNull();
   });
 
-  it("VN-UI-001: the time bar shows the time in UTC and ticks", () => {
-    vi.useFakeTimers({ now: Date.UTC(2026, 10, 26, 12, 0, 0) });
-    try {
-      render(<App />);
-      const bar = screen.getByRole("contentinfo", { name: /time/i });
-      expect(bar.textContent).toContain("2026-11-26 12:00:00 UTC");
-      act(() => vi.advanceTimersByTime(2000));
-      expect(bar.textContent).toContain("2026-11-26 12:00:02 UTC");
-    } finally {
-      vi.useRealTimers();
-    }
+  it("VN-UI-001, VN-TIM-004: the time bar shows the simulation time in UTC as the frame clock runs", () => {
+    viewStore.getState().setTime(parseUtc("2026-11-26T12:00:00Z"));
+    viewStore.getState().setRate(1);
+    render(<App />);
+    const bar = screen.getByRole("contentinfo", { name: /time/i });
+    expect(bar.textContent).toContain("2026-11-26 12:00:00 UTC");
+    act(() => {
+      for (let i = 0; i < 125; i++) viewStore.getState().tick(0.016); // 2 s of frames
+    });
+    expect(bar.textContent).toContain("2026-11-26 12:00:02 UTC");
+    act(() => viewStore.getState().setPaused(true));
+    expect(bar.textContent).toContain("Paused");
+    act(() => viewStore.getState().setPaused(false));
   });
 });

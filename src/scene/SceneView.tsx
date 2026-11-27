@@ -1,4 +1,11 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { viewStore } from "../app/store/view";
+
+/** VN-TIM-004: the frame clock advances simulation time by the frame's real seconds. */
+function FrameClock() {
+  useFrame((_, dt) => viewStore.getState().tick(dt));
+  return null;
+}
 
 /** Sets data-scene-ready="1" on the canvas once the first frame has rendered (e2e specs wait for it). */
 function ReadyMarker() {
@@ -18,6 +25,7 @@ export function SceneView() {
         <sphereGeometry args={[1, 48, 24]} />
         <meshBasicMaterial color="#ffd27a" />
       </mesh>
+      <FrameClock />
       <ReadyMarker />
     </Canvas>
   );

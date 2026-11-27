@@ -7,7 +7,7 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 
 ## Now
 
-- [ ] NOW T-025 P0 @phase2 slice: view store (Zustand): simulation time in TDB seconds, selection, camera target, layers; frame clock advances time  req: VN-TIM-004  files: src/app/store/view.ts  test: src/app/store/view.test.ts
+- [x] T-025 P0 @phase2 slice: view store (Zustand): simulation time in TDB seconds, selection, camera target, layers; frame clock advances time  req: VN-TIM-004  files: src/app/store/view.ts  test: src/app/store/view.test.ts
 
 ## Next
 
