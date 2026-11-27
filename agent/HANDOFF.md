@@ -22,7 +22,7 @@ do_not_read:
   - node_modules/, dist/, nightly/, public/ephem/ (read manifest.json keys only), .cache/, testdata/, THIRD_PARTY_NOTICES.txt
 tests: pass (vitest 173/173; ephem:check 9/9; ephem:check-ids 10/10; offline ephem regeneration byte-identical; bench Earth 67 ns, Moon composed 143 ns)
 commit: ad912b7
-push: pending
+push: ok
 notes:
   - Batch session (user asked for 4-6 tasks in one area): the ephemeris core and pipeline. M1 closed (T-021, T-023, T-024); exit criteria hold, so STATE moves to M2 and the M2 tasks are in Next.
   - Out of phase order, by the batch request: T-039 and T-037 are M3 tasks, but core and pipeline only (nothing drawn), so the M1-first rule is kept.
@@ -30,6 +30,6 @@ notes:
   - Runtime API (T-021): createEphemeris(manifest, loader); load(t, ids?) for the decade first; state/relativeState return "ok" | "loading" | "outside" | "error" and request a missing chunk lazily.
   - Format version 2 (T-039): element files only (80-byte header, kind, mu, mean_motion); position files stay version 1, so public/ephem is unchanged. Element segments measured 0.94 km where same-size position segments miss by 582 km (e = 0.6 synthetic).
   - Live Horizons this session (pipeline only, serial, cached): 6 lookup probes, then 12 lookup fixtures (1 cached). Lookup cache keys include the endpoint; horizons.api keys unchanged.
-  - D-001 (low, env) unchanged.
+  - D-001 (low, env) unchanged. Nightly 07170cd-nightly ok; LAN http://192.168.1.166:8770/ (200).
 open_defects_blocking: []
 optimizations_applied: []
