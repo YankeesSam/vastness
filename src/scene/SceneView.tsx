@@ -10,6 +10,7 @@ import { Controls } from "./camera/Controls";
 import { Labels } from "./labels/Labels";
 import { Markers } from "./labels/Markers";
 import { createScreenFrame } from "./labels/screen";
+import { Orbits } from "./orbits/Orbits";
 import { createRig, RigContext } from "./rig";
 import { OriginCamera, PRIORITY } from "./Scene";
 
@@ -79,6 +80,7 @@ export function SceneView() {
           <Controls frame={frame} />
           <OriginCamera />
           <Bodies frame={frame} />
+          <Orbits eph={eph} frame={frame} />
           <Markers frame={frame} screen={screen} />
           <ReadyMarker frame={frame} failed={failed} />
         </RigContext.Provider>

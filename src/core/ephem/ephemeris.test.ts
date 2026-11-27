@@ -109,6 +109,22 @@ describe("runtime ephemeris: chunk index and injected loader", () => {
     expect(e.relativeState(399, -1, out)).toBe("outside");
   });
 
+  it("VN-EPH-010: peek evaluates loaded chunks only and never requests one", async () => {
+    const { manifest, loader, requested } = synthetic();
+    const e = createEphemeris(manifest, loader);
+    const out = new Float64Array(6);
+    expect(e.peek(399, 150, out)).toBe("loading");
+    expect(e.peek(301, 50, out)).toBe("loading");
+    expect(requested).toEqual([]);
+    await e.load(50);
+    expect(e.peek(301, 50, out)).toBe("ok");
+    expect(out[0]).toBeCloseTo(1050 + 10.5, 9); // Earth plus the Moon relative to it
+    expect(e.peek(399, 150, out)).toBe("loading");
+    expect(requested.sort()).toEqual(["301/0.bin", "399/0.bin"]);
+    expect(e.state(399, 150, out)).toBe("loading"); // state still requests lazily
+    expect(requested).toContain("399/100.bin");
+  });
+
   it("a time on a chunk boundary evaluates from either side to the same state", async () => {
     const { manifest, loader } = synthetic();
     const e = createEphemeris(manifest, loader);

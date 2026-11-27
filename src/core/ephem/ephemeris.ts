@@ -77,6 +77,8 @@ export interface Ephemeris {
   relativeState(id: number, t: number, out: Float64Array, offset?: number): EvalStatus;
   /** Heliocentric (frame origin) state, composed through the parent chain (VN-EPH-009). */
   state(id: number, t: number, out: Float64Array, offset?: number): EvalStatus;
+  /** As state, from chunks already in memory only: "loading" where one is missing, and nothing is requested. */
+  peek(id: number, t: number, out: Float64Array, offset?: number): EvalStatus;
 }
 
 function findChunk(chunks: readonly ChunkSlot[], t: number): number {
@@ -212,6 +214,8 @@ export function createEphemeris(manifest: EphemerisManifest, loader: ChunkLoader
   // search and the Clenshaw recurrence are written out in this one function; only objects and small integers cross
   // a call boundary.
   const clock = new Float64Array(1);
+  /** Set while peek runs: missing chunks are not requested. */
+  let quiet = false;
 
   function relative(b: Body, out: Float64Array, o: number): EvalStatus {
     if (b.origin) {
@@ -231,7 +235,7 @@ export function createEphemeris(manifest: EphemerisManifest, loader: ChunkLoader
     }
     const slot = b.chunks[lo]!;
     if (slot.state !== LOADED) {
-      if (slot.state === EMPTY) requestQuietly(b.id, slot);
+      if (slot.state === EMPTY && !quiet) requestQuietly(b.id, slot);
       return slot.state === FAILED ? "error" : "loading";
     }
     const f = slot.data!;
@@ -324,6 +328,13 @@ export function createEphemeris(manifest: EphemerisManifest, loader: ChunkLoader
     state(id, t, out, offset = 0) {
       clock[0] = t;
       return compose(body(id), out, offset);
+    },
+    peek(id, t, out, offset = 0) {
+      clock[0] = t;
+      quiet = true;
+      const st = compose(body(id), out, offset);
+      quiet = false;
+      return st;
     },
   };
 }
