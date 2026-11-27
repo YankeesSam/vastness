@@ -126,4 +126,53 @@ describe("trail sampling", () => {
     expect(trailStale(s, { ...r, now: r.now + DAY })).toBe(false);
     expect(trailStale(s, { ...r, now: r.now + 10 * DAY })).toBe(true);
   });
+
+  /** Worst distance, over many times, between the true position and the polyline interpolated in time. */
+  function worstError(ev: Evaluate, s: ReturnType<typeof createTrailSamples>): number {
+    const p = new Float64Array(3);
+    let worst = 0;
+    for (let i = 1; i < s.count; i++) {
+      const a = s.t[i - 1]!;
+      const b = s.t[i]!;
+      for (const f of [0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875]) {
+        ev(a + f * (b - a), p, 0);
+        let d2 = 0;
+        for (let k = 0; k < 3; k++) {
+          const l = s.pos[3 * i - 3 + k]! + f * (s.pos[3 * i + k]! - s.pos[3 * i - 3 + k]!);
+          d2 += (p[k]! - l) ** 2;
+        }
+        worst = Math.max(worst, Math.sqrt(d2));
+      }
+    }
+    return worst;
+  }
+
+  const YEAR = 365.25 * DAY;
+  /** A circular heliocentric orbit of 1 AU and 1 year, like JWST's around the Sun. */
+  const circle: Evaluate = (t, out, o) => {
+    const w = (2 * Math.PI * t) / YEAR;
+    out[o] = AU * Math.cos(w);
+    out[o + 1] = AU * Math.sin(w);
+    out[o + 2] = 0;
+    return true;
+  };
+
+  it("D-004: base intervals of a whole number of periods do not alias into chords", () => {
+    const s = createTrailSamples();
+    // Each side spans 64 intervals of exactly two periods: every midpoint lands on its ends.
+    sampleTrail(circle, { t0: -128 * YEAR, now: 0, t1: 128 * YEAR }, s);
+    expect(worstError(circle, s)).toBeLessThan(0.1 * AU);
+  });
+
+  it("D-004: a whole-coverage trail spends its budget evenly (JWST 2021-12-25..2031-11-16 seen from 2029-04-17)", () => {
+    for (const cap of [513, 1025, 2049]) {
+      const s = createTrailSamples(cap);
+      sampleTrail(circle, { t0: -7.3 * YEAR, now: 0, t1: 2.6 * YEAR }, s);
+      expect(s.count).toBe(cap);
+      // A regular polygon of `cap` points over 10 years: about 1.7 degrees (high) to 7 degrees (low) per side.
+      const sides = (cap - 1) / 9.9;
+      const even = AU * (1 - Math.cos(Math.PI / sides));
+      expect(worstError(circle, s)).toBeLessThan(4 * even);
+    }
+  });
 });

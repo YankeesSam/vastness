@@ -1,4 +1,4 @@
-import { BODIES, type BodyId } from "../constants";
+import { AU_KM, BODIES, type BodyId } from "../constants";
 
 // VN-SCL-001, VN-SCL-002 (ADR-0004): the scale mapping. A pure function from true positions and radii to drawn ones;
 // the scene never scales anything on its own. True scale draws everything as it is. Exaggerated scale enlarges radii
@@ -53,7 +53,32 @@ export interface ScaleTable {
   readonly parent: Int32Array;
   /** Exaggerated distance stretch of a moon about its parent, 1 otherwise. */
   readonly stretch: Float64Array;
+  /**
+   * D-002: the heliocentric distances, km, a point must lie between for the body to push it at any scale amount: the
+   * body's own range in 1900-2100 widened by its exaggerated zone (enlarged radius plus the fade, pushWeight).
+   */
+  readonly reachMin: Float64Array;
+  readonly reachMax: Float64Array;
 }
+
+/**
+ * Heliocentric distance range of each body, AU: perihelion and aphelion from the NASA Planetary Fact Sheet
+ * (nssdc.gsfc.nasa.gov/planetary/factsheet), widened by 2 % for the changes of the orbits over 1900-2100 (checked
+ * against the ephemeris in mapping.test.ts); the Moon is Earth's range widened by its apogee (406 700 km).
+ */
+const HELIO_RANGE_AU: Readonly<Record<BodyId, readonly [number, number]>> = {
+  10: [0, 0],
+  199: [0.307, 0.467],
+  299: [0.718, 0.728],
+  399: [0.983, 1.017],
+  301: [0.983 - 0.00272, 1.017 + 0.00272],
+  499: [1.381, 1.666],
+  599: [4.95, 5.459],
+  699: [9.041, 10.124],
+  799: [18.286, 20.097],
+  899: [29.81, 30.33],
+};
+const RANGE_MARGIN = 0.02;
 
 /** The scale table for bodies in the given order (Horizons IDs from the constants table). */
 export function scaleTable(ids: readonly BodyId[]): ScaleTable {
@@ -64,10 +89,18 @@ export function scaleTable(ids: readonly BodyId[]): ScaleTable {
     factor: new Float64Array(n),
     parent: new Int32Array(n).fill(-1),
     stretch: new Float64Array(n).fill(1),
+    reachMin: new Float64Array(n),
+    reachMax: new Float64Array(n),
   };
   ids.forEach((id, i) => {
     t.radiusKm[i] = BODIES[id].radiusKm;
     t.factor[i] = CLASS_FACTOR[CLASS_OF[id]];
+    // The zone at amount 1 is the widest: the enlarged radius plus twice its growth.
+    const r = t.radiusKm[i]!;
+    const zone = r * t.factor[i]! + 2 * (r * t.factor[i]! - r);
+    const [q, Q] = HELIO_RANGE_AU[id];
+    t.reachMin[i] = Math.max(0, q * (1 - RANGE_MARGIN) * AU_KM - zone);
+    t.reachMax[i] = Q * (1 + RANGE_MARGIN) * AU_KM + zone;
   });
   ids.forEach((id, i) => {
     const m = MOON_MIN_DISTANCE_KM[id];
@@ -195,4 +228,63 @@ export const FRAMED_RADII = 100;
 export function keepFramed(distance: number, r0: number, r1: number): number {
   if (!(r0 > 0) || !(r1 > 0) || r0 === r1 || distance > FRAMED_RADII * Math.max(r0, r1)) return distance;
   return (distance * r1) / r0;
+}
+
+// Scratch for mapTrail: the bodies and one point after them.
+let mtTruth = new Float64Array(0);
+let mtOk = new Uint8Array(0);
+let mtDrawn = new Float64Array(0);
+let mtRadius = new Float64Array(0);
+
+/**
+ * D-002: drawn positions of a small object's trail. Vertex i (pts[3i..]) is mapped as mapSmall maps the object's
+ * marker, against the bodies at the vertex's own time: bodyTruth holds 3 numbers per body per vertex (true scene
+ * positions, from 3 n i) and bodyOk 1 per body per vertex (0 where the body was not evaluated: too far to push it, see
+ * reachMin and reachMax). At amount 0 the trail is drawn where it is. Allocates only when the table first grows.
+ */
+export function mapTrail(
+  table: ScaleTable,
+  amount: number,
+  bodyTruth: Float64Array,
+  bodyOk: Uint8Array,
+  pts: Float64Array,
+  count: number,
+  out: Float64Array,
+): void {
+  const n = table.n;
+  if (!(amount > 0)) {
+    out.set(pts.subarray(0, 3 * count));
+    return;
+  }
+  if (mtTruth.length < 3 * (n + 1)) {
+    mtTruth = new Float64Array(3 * (n + 1));
+    mtOk = new Uint8Array(n);
+    mtDrawn = new Float64Array(3 * n);
+    mtRadius = new Float64Array(n);
+  }
+  const o = 3 * n;
+  for (let i = 0; i < count; i++) {
+    let any = 0;
+    for (let j = 0; j < n; j++) {
+      const k = bodyOk[n * i + j]!;
+      mtOk[j] = k;
+      any |= k;
+    }
+    const p = 3 * i;
+    if (!any) {
+      out[p] = pts[p]!;
+      out[p + 1] = pts[p + 1]!;
+      out[p + 2] = pts[p + 2]!;
+      continue;
+    }
+    for (let c = 0; c < 3 * n; c++) mtTruth[c] = bodyTruth[3 * n * i + c]!;
+    mtTruth[o] = pts[p]!;
+    mtTruth[o + 1] = pts[p + 1]!;
+    mtTruth[o + 2] = pts[p + 2]!;
+    mapBodies(table, amount, mtTruth, mtOk, mtDrawn, mtRadius);
+    mapSmall(table, mtTruth, mtOk, mtDrawn, mtRadius, o, mtTruth);
+    out[p] = mtTruth[o]!;
+    out[p + 1] = mtTruth[o + 1]!;
+    out[p + 2] = mtTruth[o + 2]!;
+  }
 }

@@ -71,4 +71,24 @@ test.describe("scale modes", () => {
     await expect(canvas).toHaveAttribute("data-labels", "");
     await page.screenshot({ path: test.info().outputPath("exaggerated-inner-bare.png") });
   });
+
+  test("D-002: in exaggerated scale a trail meets its marker (LRO at the stretched Moon)", async ({ page }) => {
+    await page.goto(
+      "./?t=2026-01-01T00:00:00Z&cam=301,2e7,0,30&still=1&layers=bodies,markers,trails&scale=exaggerated",
+    );
+    const canvas = page.locator("canvas");
+    await expect(canvas).toHaveAttribute("data-scene-ready", "1", { timeout: 20_000 });
+    await expect(canvas).toHaveAttribute("data-scale-amount", "1.00");
+    await expect
+      .poll(async () => Number(await canvas.getAttribute("data-trails")), { timeout: 10_000 })
+      .toBeGreaterThan(0);
+    // The Moon is drawn ~13 million km out from Earth; a trail left at true positions would part from LRO by that.
+    await expect
+      .poll(async () => Number(await canvas.getAttribute("data-trail-gap")), { timeout: 10_000 })
+      .toBeLessThan(1);
+    await page.screenshot({ path: test.info().outputPath("exaggerated-lro.png") });
+    await page.getByRole("combobox", { name: "Scale mode" }).selectOption("true");
+    await expect(canvas).toHaveAttribute("data-scale-amount", "0.00");
+    await expect.poll(async () => Number(await canvas.getAttribute("data-trail-gap"))).toBeLessThan(1);
+  });
 });

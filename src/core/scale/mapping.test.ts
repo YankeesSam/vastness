@@ -12,6 +12,7 @@ import {
   MOON_CLEARANCE,
   mapBodies,
   mapSmall,
+  mapTrail,
   pushWeight,
   scaleTable,
   stepAmount,
@@ -135,6 +136,59 @@ describe("scale mapping", () => {
     mapSmall(table, pos, ok, drawn, r, o, out);
     expect([out[o], out[o + 1], out[o + 2]]).toEqual([1.5e8, BODIES[399].radiusKm + 400, 0]);
   });
+
+  it("D-002: a trail vertex is mapped as the marker is at the vertex's time; true scale leaves it", () => {
+    const truth = new Float64Array(3 * (n + 1));
+    truth[3 * at(399)] = 1.5e8;
+    truth[3 * at(301)] = 1.5e8 + 384_400;
+    const ok = new Uint8Array(n).fill(1);
+    const o = 3 * n;
+    // A lunar orbiter 100 km up at the vertex's time.
+    truth[o] = 1.5e8 + 384_400;
+    truth[o + 2] = BODIES[301].radiusKm + 100;
+    const drawn = new Float64Array(3 * (n + 1));
+    const r = new Float64Array(n);
+    const marker = new Float64Array(3 * (n + 1));
+    const pts = Float64Array.of(5e8, 3e8, 0, truth[o]!, truth[o + 1]!, truth[o + 2]!);
+    // Vertex 0 is far from everything (no bodies evaluated), vertex 1 has the bodies above.
+    const bodyTruth = new Float64Array(6 * n);
+    bodyTruth.set(truth.subarray(0, 3 * n), 3 * n);
+    const bodyOk = new Uint8Array(2 * n);
+    bodyOk.fill(1, n);
+    const out = new Float64Array(6);
+    for (const a of [0.5, 1]) {
+      mapBodies(table, a, truth, ok, drawn, r);
+      mapSmall(table, truth, ok, drawn, r, o, marker);
+      mapTrail(table, a, bodyTruth, bodyOk, pts, 2, out);
+      expect([...out.subarray(0, 3)]).toEqual([5e8, 3e8, 0]);
+      expect([...out.subarray(3)]).toEqual([...marker.subarray(o)]);
+    }
+    expect(out[5]! - (drawn[3 * at(301) + 2] ?? 0)).toBeCloseTo(r[at(301)]! + 100, 3);
+    mapTrail(table, 0, bodyTruth, bodyOk, pts, 2, out);
+    expect([...out]).toEqual([...pts]);
+  });
+
+  it("D-002: each body's push reach holds its heliocentric distance plus its zone at 400 seeded times", async () => {
+    const dir = new URL("../../../public/ephem/", import.meta.url);
+    const manifest = JSON.parse(readFileSync(new URL("manifest.json", dir), "utf8")) as EphemerisManifest;
+    const eph = createEphemeris(manifest, async (file) => readFileSync(new URL(file, dir)));
+    const rand = rng(20261128);
+    const span = PLANET_COVERAGE.end - PLANET_COVERAGE.start;
+    const st = new Float64Array(6);
+    for (let s = 0; s < 400; s++) {
+      const t = PLANET_COVERAGE.start + rand() * span;
+      await eph.load(t, IDS);
+      for (let i = 0; i < n; i++) {
+        expect(eph.state(IDS[i]!, t, st)).toBe("ok");
+        const d = Math.hypot(st[0]!, st[1]!, st[2]!);
+        const rad = table.radiusKm[i]!;
+        const zone = rad * table.factor[i]! + 2 * (rad * table.factor[i]! - rad);
+        // Any point within the zone of the body lies inside the reach (triangle inequality).
+        expect(Math.max(0, d - zone)).toBeGreaterThanOrEqual(table.reachMin[i]! - 1e-6);
+        expect(d + zone).toBeLessThanOrEqual(table.reachMax[i]! + 1e-6);
+      }
+    }
+  }, 60_000);
 
   it("VN-SCL-002: the push is continuous and keeps order along a ray from the body", () => {
     expect(pushWeight(10, 10, 5)).toBe(1);

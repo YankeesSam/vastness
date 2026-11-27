@@ -2,12 +2,12 @@ schema: 1
 project: vastness
 milestone: M7
 phase: 7
-status: ready
-active_task_id: T-097
-active_task: "T-097 LRO whole mission under 5 MB (non-singular elements, format v3); WIP in git stash"
+status: running
+active_task_id: D-004
+active_task: "batch (user): scene bodies and trails: D-004, D-002, T-098, T-062, T-099 (+D-003)"
 next_skill: vastness-execute
-session: 18
-updated: 2026-11-27T15:59:29-05:00
+session: 19
+updated: 2026-11-27T16:30:00-05:00
 branch: main
 last_commit: 690daba
 push: ok
