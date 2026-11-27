@@ -1,4 +1,4 @@
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "../App";
 import { buildInfo } from "../build-info";
@@ -99,19 +99,21 @@ describe("app shell", () => {
   it("VN-CAM-002: choosing an object in the list selects it and asks the camera to fly there", () => {
     render(<App />);
     const objects = screen.getByRole("region", { name: "Objects" });
-    const names = [...objects.querySelectorAll("button")].map((b) => b.textContent);
-    expect(names).toEqual([
+    const group = (name: string) =>
+      [...within(objects).getByRole("region", { name }).querySelectorAll("button")].map((b) => b.textContent);
+    expect(group("Sun and planets")).toEqual([
       "Sun",
       "Mercury",
       "Venus",
       "Earth",
-      "Moon",
       "Mars",
       "Jupiter",
       "Saturn",
       "Uranus",
       "Neptune",
     ]);
+    expect(group("Moons")).toEqual(["Moon"]);
+    expect(group("Spacecraft")).toHaveLength(13);
     const seq = viewStore.getState().targetSeq;
     const mars = screen.getByRole("button", { name: "Mars" });
     fireEvent.click(mars);

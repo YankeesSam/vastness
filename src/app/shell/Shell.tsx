@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
+import { TRAIL_RANGES_DAYS, TRAIL_WHOLE } from "../../core/trails/sample";
 import { DRAWN_BODIES } from "../../scene/bodies/positions";
+import { CATALOG } from "../catalog";
+import { ObjectList, ObjectSearch } from "../objects/ObjectList";
 import { SceneView } from "../../scene/SceneView";
 import { About } from "../about/About";
 import { InfoPanel } from "../info/InfoPanel";
@@ -12,9 +15,43 @@ import { TimeBar } from "./TimeBar";
 // (object list, info panel) and a bottom time bar. Choosing an object selects it and flies the camera to it
 // (VN-CAM-002); the info panel shows its read-outs (VN-INF-001). The search and scale are placeholders until their
 // tasks (T-042, M5).
+/** The Sun, planets and Moon in the order they are listed (from the Sun outwards). */
+const OBJECT_ORDER = DRAWN_BODIES.map((b) => b.horizonsId);
+
+const rangeLabel = (d: number): string =>
+  d === TRAIL_WHOLE ? "Whole coverage" : d >= 365 ? `${d / 365} year${d === 365 ? "" : "s"}` : `${d} days`;
+
+/** VN-CAT-003, VN-CAM-002: choosing an object selects it and flies the camera there. */
+function chooseObject(id: number): void {
+  viewStore.getState().select(id);
+  viewStore.getState().setTarget(id);
+}
+
+/** VN-CAT-004: how far back and ahead spacecraft trails reach. */
+function TrailRangeSelect() {
+  const days = useView((s) => s.trailDays);
+  return (
+    <label>
+      Back and ahead{" "}
+      <select
+        aria-label="Trail range"
+        value={String(days)}
+        onChange={(e) => viewStore.getState().setTrailDays(Number(e.target.value))}
+      >
+        {TRAIL_RANGES_DAYS.map((d) => (
+          <option key={d} value={String(d)}>
+            {rangeLabel(d)}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
 export function Shell() {
   const [prefs, setPrefs] = useState<Prefs>(loadPrefs);
   const [panelOpen, setPanelOpen] = useState(true);
+  const [query, setQuery] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
   const selection = useView((s) => s.selection);
@@ -49,7 +86,17 @@ export function Shell() {
           ☰
         </button>
         <span className={styles.title}>Vastness</span>
-        <input className={styles.search} type="search" placeholder="Search objects" aria-label="Search objects" />
+        <ObjectSearch
+          className={styles.search}
+          objects={CATALOG.objects}
+          order={OBJECT_ORDER}
+          query={query}
+          onQuery={(q) => {
+            setQuery(q);
+            if (q !== "") setPanelOpen(true);
+          }}
+          onChoose={chooseObject}
+        />
         <label className={styles.scale}>
           <span>Scale</span>
           <select aria-label="Scale mode" defaultValue="true">
@@ -95,22 +142,17 @@ export function Shell() {
       <aside id="side-panel" className={styles.side} aria-label="Side panel" hidden={!panelOpen}>
         <section aria-label="Objects">
           <h2>Objects</h2>
-          <ul className={styles.objects}>
-            {DRAWN_BODIES.map((b) => (
-              <li key={b.horizonsId}>
-                <button
-                  type="button"
-                  aria-current={selection === b.horizonsId}
-                  onClick={() => {
-                    viewStore.getState().select(b.horizonsId);
-                    viewStore.getState().setTarget(b.horizonsId);
-                  }}
-                >
-                  {b.name}
-                </button>
-              </li>
-            ))}
-          </ul>
+          <ObjectList
+            objects={CATALOG.objects}
+            order={OBJECT_ORDER}
+            query={query}
+            selection={selection}
+            onChoose={chooseObject}
+          />
+        </section>
+        <section aria-label="Trails">
+          <h2>Trails</h2>
+          <TrailRangeSelect />
         </section>
         <section aria-label="Info">
           <h2>Info</h2>
