@@ -32,8 +32,8 @@ export interface FlightPoint {
   w: number;
 }
 
-/** A flight from distance w0 to w1 across a focus move of D km. */
-export function planFlight(D: number, w0: number, w1: number): Flight {
+/** A flight from distance w0 to w1 across a focus move of D km. VN-CAM-006: with reduced motion it is an instant cut. */
+export function planFlight(D: number, w0: number, w1: number, reducedMotion = false): Flight {
   const rho2 = RHO * RHO;
   const zoomOnly = !(D > 1e-9 * Math.max(w0, w1));
   let S: number;
@@ -48,6 +48,7 @@ export function planFlight(D: number, w0: number, w1: number): Flight {
     const r1 = -Math.asinh(b1);
     S = (r1 - r0) / RHO;
   }
+  if (reducedMotion) return { D, w0, w1, S: 0, duration: 0, r0, zoomOnly };
   const duration = S > 0 ? Math.min(MAX_FLIGHT_S, FLIGHT_BASE_S + FLIGHT_PER_UNIT_S * S) : 0;
   return { D, w0, w1, S, duration, r0, zoomOnly };
 }

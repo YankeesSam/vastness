@@ -58,4 +58,26 @@ test.describe("camera", () => {
     await page.keyboard.press("Escape");
     await expect(canvas).toHaveAttribute("data-follow", "");
   });
+
+  test("VN-CAM-006: with reduced motion, choosing Mars cuts there at once", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    const canvas = page.locator("canvas");
+    const flying: string[] = [];
+    await page.exposeFunction("noteFlying", (v: string) => flying.push(v));
+    await canvas.evaluate((el) => {
+      new MutationObserver(() =>
+        (window as unknown as { noteFlying(v: string): void }).noteFlying(el.dataset.flying ?? ""),
+      ).observe(el, {
+        attributes: true,
+        attributeFilter: ["data-flying"],
+      });
+    });
+    const start = Date.now();
+    await page.getByRole("button", { name: "Mars" }).click();
+    await expect(canvas).toHaveAttribute("data-follow", "499", { timeout: 2000 });
+    expect(Date.now() - start).toBeLessThan(1500);
+    await expect(canvas).toHaveAttribute("data-camera-distance", (3389.5 * 4).toPrecision(4));
+    // the flight lasted at most a frame or two: no intermediate distance was ever drawn
+    expect(flying.filter((v) => v === "499").length).toBeLessThanOrEqual(1);
+  });
 });

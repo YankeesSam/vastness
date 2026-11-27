@@ -16,6 +16,8 @@ interface Common {
 }
 
 export const OBJECT_LIST_ID = "object-list";
+/** VN-ACC-001: the `/` shortcut focuses this. */
+export const OBJECT_SEARCH_ID = "object-search";
 
 export function ObjectSearch({
   objects,
@@ -27,6 +29,7 @@ export function ObjectSearch({
 }: Common & { query: string; onQuery(q: string): void; className?: string | undefined }) {
   return (
     <input
+      id={OBJECT_SEARCH_ID}
       className={className}
       type="search"
       placeholder="Search objects"

@@ -82,3 +82,13 @@ describe("framing", () => {
     expect(frameDistance(0)).toBe(1e-2);
   });
 });
+
+describe("fly-to with reduced motion", () => {
+  it.each(CASES)("VN-CAM-006: %s is an instant cut to the end", (_n, D, w0, w1) => {
+    const f = planFlight(D, w0, w1, true);
+    expect(f.duration).toBe(0);
+    const p = flightAt(f, 0.5, { u: 0, w: 0 });
+    expect(p.u).toBe(1);
+    expect(p.w).toBe(w1);
+  });
+});

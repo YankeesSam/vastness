@@ -21,6 +21,7 @@ import type { BodyFrame } from "../bodies/Bodies";
 import { objectIndex } from "../bodies/positions";
 import { useRig, type Rig } from "../rig";
 import { PRIORITY } from "../Scene";
+import { reducedMotion } from "../motion";
 
 // VN-CAM-001: orbit (drag), pan (right or shift drag, two-finger drag), exponential zoom (wheel, pinch, + and -),
 // arrow keys. VN-CAM-002: a new camera target starts a fly-to; VN-CAM-003: once there the camera follows it, and
@@ -35,6 +36,8 @@ export function minDistance(rig: Rig, frame: BodyFrame): number {
 /** A fly-to in progress: from a fixed start focus to a body, timed in real seconds. */
 interface Flying {
   plan: Flight;
+  /** VN-CAM-006: reduced motion, so the flight is an instant cut. */
+  instant: boolean;
   to: number;
   start: Float64Array;
   elapsed: number;
@@ -163,8 +166,10 @@ export function Controls({ frame }: { frame: BodyFrame }) {
       const i = objectIndex(s.target);
       if (i < 0) return;
       rig.follow = null;
+      const instant = reducedMotion();
       flying.current = {
-        plan: planFlight(0, rig.orbit.distance, frameDistance(frame.radius[i]!)),
+        plan: planFlight(0, rig.orbit.distance, frameDistance(frame.radius[i]!), instant),
+        instant,
         to: s.target,
         start: Float64Array.from(rig.focus),
         elapsed: 0,
@@ -204,7 +209,7 @@ export function Controls({ frame }: { frame: BodyFrame }) {
       if (f.elapsed === 0) {
         // Planned on the first frame with the end position; the end keeps moving with its body after that.
         const D = Math.hypot(ex - f.start[0]!, ey - f.start[1]!, ez - f.start[2]!);
-        f.plan = planFlight(D, f.plan.w0, f.plan.w1);
+        f.plan = planFlight(D, f.plan.w0, f.plan.w1, f.instant);
       }
       f.elapsed += dt; // wall-clock: a slow or hidden frame shortens the rest of the flight, never lengthens it
       const tau = f.plan.duration > 0 ? f.elapsed / f.plan.duration : 1;
@@ -241,7 +246,10 @@ export function Controls({ frame }: { frame: BodyFrame }) {
     const d = rig.orbit.distance.toPrecision(4);
     if (el.dataset.cameraDistance !== d) el.dataset.cameraDistance = d;
     const fo = String(rig.follow ?? "");
-    if (el.dataset.follow !== fo) el.dataset.follow = fo;
+    if (el.dataset.follow !== fo) {
+      el.dataset.follow = fo;
+      viewStore.getState().setFollowing(rig.follow); // VN-ACC-002: announced by the app
+    }
     const fl = flying.current ? String(flying.current.to) : "";
     if (el.dataset.flying !== fl) el.dataset.flying = fl;
   }, PRIORITY.rig);

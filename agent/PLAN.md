@@ -37,21 +37,16 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 
 - [ ] T-062 P0 @phase6 slice: textures (NASA public domain or CC BY with credit, OI-8) with tiers and plain fallback, and switchable topographic maps (shaded relief or colour-coded elevation: MOLA Mars, LOLA Moon, MESSENGER Mercury, ETOPO Earth, Magellan Venus) draped on the bodies; every texture listed with licence and a size budget  req: VN-SCN-006, VN-DOC-002  files: public/textures/, src/scene/bodies/materials.ts, docs/DATA_SOURCES.md  test: tests/assets.test.ts
 - [ ] T-096 P1 @phase6 slice: real spacecraft models from NASA 3D Resources (glTF/GLB; ESA for JUICE) in place of the generic model within 10,000 km: per-model terms checked and listed (no NASA insignia implying endorsement), decimated and quantized at build time (tools/models, no runtime decoder, so no wasm under the CSP), at most 1 MB per model, lazy-loaded only when in range with the generic model until loaded and as fallback where no model exists (CAPSTONE likely), true size and a conventional attitude per model (panels to the Sun, high-gain antenna to Earth; real attitude needs SPICE CK, out of scope)  req: VN-CAT-006, VN-PRF-004, VN-DOC-002  files: tools/models/, public/models/, data/models.json, src/scene/spacecraft/Model.tsx, docs/DATA_SOURCES.md  test: tools/models/models.test.ts, e2e/spacecraft.spec.ts
-- [ ] T-065 P2 @phase6 slice: optional dimmable Milky Way image; needs-user: NASA SVS answers 403 to automated downloads (session 16): save https://svs.gsfc.nasa.gov/vis/a000000/a004800/a004851/milkyway_2020_4k.exr (Deep Star Maps 2020, celestial plate carree, 34 MB) from a browser into .cache/milkyway/, then a tool converts it to a 2k image  req: VN-SCN-007  files: src/scene/stars/MilkyWay.tsx  test: e2e/visual.spec.ts
+- [ ] T-065 P2 @phase6 slice: optional dimmable Milky Way image. Source: NASA SVS 4851 answers 403 to every /vis/ file (curl and the user's browser, session 17), so use ESO eso0932a "The Milky Way panorama" (S. Brunier, CC BY 4.0, credit ESO/S. Brunier), https://cdn.eso.org/images/large/eso0932a.jpg (8 MB; original .tif 29 MB), reachable by curl: a tool in tools/sky downloads it to .cache/milkyway/, checks its projection (galactic, centred on the Galactic Centre), reprojects to ecliptic J2000 and writes a 2k image; listed in docs/DATA_SOURCES.md  req: VN-SCN-007, VN-DOC-002  files: tools/sky/, public/milkyway.webp, src/scene/stars/MilkyWay.tsx, docs/DATA_SOURCES.md  test: tools/sky/milkyway.test.ts, e2e/visual.spec.ts
 
 ### M7 accessibility, mobile and performance
 
-- [ ] T-067 P0 @phase7 slice: keyboard map and help dialog  req: VN-ACC-001  files: src/app/keys/  test: e2e/keyboard.spec.ts
-- [ ] T-068 P0 @phase7 slice: screen readers: throttled live-region announcements, canvas text alternative  req: VN-ACC-002  files: src/app/a11y/  test: src/app/a11y/announce.test.ts
-- [ ] T-069 P0 @phase7 slice: high-contrast theme, large text, axe-core in e2e  req: VN-ACC-003  files: src/app/theme/, e2e/a11y.spec.ts  test: e2e/a11y.spec.ts
 - [ ] T-070 P1 @phase7 slice: no-WebGL fallback view  req: VN-ACC-004, VN-GEN-011  files: src/app/fallback/  test: e2e/no-webgl.spec.ts
-- [ ] T-071 P0 @phase7 slice: reduced motion: instant fly-to, no auto-rotation  req: VN-CAM-006  files: src/core/camera/flyto.ts  test: src/core/camera/flyto.test.ts
 - [ ] T-072 P0 @phase7 slice: quality tiers chosen from the device and in settings  req: VN-PRF-003, VN-UI-003  files: src/core/quality.ts, src/app/settings/  test: src/core/quality.test.ts
 - [ ] T-073 P0 @phase7 slice: render budgets from renderer.info on the reference scene in CI  req: VN-PRF-002  files: e2e/budget.spec.ts, docs/TESTBED.md  test: e2e/budget.spec.ts
 - [ ] T-074 P1 @phase7 slice: touch gestures and bottom sheets under 768 px  req: VN-PRF-005  files: src/scene/camera/Controls.tsx, src/app/shell/  test: e2e/mobile.spec.ts
 - [ ] T-075 P1 @phase7 slice: `?stats` frame-time overlay and the 60 fps demonstration; reference machine in docs/TESTBED.md (OI-9 answered)  req: VN-PRF-001  files: src/app/stats/, docs/TESTBED.md  test: e2e/perf.spec.ts
 - [ ] T-076 P1 @phase7 slice: browser matrix: Playwright Firefox and WebKit projects  req: VN-GEN-011  files: playwright.config.ts  test: npm run e2e
-- [ ] T-077 P2 @phase7 slice: preferences only in localStorage, Reset clears them  req: VN-GEN-008, VN-UI-003  files: src/app/settings/  test: src/app/settings/prefs.test.ts
 
 ### M8 release 1.0
 
@@ -71,6 +66,12 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 - [ ] T-088 P2 @phase9 slice: command light-time animation to and from a spacecraft  req: VN-EXT-004  files: src/scene/signal/  test: src/scene/signal/signal.test.ts
 
 ## Done
+
+- [x] T-071 reduced motion: planFlight(..., reducedMotion) gives a zero-length flight, so fly-to is an instant cut (src/core/camera/flyto.ts, src/scene/motion.ts); there is no auto-rotation to turn off; e2e camera VN-CAM-006; session 17
+- [x] T-067 keyboard map (src/app/keys/): / search, Space play/pause, N now, F follow the selection, ? help; help dialog (also in the menu) lists every shortcut with the camera's; Escape in a dialog no longer releases follow; e2e keyboard; session 17
+- [x] T-068 screen readers (src/app/a11y/): polite live region, at most one message per 1.5 s, latest wins ("Selected Mars.", "Arrived at Mars, following it.", "Stopped following Mars."); the canvas wrapped as role=img named by a view description (date, centre, selection, scale, rate); store field `following` set by Controls; session 17
+- [x] T-069 high-contrast theme and Large text (125%, rem-based) in the menu; list buttons at least 24 px (WCAG 2.5.8); e2e/a11y.spec.ts runs @axe-core/playwright (new dev dependency) with WCAG 2.2 AA tags: dark, light, contrast, large text all clean; session 17
+- [x] T-077 preferences (src/app/settings/prefs.ts, moved from src/app/prefs.ts): theme, large text, units, time zone and sky settings in one localStorage key, only differences stored, junk falls back per field; prefs store; sky settings bound both ways to the view store; Reset clears all; session 17; vitest 469, e2e 48
 
 - [x] T-061 Sun as an emissive disc (near white, not tone-mapped) with a configurable glow (src/core/sky/glow.ts, src/scene/sun/SunGlow.tsx: 8 solar radii or at least 14 px, brightness and size in a Sky section); ambient light removed, the Sun's point light is the only light; session 16
 - [x] T-063 Saturn's rings from the NSSDCA fact sheet (C, B, Cassini division, A: radii, optical depth, albedo) in the IAU WGCCRE 2015 equator plane (src/core/rings.ts, src/scene/bodies/Rings.tsx); Sun in the ring plane at the 2009-08-11 equinox (0.0005 deg) and 26.73 deg at the 2017 solstice; session 16

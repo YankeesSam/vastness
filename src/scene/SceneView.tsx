@@ -1,3 +1,4 @@
+import { reducedMotion } from "./motion";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useState } from "react";
 import { preloadEphemeris, streamSpacecraft } from "../app/assets/loader";
@@ -38,8 +39,6 @@ function FrameClock() {
   useFrame((_, dt) => viewStore.getState().tick(dt), PRIORITY.clock);
   return null;
 }
-
-const reducedMotion = () => typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /**
  * Fills the frame's true positions from the ephemeris at the store's time (missing chunks load lazily), moves the

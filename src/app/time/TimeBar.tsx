@@ -19,10 +19,22 @@ export interface TimeBarProps {
   offsetMinutes?: OffsetFn;
   /** A first row (the timeline, VN-TIM-005). */
   children?: ReactNode;
+  /** UTC or local display, when the caller keeps it (a preference, VN-GEN-008); otherwise the bar keeps its own. */
+  zone?: Zone;
+  onZone?: (zone: Zone) => void;
 }
 
-export function TimeBar({ className, store = viewStore, offsetMinutes = browserOffset, children }: TimeBarProps) {
-  const [zone, setZone] = useState<Zone>("utc");
+export function TimeBar({
+  className,
+  store = viewStore,
+  offsetMinutes = browserOffset,
+  children,
+  zone: zoneProp,
+  onZone,
+}: TimeBarProps) {
+  const [ownZone, setOwnZone] = useState<Zone>("utc");
+  const zone = zoneProp ?? ownZone;
+  const setZone = (z: Zone) => (onZone ? onZone(z) : setOwnZone(z));
   // Strings, so the bar re-renders once per shown second and not per frame.
   const shown = useStore(store, (s) => inputValue(s.t, zone, offsetMinutes));
   const label = useStore(store, (s) => formatTimeLabel(s.t, zone, offsetMinutes));

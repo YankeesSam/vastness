@@ -2,7 +2,7 @@ import { act, cleanup, fireEvent, render, screen, within } from "@testing-librar
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "../App";
 import { buildInfo } from "../build-info";
-import { PREFS_KEY } from "../prefs";
+import { PREFS_KEY } from "../settings/prefs";
 import { viewStore } from "../store/view";
 import { parseUtc } from "../../core/time/scales";
 
@@ -172,5 +172,102 @@ describe("app shell", () => {
     fireEvent.click(within(region).getByRole("button", { name: "Stop" }));
     expect(viewStore.getState().pulse).toBeNull();
     expect(within(region).queryByRole("button", { name: "Stop" })).toBeNull();
+  });
+});
+
+describe("keyboard shortcuts", () => {
+  const press = (key: string, target: Element = document.body) =>
+    act(() => {
+      fireEvent.keyDown(target, { key });
+    });
+
+  it("VN-ACC-001: / focuses search, Space toggles play, N returns to now, F follows the selection", () => {
+    render(<App />);
+    press("/");
+    expect(document.activeElement).toBe(screen.getByRole("searchbox", { name: /search/i }));
+    (document.activeElement as HTMLElement).blur();
+
+    const paused = viewStore.getState().paused;
+    press(" ");
+    expect(viewStore.getState().paused).toBe(!paused);
+
+    act(() => viewStore.getState().setTime(0));
+    press("n");
+    expect(Math.abs(viewStore.getState().t)).toBeGreaterThan(1e8);
+
+    act(() => viewStore.getState().select(499));
+    const seq = viewStore.getState().targetSeq;
+    press("f");
+    expect(viewStore.getState().target).toBe(499);
+    expect(viewStore.getState().targetSeq).toBe(seq + 1);
+  });
+
+  it("VN-ACC-001: ? opens the shortcut help, also from the menu; Escape closes it", () => {
+    render(<App />);
+    press("?");
+    const dialog = screen.getByRole("dialog", { name: /keyboard shortcuts/i });
+    expect(within(dialog).getByText("Space")).toBeTruthy();
+    press("Escape");
+    expect(screen.queryByRole("dialog")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: /menu/i }));
+    fireEvent.click(screen.getByRole("menuitem", { name: /keyboard shortcuts/i }));
+    expect(screen.getByRole("dialog", { name: /keyboard shortcuts/i })).toBeTruthy();
+  });
+});
+
+describe("screen readers", () => {
+  it("VN-ACC-002: a selection is announced in a polite live region; the view has a text alternative", async () => {
+    render(<App />);
+    const region = screen.getByRole("status", { name: "Announcements" });
+    expect(region.getAttribute("aria-live")).toBe("polite");
+    act(() => viewStore.getState().select(null));
+    act(() => viewStore.getState().select(499));
+    await vi.waitFor(() => expect(region.textContent).toBe("Selected Mars."), { timeout: 3000 });
+    const view = screen.getByRole("img", { name: /3D view of the solar system/ });
+    expect(view.getAttribute("aria-label")).toContain("Mars selected");
+    act(() => viewStore.getState().setFollowing(499));
+    await vi.waitFor(() => expect(region.textContent).toBe("Arrived at Mars, following it."), { timeout: 3000 });
+    expect(view.getAttribute("aria-label")).toContain("following Mars");
+  });
+});
+
+describe("themes and text size", () => {
+  it("VN-ACC-003: high contrast and large text from the menu, kept in preferences, cleared by Reset", () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: /menu/i }));
+    const contrast = screen.getByRole("menuitemcheckbox", { name: /high contrast/i });
+    expect(contrast.getAttribute("aria-checked")).toBe("false");
+    fireEvent.click(contrast);
+    expect(document.documentElement.dataset.theme).toBe("contrast");
+    fireEvent.click(screen.getByRole("button", { name: /menu/i }));
+    fireEvent.click(screen.getByRole("menuitemcheckbox", { name: /large text/i }));
+    expect(document.documentElement.dataset.text).toBe("large");
+    expect(JSON.parse(localStorage.getItem(PREFS_KEY) ?? "{}")).toEqual({ theme: "contrast", largeText: true });
+    fireEvent.click(screen.getByRole("button", { name: /menu/i }));
+    expect(screen.getByRole("menuitemcheckbox", { name: /high contrast/i }).getAttribute("aria-checked")).toBe("true");
+    fireEvent.click(screen.getByRole("menuitem", { name: /reset/i }));
+    expect(document.documentElement.dataset.theme).toBe("dark");
+    expect(document.documentElement.dataset.text).toBe("normal");
+    expect(localStorage.getItem(PREFS_KEY)).toBeNull();
+  });
+});
+
+describe("preferences across a reload", () => {
+  it("VN-GEN-008, VN-UI-003: time zone and sky settings are remembered and Reset clears them", () => {
+    const first = render(<App />);
+    fireEvent.change(screen.getByRole("combobox", { name: "Time zone" }), { target: { value: "local" } });
+    fireEvent.change(screen.getByRole("slider", { name: /star brightness/i }), { target: { value: "0.3" } });
+    expect(JSON.parse(localStorage.getItem(PREFS_KEY) ?? "{}")).toEqual({ zone: "local", sky: { stars: 0.3 } });
+    first.unmount();
+    act(() => viewStore.getState().setSky({ stars: 0.8 })); // a fresh page starts from the defaults
+
+    render(<App />);
+    expect((screen.getByRole("combobox", { name: "Time zone" }) as HTMLSelectElement).value).toBe("local");
+    expect(viewStore.getState().sky.stars).toBe(0.3);
+    fireEvent.click(screen.getByRole("button", { name: /menu/i }));
+    fireEvent.click(screen.getByRole("menuitem", { name: /reset/i }));
+    expect((screen.getByRole("combobox", { name: "Time zone" }) as HTMLSelectElement).value).toBe("utc");
+    expect(viewStore.getState().sky.stars).toBe(0.8);
+    expect(localStorage.getItem(PREFS_KEY)).toBeNull();
   });
 });

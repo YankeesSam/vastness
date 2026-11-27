@@ -39,6 +39,8 @@ export interface ViewState {
   selection: number | null;
   /** Horizons ID the camera is aimed at (and follows). */
   target: number;
+  /** VN-ACC-002: the object the camera follows now (set by the scene when it arrives or releases), or null. */
+  following: number | null;
   /** Bumped by every setTarget, so choosing the current target again flies back to it. */
   targetSeq: number;
   layers: Record<Layer, boolean>;
@@ -65,6 +67,7 @@ export interface ViewState {
   now(ms?: number): void;
   select(id: number | null): void;
   setTarget(id: number): void;
+  setFollowing(id: number | null): void;
   setLayer(layer: Layer, on: boolean): void;
   /** Places the camera at once (no fly-to) and makes its target the camera target. */
   setCamera(cam: FragmentCamera): void;
@@ -96,6 +99,7 @@ export function createViewStore(init: ViewInit = {}): StoreApi<ViewState> {
     selection: null,
     target: init.target ?? 399,
     targetSeq: 0,
+    following: null,
     layers: { bodies: true, labels: true, markers: true, orbits: true, trails: true, callouts: true, stars: true },
     sky: { ...DEFAULT_SKY },
     trailDays: TRAIL_DEFAULT_DAYS,
@@ -116,6 +120,7 @@ export function createViewStore(init: ViewInit = {}): StoreApi<ViewState> {
     now: (ms) => set({ t: tdbNow(ms), rate: 1, paused: false }),
     select: (selection) => set({ selection }),
     setTarget: (target) => set((s) => ({ target, targetSeq: s.targetSeq + 1 })),
+    setFollowing: (following) => set({ following }),
     cameraRequest: null,
     cameraSeq: 0,
     setCamera: (cam) => set((s) => ({ cameraRequest: cam, cameraSeq: s.cameraSeq + 1, target: cam.target })),

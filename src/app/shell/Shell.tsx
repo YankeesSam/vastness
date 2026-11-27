@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
+import { useStore } from "zustand";
 import { PRESETS, presetCamera } from "../../core/camera/presets";
 import { TRAIL_RANGES_DAYS, TRAIL_WHOLE } from "../../core/trails/sample";
 import { DRAWN_BODIES } from "../../scene/bodies/positions";
 import { CATALOG } from "../catalog";
-import { ObjectList, ObjectSearch } from "../objects/ObjectList";
+import { OBJECT_SEARCH_ID, ObjectList, ObjectSearch } from "../objects/ObjectList";
+import { Announcements, DescribedView } from "../a11y/Announcements";
+import { HelpDialog } from "../keys/HelpDialog";
+import { useShortcuts } from "../keys/useShortcuts";
 import { SceneView } from "../../scene/SceneView";
 import { About } from "../about/About";
 import { LoadingIndicator } from "../assets/LoadingIndicator";
@@ -13,7 +17,7 @@ import { ScaleBar } from "../scale/ScaleBar";
 import { LayerSwitches, ScaleNote, ScaleSelect } from "../scale/ScaleControls";
 import { Share } from "../share/Share";
 import { SkyControls } from "../sky/SkyControls";
-import { loadPrefs, resetPrefs, savePrefs, type Prefs } from "../prefs";
+import { bindSkyPrefs, createPrefsStore, type Prefs } from "../settings/prefs";
 import { useView, viewStore } from "../store/view";
 import styles from "./Shell.module.css";
 import { SelectionTimeline } from "../time/Timeline";
@@ -56,21 +60,41 @@ function TrailRangeSelect() {
 }
 
 export function Shell() {
-  const [prefs, setPrefs] = useState<Prefs>(loadPrefs);
+  // VN-GEN-008: preferences in localStorage, read once per page load; the sky settings follow them both ways
+  const [prefsStore] = useState(createPrefsStore);
+  const prefs = useStore(prefsStore, (s) => s.prefs);
+  useEffect(() => bindSkyPrefs(viewStore, prefsStore), [prefsStore]);
   const [panelOpen, setPanelOpen] = useState(true);
   const [query, setQuery] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
   const selection = useView((s) => s.selection);
+
+  // VN-ACC-001: app shortcuts (the camera's keys are in the scene's Controls).
+  useShortcuts({
+    search: () => {
+      setPanelOpen(true);
+      document.getElementById(OBJECT_SEARCH_ID)?.focus();
+    },
+    togglePlay: () => viewStore.getState().togglePlay(),
+    now: () => viewStore.getState().now(),
+    follow: () => {
+      const id = viewStore.getState().selection;
+      if (id !== null) viewStore.getState().setTarget(id);
+    },
+    help: () => setHelpOpen(true),
+  });
 
   useEffect(() => {
     document.documentElement.dataset.theme = prefs.theme;
   }, [prefs.theme]);
+  useEffect(() => {
+    // VN-ACC-003: large text scales every rem in the interface
+    document.documentElement.dataset.text = prefs.largeText ? "large" : "normal";
+  }, [prefs.largeText]);
 
-  const update = (next: Prefs) => {
-    savePrefs(next);
-    setPrefs(next);
-  };
+  const update = (next: Prefs) => prefsStore.getState().update(next);
   const choose = (action: () => void) => () => {
     setMenuOpen(false);
     action();
@@ -78,9 +102,10 @@ export function Shell() {
 
   return (
     <div className={styles.shell}>
-      <div className={styles.view}>
+      <DescribedView className={styles.view}>
         <SceneView />
-      </div>
+      </DescribedView>
+      <Announcements />
 
       <header className={styles.top}>
         <button
@@ -123,14 +148,39 @@ export function Shell() {
                 <button
                   type="button"
                   role="menuitem"
-                  onClick={choose(() => update({ ...prefs, theme: prefs.theme === "dark" ? "light" : "dark" }))}
+                  onClick={choose(() => update({ ...prefs, theme: prefs.theme === "light" ? "dark" : "light" }))}
                 >
-                  {prefs.theme === "dark" ? "Light theme" : "Dark theme"}
+                  {prefs.theme === "light" ? "Dark theme" : "Light theme"}
                 </button>
               </li>
               <li role="none">
-                <button type="button" role="menuitem" onClick={choose(() => setPrefs(resetPrefs()))}>
+                <button
+                  type="button"
+                  role="menuitemcheckbox"
+                  aria-checked={prefs.theme === "contrast"}
+                  onClick={choose(() => update({ ...prefs, theme: prefs.theme === "contrast" ? "dark" : "contrast" }))}
+                >
+                  High contrast
+                </button>
+              </li>
+              <li role="none">
+                <button
+                  type="button"
+                  role="menuitemcheckbox"
+                  aria-checked={prefs.largeText}
+                  onClick={choose(() => update({ ...prefs, largeText: !prefs.largeText }))}
+                >
+                  Large text
+                </button>
+              </li>
+              <li role="none">
+                <button type="button" role="menuitem" onClick={choose(() => prefsStore.getState().reset())}>
                   Reset preferences
+                </button>
+              </li>
+              <li role="none">
+                <button type="button" role="menuitem" onClick={choose(() => setHelpOpen(true))}>
+                  Keyboard shortcuts
                 </button>
               </li>
               <li role="none">
@@ -198,11 +248,12 @@ export function Shell() {
         <ScaleBar />
       </div>
 
-      <TimeBar className={styles.bottom}>
+      <TimeBar className={styles.bottom} zone={prefs.zone} onZone={(zone) => update({ ...prefs, zone })}>
         <SelectionTimeline />
       </TimeBar>
 
       {aboutOpen && <About onClose={() => setAboutOpen(false)} />}
+      {helpOpen && <HelpDialog onClose={() => setHelpOpen(false)} />}
     </div>
   );
 }

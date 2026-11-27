@@ -1,13 +1,13 @@
 schema: 1
 project: vastness
-milestone: M6
-phase: 6
+milestone: M7
+phase: 7
 status: ready
 active_task_id: T-097
 active_task: "T-097 LRO whole mission under 5 MB (non-singular elements, format v3); WIP in git stash"
 next_skill: vastness-execute
-session: 16
-updated: 2026-11-27T12:30:00-05:00
+session: 17
+updated: 2026-11-27T14:25:06-05:00
 branch: main
 last_commit: 673abe3
 push: ok
