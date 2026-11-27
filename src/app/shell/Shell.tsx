@@ -5,6 +5,7 @@ import { CATALOG } from "../catalog";
 import { ObjectList, ObjectSearch } from "../objects/ObjectList";
 import { SceneView } from "../../scene/SceneView";
 import { About } from "../about/About";
+import { LoadingIndicator } from "../assets/LoadingIndicator";
 import { InfoPanel } from "../info/InfoPanel";
 import { loadPrefs, resetPrefs, savePrefs, type Prefs } from "../prefs";
 import { useView, viewStore } from "../store/view";
@@ -86,6 +87,7 @@ export function Shell() {
           ☰
         </button>
         <span className={styles.title}>Vastness</span>
+        <LoadingIndicator />
         <ObjectSearch
           className={styles.search}
           objects={CATALOG.objects}

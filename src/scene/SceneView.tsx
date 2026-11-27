@@ -1,6 +1,6 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useState } from "react";
-import { preloadEphemeris } from "../app/assets/loader";
+import { preloadEphemeris, streamSpacecraft } from "../app/assets/loader";
 import { viewStore } from "../app/store/view";
 import { testParams } from "../app/testparams";
 import type { Ephemeris } from "../core/ephem/ephemeris";
@@ -35,10 +35,20 @@ function BodyStates({ eph, frame }: { eph: Ephemeris | null; frame: BodyFrame })
  * Sets data-scene-ready="1" on the canvas once a frame has rendered with every object placed or known to be outside
  * its coverage (or the ephemeris failed to load), data-bodies to the count placed and data-spacecraft to the
  * spacecraft placed. e2e specs wait for the first.
+ * VN-UI-005, VN-PRF-004: data-first-frame="1" once a frame has rendered with the Sun, planets and Moon settled;
+ * onFirstFrame then starts the spacecraft downloads, which stream in without holding the view back.
  */
-function ReadyMarker({ frame, failed }: { frame: BodyFrame; failed: boolean }) {
+function ReadyMarker({ frame, failed, onFirstFrame }: { frame: BodyFrame; failed: boolean; onFirstFrame(): void }) {
   const canvas = useThree((s) => s.gl.domElement);
   useFrame(() => {
+    if (canvas.dataset.firstFrame !== "1") {
+      let natural = 0;
+      for (let i = 0; i < DRAWN_BODIES.length; i++) natural += frame.ok[i]! | frame.outside[i]!;
+      if (natural === DRAWN_BODIES.length || failed) {
+        canvas.dataset.firstFrame = "1";
+        onFirstFrame();
+      }
+    }
     let n = 0;
     let settled = 0;
     for (let i = 0; i < frame.ok.length; i++) {
@@ -103,7 +113,16 @@ export function SceneView() {
           <Trails eph={eph} frame={frame} />
           <Markers frame={frame} screen={screen} />
           <Picker screen={screen} />
-          <ReadyMarker frame={frame} failed={failed} />
+          <ReadyMarker
+            frame={frame}
+            failed={failed}
+            onFirstFrame={() => {
+              if (eph)
+                streamSpacecraft(eph, viewStore.getState().t).catch(() => {
+                  // per-chunk failures show as "error" states (VN-EPH-007 reasons), not here
+                });
+            }}
+          />
         </RigContext.Provider>
       </Canvas>
       <Labels screen={screen} />

@@ -1,0 +1,5 @@
+.indicator {
+  color: var(--muted);
+  font-size: 0.78rem;
+  white-space: nowrap;
+}

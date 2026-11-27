@@ -12,7 +12,7 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 ## Next
 
 - [x] T-045 P0 @phase3 slice: e2e agreement with Horizons: three objects at fixed epochs, panel values against F2 within tolerance  req: VN-INF-005  files: e2e/accuracy.spec.ts  test: e2e/accuracy.spec.ts
-- [ ] T-046 P1 @phase3 slice: streaming spacecraft chunks with a quiet indicator; no blocking after the first frame  req: VN-UI-005  files: src/app/assets/loader.ts  test: src/app/assets/loader.test.ts
+- [x] T-046 P1 @phase3 slice: streaming spacecraft chunks with a quiet indicator; no blocking after the first frame  req: VN-UI-005  files: src/app/assets/loader.ts  test: src/app/assets/loader.test.ts
 - [ ] T-044 P1 @phase3 slice: simple spacecraft model or icon within 10,000 km  req: VN-CAT-006  files: src/scene/spacecraft/Model.tsx  test: e2e/spacecraft.spec.ts
 - [ ] T-089 P1 @phase3 slice: orbiters in the pipeline: Juno at Jupiter, LRO and CAPSTONE at the Moon; fit position and element segments, keep the smaller within tolerance (2 km lunar), report size and worst error for the whole mission, full mission within 5 MB per object else ±30 days; generate and commit  req: VN-EPH-003, VN-EPH-009, VN-EPH-011  files: tools/ephem/orbiters.ts, public/ephem/  test: tools/ephem/orbiters.test.ts
 
