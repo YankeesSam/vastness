@@ -31,6 +31,6 @@ notes:
   - Fly-to: van Wijk-Nuij path (r = -asinh(b) for large interplanetary b); timed by wall-clock dt (a clamp stretched flights under SwiftShader load). Escape is ignored if a dialog already handled it (defaultPrevented).
   - VN-PRF-004 headroom: first render now waits for all body chunks (~630 kB uncompressed for the 2020s): 2.0 s alone, 2.3-2.8 s with e2e workers in parallel, budget 3 s. The ephemeris preloads from main.tsx. If it gets tight, render first and mark ready per body, or split the manifest.
   - Side panel object list now lists the 10 bodies and flies to them (stand-in until search T-042 and picking T-032).
-  - D-001 (low, env) unchanged.
+  - D-001 (low, env) unchanged. Nightly 274b282-nightly ok; LAN http://192.168.1.166:8770/ (200).
 open_defects_blocking: []
 optimizations_applied: []
