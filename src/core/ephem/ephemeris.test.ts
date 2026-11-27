@@ -236,8 +236,9 @@ describe("runtime ephemeris over the committed files (F3) against Horizons (F2)"
 
   it("VN-EPH-010: the Sun, planets and Moon for the current decade are under 1 MB", () => {
     const e = createEphemeris(manifest, loader);
-    const chunks = e.chunksAt(t2025);
-    expect(chunks.length).toBe(e.ids.length - 1); // every object but the origin
+    const bodies = e.ids.filter((id) => id > 0); // spacecraft (negative IDs) stream separately (T-046)
+    const chunks = e.chunksAt(t2025, bodies);
+    expect(chunks.length).toBe(bodies.length - 1); // every body but the origin
     const bytes = chunks.reduce((s, c) => s + (c.bytes ?? 0), 0);
     expect(bytes).toBeGreaterThan(0);
     expect(bytes).toBeLessThan(1_000_000);

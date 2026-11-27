@@ -73,6 +73,18 @@ Top level: `format_version` (the highest file version it lists; 1 while every fi
 | `misses` | segments that did not reach the tolerance at the step limit: `t0`, `t1`, `error_km` |
 | `fallbacks` | chunks where Horizons had no ephemeris for the planet centre and the barycentre was used: `file`, `target` |
 
+Heliocentric spacecraft (`kind: "spacecraft"`, from `data/catalog.json` entries whose parent is the Sun; `tools/ephem/spacecraft.ts`, T-038) carry the same keys plus:
+
+| Key | Meaning |
+|---|---|
+| `kind` | `"spacecraft"` |
+| `horizons_coverage` | `first`, `last`: Horizons' own first and last epochs (TDB s), read from its refusals one day outside them; `coverage` is that span rounded inwards to 10 minutes and clamped to 1900..2100 (VN-EPH-007) |
+| `refined` | windows sampled again below 1 day: `t0`, `t1`, `step_minutes` (240, 30, 5, 1) |
+| `seams` | position jumps in Horizons' merged trajectory (between its source files): `t` (the segment boundary, the last sample before the jump), `t_after`, `jump_km` |
+| `query.STEP_SIZE` | the step ladder, `'1440 m' \| '240 m' \| ...` |
+
+Spacecraft chunk files start at the coverage start (`<id>/<year of start>.bin`) and then follow the decades; their chunk entries have `requests` (Horizons requests for that chunk) instead of `retrieved`, `start_time` and `stop_time`. `max_error_km` for spacecraft is the largest error at every sample fetched (fitted and held out, at every step), not only the held-out ones.
+
 Before fitting, the pipeline checks that the response's target, centre, frame (Ecliptic of J2000.0) and time scale (TDB) are what was asked for, and that the records run from the chunk start to its end at the requested step; anything else stops the run.
 
 ## Fitting method
@@ -80,4 +92,5 @@ Before fitting, the pipeline checks that the response's target, centre, frame (E
 1. Sample the object from Horizons (geometric state vectors, TDB) over each chunk at `step_hours` (a divisor of 12 h, so every chunk has an even number of intervals). Even-indexed samples are fitted; odd-indexed ones, the midpoints, are held out.
 2. For each segment, fit each axis by least squares (Householder QR) to the position samples, with the velocity samples as extra rows scaled to position units over the segment. Each degree 7..13 is fitted adaptively and the passing one with the fewest coefficients is kept (one degree per file); acceptance is by held-out error, not by the residuals at the fitted points (`tools/ephem/fit.ts`).
 3. Check the fit at held-out points, the midpoints between samples. If the error exceeds the object's tolerance (10 km planets and Moon, 50 km spacecraft in cruise, 2 km low lunar orbiters), halve the segment and repeat, down to the sample step limit; a segment that still misses is listed in `misses`.
-4. `npm run ephem:check` compares every file with reference samples not used in the fit (F2) and fails above tolerance (VN-EPH-008).
+4. Spacecraft (VN-EPH-003, VN-EPH-007): each chunk is sampled at 1 day and fitted at every degree; a segment over half the tolerance at any sample (or held-out point) is sampled again at 4 h, 30 min, 5 min and 1 min and refitted at the chunk's degree. At 1 min, a step that disagrees with the trapezoid of its two velocities by more than 25 km is a seam: the 1 min gap around it is sampled at 60 equal intervals to place it within a second or so, a segment boundary goes there, and each side is fitted on its own points. What is still over 50 km at 1 min is listed in `misses`.
+5. `npm run ephem:check` compares every file with reference samples not used in the fit (F2) and fails above tolerance (VN-EPH-008).

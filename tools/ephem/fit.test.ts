@@ -157,3 +157,25 @@ describe("fit target below the tolerance (T-019 finding)", () => {
     expect(() => fitAdaptive(s, { toleranceKm: 10, targetKm: 20 })).toThrow(/target/);
   });
 });
+
+describe("fitAdaptive short tail", () => {
+  it("VN-EPH-002: a last piece too short for the degree joins the one before instead of failing", () => {
+    const s: { t: number; x: number; y: number; z: number; vx: number; vy: number; vz: number }[] = [];
+    for (let i = 0; i <= 66; i++) {
+      const t = i * 3600;
+      s.push({
+        t,
+        x: Math.cos(t / 1e5) * 1e6,
+        y: Math.sin(t / 1e5) * 1e6,
+        z: 0,
+        vx: -Math.sin(t / 1e5) * 10,
+        vy: Math.cos(t / 1e5) * 10,
+        vz: 0,
+      });
+    }
+    expect(() => fitAdaptive(s, { toleranceKm: 1, degrees: [13] })).toThrow(/too few samples/);
+    const r = fitAdaptive(s, { toleranceKm: 1, degrees: [13], joinShortTail: true });
+    expect(r.segments.at(-1)!.t1).toBe(66 * 3600);
+    expect(r.misses).toEqual([]);
+  });
+});

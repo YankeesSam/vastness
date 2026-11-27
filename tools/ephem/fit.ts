@@ -37,6 +37,8 @@ export interface FitOptions {
   initialIntervals?: number;
   /** Use velocities as derivative rows (default true). */
   velocities?: boolean;
+  /** Join a too-short last piece to the one before instead of rejecting the degree (default false; spacecraft). */
+  joinShortTail?: boolean;
 }
 
 export interface Miss {
@@ -99,6 +101,10 @@ function fitDegree(s: readonly Sample[], degree: number, o: Required<FitOptions>
   const last = s.length - 1;
   const starts: number[] = [];
   for (let i = 0; i < last; i += o.initialIntervals) starts.push(i);
+  // With joinShortTail, a last piece too short to fit at this degree joins the one before (work() halves it if it
+  // then misses) instead of ruling the degree out. Off by default so the planets' files stay as they are.
+  const rows = (intervals: number): number => (intervals / 2 + 1) * (o.velocities ? 2 : 1);
+  if (o.joinShortTail) while (starts.length > 1 && rows(last - starts.at(-1)!) < degree + 1) starts.pop();
   const pieces: Piece[] = [];
   const misses: Miss[] = [];
   const work = (i0: number, i1: number): boolean => {
@@ -113,7 +119,9 @@ function fitDegree(s: readonly Sample[], degree: number, o: Required<FitOptions>
     if (!canHalve) return false; // too few samples for this degree at all
     return work(i0, mid) && work(mid, i1);
   };
-  for (const i0 of starts) if (!work(i0, Math.min(i0 + o.initialIntervals, last))) return undefined;
+  for (let k = 0; k < starts.length; k++) {
+    if (!work(starts[k]!, k + 1 < starts.length ? starts[k + 1]! : last)) return undefined;
+  }
   let maxErrorKm = 0;
   let maxErrorEpoch = s[0]!.t;
   for (const p of pieces) {
@@ -142,6 +150,7 @@ export function fitAdaptive(samples: readonly Sample[], options: FitOptions): Fi
     degrees: DEGREES,
     initialIntervals: 64,
     velocities: true,
+    joinShortTail: false,
     targetKm: options.toleranceKm,
     ...options,
   };

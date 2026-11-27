@@ -4,6 +4,9 @@ import { writeEphemeris } from "../../src/core/ephem/format.ts";
 import type { CachedResponse } from "./client.ts";
 import {
   REFERENCE_EPOCHS,
+  SPACECRAFT_EPOCHS,
+  SPACECRAFT_FLYBY_EPOCHS,
+  spacecraftEpochs,
   TLIST_BATCH,
   checkEphemerides,
   formatTable,
@@ -128,11 +131,24 @@ describe("ephem:check (T-019)", () => {
     const files = readdirSync(dir)
       .filter((f) => f.endsWith(".json"))
       .sort();
-    const expected = bodies.bodies
-      .filter((b) => !b.origin)
-      .map((b) => `${b.id}.json`)
-      .sort();
+    // VN-EPH-008: and every heliocentric spacecraft in the manifest, at its own epochs (T-038).
+    const manifest = JSON.parse(readFileSync(new URL("../../public/ephem/manifest.json", import.meta.url), "utf8"));
+    const craft = (manifest.objects as Array<{ id: number; kind?: string }>).filter((o) => o.kind === "spacecraft");
+    const expected = [
+      ...bodies.bodies.filter((b) => !b.origin).map((b) => `${b.id}.json`),
+      ...craft.map((o) => `${o.id}.json`),
+    ].sort();
     expect(files).toEqual(expected);
+    for (const o of craft) {
+      const ref = JSON.parse(readFileSync(new URL(`${o.id}.json`, dir), "utf8")) as ReferenceFile;
+      expect(ref.center).toBe(10);
+      const jds = spacecraftEpochs(
+        o as Parameters<typeof spacecraftEpochs>[0],
+        SPACECRAFT_EPOCHS,
+        SPACECRAFT_FLYBY_EPOCHS,
+      );
+      expect(ref.samples.map((x) => x.jd)).toEqual(jds.map((j) => `${j}000`));
+    }
     for (const b of bodies.bodies.filter((x) => !x.origin)) {
       const ref = JSON.parse(readFileSync(new URL(`${b.id}.json`, dir), "utf8")) as ReferenceFile;
       expect(ref.id).toBe(b.id);
