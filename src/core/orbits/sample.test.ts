@@ -3,6 +3,7 @@ import {
   createOrbitSamples,
   needsResample,
   ORBIT_PERIOD_DAYS,
+  ORBIT_SAMPLES,
   orbitFade,
   sampleOrbit,
   splitDouble,
@@ -36,6 +37,15 @@ describe("orbit sampling", () => {
     expect(s.pos[0]).toBeCloseTo(s.pos[3 * 100]!, 3);
     expect(s.pos[1]).toBeCloseTo(s.pos[3 * 100 + 1]!, 3);
     expect(s.missing).toBe(0);
+  });
+
+  it("VN-SCN-002: the default sample count is odd, so the path passes through the body's current position", () => {
+    expect(ORBIT_SAMPLES % 2).toBe(1);
+    const s = createOrbitSamples();
+    sampleOrbit(circle(1e8, 1000), 123, 1000, s);
+    const mid = (ORBIT_SAMPLES - 1) / 2;
+    expect(s.pos[3 * mid]).toBeCloseTo(1e8 * Math.cos((2 * Math.PI * 123) / 1000), 3);
+    expect(s.alpha[mid]).toBeCloseTo(0.9);
   });
 
   it("VN-SCN-002: samples the evaluator cannot give are marked and counted", () => {

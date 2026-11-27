@@ -18,8 +18,8 @@ export const ORBIT_PERIOD_DAYS: Readonly<Record<number, number>> = {
   899: 60_189,
 };
 
-/** Samples per orbit. */
-export const ORBIT_SAMPLES = 512;
+/** Samples per orbit: odd, so the middle one is exactly the current position. */
+export const ORBIT_SAMPLES = 513;
 
 /** Writes the position (km) at TDB t into out[o..o+2]; false when there is none. */
 export type Evaluate = (t: number, out: Float64Array, o: number) => boolean;
