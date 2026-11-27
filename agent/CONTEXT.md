@@ -1,9 +1,8 @@
-# Context (session 13, T-093)
+# Context (session 15, T-097)
 
 - agent/STATE.md
 - agent/PLAN.md
-- docs/adr/0007-earth-satellites.md
-- src/core/sgp4/sgp4.ts
-- src/core/sgp4/teme.ts
-- tools/ephem/client.ts
-- src/core/catalog/schema.ts
+- src/core/ephem/elements.ts
+- src/core/ephem/format.ts
+- tools/ephem/orbiters.ts
+- docs/EPHEMERIS_FORMAT.md

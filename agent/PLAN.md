@@ -26,12 +26,7 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 
 ### M4 time control and sharing
 
-- [ ] T-048 P0 @phase4 slice: clock: rate ladder, play, pause, reverse, no jump on resume  req: VN-TIM-002, VN-TIM-004  files: src/core/time/clock.ts  test: src/core/time/clock.test.ts
-- [ ] T-049 P0 @phase4 slice: time bar: picker in UTC or local, play controls, rate, Now  req: VN-TIM-001, VN-TIM-003  files: src/app/time/  test: src/app/time/TimeBar.test.tsx
-- [ ] T-050 P1 @phase4 slice: timeline scrubber with the selected object's coverage and catalog events  req: VN-TIM-005  files: src/app/time/Timeline.tsx  test: src/app/time/Timeline.test.tsx
-- [ ] T-051 P0 @phase4 slice: URL fragment codec for the view state (versioned, compact, validated) and store sync  req: VN-UI-002  files: src/core/share/fragment.ts, src/app/store/url-sync.ts  test: src/core/share/fragment.test.ts
-- [ ] T-052 P0 @phase4 slice: Share button (clipboard) and restore on load; e2e round trip  req: VN-WEB-002  files: src/app/share/  test: e2e/share.spec.ts
-- [ ] T-053 P1 @phase4 slice: preset views  req: VN-CAM-005  files: src/core/camera/presets.ts  test: src/core/camera/presets.test.ts
+(done, session 14)
 
 ### M5 scale and education
 
@@ -85,6 +80,13 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 - [ ] T-088 P2 @phase9 slice: command light-time animation to and from a spacecraft  req: VN-EXT-004  files: src/scene/signal/  test: src/scene/signal/signal.test.ts
 
 ## Done
+
+- [x] T-048 clock: rate ladder 1 s/s..1 year/s, faster/slower/reverse, planets' coverage clamp (src/core/time/clock.ts); session 14; 21a284e
+- [x] T-049 time bar: UTC or local label and picker, play/pause, reverse, rate, Now (src/app/time/); session 14; 84fa3c1
+- [x] T-050 timeline scrubber: coverage band, launch and catalog events (schema `events`, 13 spacecraft); session 14; 580723b
+- [x] T-051 URL fragment codec v=1 and url-sync (replaceState, hashchange, camera request); session 14; 6ebdf29
+- [x] T-052 Share button, e2e round trip in a new tab; session 14; 92af8a4
+- [x] T-053 preset views (Views section), F5 baselines updated; session 14; vitest 406, e2e 29; cfcee80
 
 - [x] T-093 Earth satellites from CelesTrak GP (tools/gp, data/satellites.json, 13 satellites, ISS vs Horizons radial 0.25 / cross 0.13 / along 22.7 km); session 13; 265cf3f
 - [x] T-094 Earth satellite layer (withSatellites, markers near Earth, panel element age, illustrative beyond 14 d); session 13; 953f298
