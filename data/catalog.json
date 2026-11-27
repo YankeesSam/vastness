@@ -1,0 +1,610 @@
+{
+  "objects": [
+    {
+      "id": 10,
+      "name": "Sun",
+      "aliases": [],
+      "type": "star",
+      "summary": "The star at the centre of the solar system, a ball of hot plasma that holds more than 99.8 percent of the system's mass. Its gravity sets the paths of everything shown here, and its light takes about eight minutes and twenty seconds to reach Earth.",
+      "goals": [],
+      "sources": [
+        {
+          "title": "NASA Science: Sun",
+          "url": "https://science.nasa.gov/sun/"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#ffd27a",
+      "priority": 100
+    },
+    {
+      "id": 199,
+      "name": "Mercury",
+      "aliases": [],
+      "type": "planet",
+      "parent": 10,
+      "summary": "The smallest planet and the closest to the Sun. It has almost no atmosphere, so its surface swings from scorching days to freezing nights, and it circles the Sun every 88 days on the most eccentric orbit of the eight planets.",
+      "goals": [],
+      "sources": [
+        {
+          "title": "NASA Science: Mercury",
+          "url": "https://science.nasa.gov/mercury/"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#9a948c",
+      "priority": 90
+    },
+    {
+      "id": 299,
+      "name": "Venus",
+      "aliases": [],
+      "type": "planet",
+      "parent": 10,
+      "summary": "Nearly Earth's twin in size, Venus hides under thick clouds of sulphuric acid above a carbon dioxide atmosphere so dense that the surface is hotter than Mercury's. It spins slowly backwards, so a day there lasts longer than its year.",
+      "goals": [],
+      "sources": [
+        {
+          "title": "NASA Science: Venus",
+          "url": "https://science.nasa.gov/venus/"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#e3cf9a",
+      "priority": 90
+    },
+    {
+      "id": 399,
+      "name": "Earth",
+      "aliases": [],
+      "type": "planet",
+      "parent": 10,
+      "summary": "Our home planet, the third from the Sun and the only world known to carry life. Liquid water covers most of its surface, and its large Moon steadies the tilt of its axis over long spans of time.",
+      "goals": [],
+      "sources": [
+        {
+          "title": "NASA Science: Earth",
+          "url": "https://science.nasa.gov/earth/"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#4f7fc9",
+      "priority": 95
+    },
+    {
+      "id": 301,
+      "name": "Moon",
+      "aliases": ["Luna"],
+      "type": "moon",
+      "parent": 399,
+      "summary": "Earth's only natural satellite, about a quarter of Earth's diameter. It keeps the same face towards us, raises most of the ocean tides, and is the only other world people have walked on.",
+      "goals": [],
+      "sources": [
+        {
+          "title": "NASA Science: Moon",
+          "url": "https://science.nasa.gov/moon/"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#b9b6ae",
+      "priority": 70
+    },
+    {
+      "id": 499,
+      "name": "Mars",
+      "aliases": [],
+      "type": "planet",
+      "parent": 10,
+      "summary": "A cold desert planet about half Earth's size, red from iron oxide dust. It has the largest volcano and one of the deepest canyons known, polar ice caps, and signs that liquid water once flowed across its surface.",
+      "goals": [],
+      "sources": [
+        {
+          "title": "NASA Science: Mars",
+          "url": "https://science.nasa.gov/mars/"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#c1623b",
+      "priority": 90
+    },
+    {
+      "id": 599,
+      "name": "Jupiter",
+      "aliases": [],
+      "type": "planet",
+      "parent": 10,
+      "summary": "The largest planet, a gas giant more than twice as massive as all the other planets together. Its striped clouds and the long-lived Great Red Spot sit above a deep hydrogen interior, and dozens of moons circle it.",
+      "goals": [],
+      "sources": [
+        {
+          "title": "NASA Science: Jupiter",
+          "url": "https://science.nasa.gov/jupiter/"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#d6b48c",
+      "priority": 90
+    },
+    {
+      "id": 699,
+      "name": "Saturn",
+      "aliases": [],
+      "type": "planet",
+      "parent": 10,
+      "summary": "The second largest planet, best known for its broad, bright rings of ice and rock. It is a gas giant less dense than water on average, and its moon Titan has a thick atmosphere and lakes of liquid methane.",
+      "goals": [],
+      "sources": [
+        {
+          "title": "NASA Science: Saturn",
+          "url": "https://science.nasa.gov/saturn/"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#e2cf98",
+      "priority": 90
+    },
+    {
+      "id": 799,
+      "name": "Uranus",
+      "aliases": [],
+      "type": "planet",
+      "parent": 10,
+      "summary": "An ice giant tipped on its side, so each pole spends decades in sunlight and then decades in darkness. Methane in its atmosphere gives it a pale blue-green colour, and faint rings and many small moons surround it.",
+      "goals": [],
+      "sources": [
+        {
+          "title": "NASA Science: Uranus",
+          "url": "https://science.nasa.gov/uranus/"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#9fd6dc",
+      "priority": 90
+    },
+    {
+      "id": 899,
+      "name": "Neptune",
+      "aliases": [],
+      "type": "planet",
+      "parent": 10,
+      "summary": "The farthest planet from the Sun, an ice giant with the fastest winds measured in the solar system. It takes about 165 years to go round the Sun once, and its largest moon Triton orbits backwards.",
+      "goals": [],
+      "sources": [
+        {
+          "title": "NASA Science: Neptune",
+          "url": "https://science.nasa.gov/neptune/"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#5577d8",
+      "priority": 90
+    },
+    {
+      "id": -31,
+      "name": "Voyager 1",
+      "aliases": [],
+      "type": "spacecraft",
+      "parent": 10,
+      "launch": "1977-09-05",
+      "status": {
+        "state": "operating",
+        "as_of": "2026-11-26",
+        "note": "Several instruments switched off to save power; a few still return data."
+      },
+      "agency": "NASA",
+      "summary": "Launched in 1977 for a tour of Jupiter and Saturn, Voyager 1 flew past both planets and Saturn's moon Titan, then headed out of the plane of the planets. In 2012 it became the first spacecraft to cross into interstellar space, and it is the most distant object people have made.",
+      "goals": [
+        "Study Jupiter, Saturn and their moons and rings",
+        "Measure the heliosphere's edge and the interstellar medium"
+      ],
+      "sources": [
+        {
+          "title": "NASA Science: Voyager",
+          "url": "https://science.nasa.gov/mission/voyager/"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#ff9f6b",
+      "priority": 60
+    },
+    {
+      "id": -32,
+      "name": "Voyager 2",
+      "aliases": [],
+      "type": "spacecraft",
+      "parent": 10,
+      "launch": "1977-08-20",
+      "status": {
+        "state": "operating",
+        "as_of": "2026-11-26",
+        "note": "Several instruments switched off to save power; a few still return data."
+      },
+      "agency": "NASA",
+      "summary": "The only spacecraft to have visited all four giant planets, Voyager 2 passed Jupiter, Saturn, Uranus and Neptune between 1979 and 1989. It crossed into interstellar space in 2018, six years after its twin, and still sends back measurements of the space it travels through.",
+      "goals": [
+        "Study the four giant planets, their moons and rings",
+        "Measure the heliosphere's edge and the interstellar medium"
+      ],
+      "sources": [
+        {
+          "title": "NASA Science: Voyager",
+          "url": "https://science.nasa.gov/mission/voyager/"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#ffb86b",
+      "priority": 60
+    },
+    {
+      "id": -98,
+      "name": "New Horizons",
+      "aliases": [],
+      "type": "spacecraft",
+      "parent": 10,
+      "launch": "2006-01-19",
+      "status": {
+        "state": "operating",
+        "as_of": "2026-11-26"
+      },
+      "agency": "NASA",
+      "summary": "The first mission to Pluto, New Horizons flew past it and its moon Charon in July 2015, revealing nitrogen ice plains and mountains of water ice. On New Year's Day 2019 it passed Arrokoth, a small, two-lobed body in the Kuiper Belt, and it keeps studying the outer solar system on its way out.",
+      "goals": ["Map Pluto and Charon", "Explore Kuiper Belt objects", "Measure the outer heliosphere"],
+      "sources": [
+        {
+          "title": "NASA Science: New Horizons",
+          "url": "https://science.nasa.gov/mission/new-horizons/"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#c9a0ff",
+      "priority": 60
+    },
+    {
+      "id": -96,
+      "name": "Parker Solar Probe",
+      "aliases": ["Parker", "PSP"],
+      "type": "spacecraft",
+      "parent": 10,
+      "launch": "2018-08-12",
+      "status": {
+        "state": "operating",
+        "as_of": "2026-11-26"
+      },
+      "agency": "NASA",
+      "summary": "Parker Solar Probe dives through the Sun's outer atmosphere, the corona, protected by a thick carbon heat shield. Repeated Venus flybys tightened its orbit until, from late 2024, it passes within about 6 million km of the solar surface, faster than any spacecraft before it.",
+      "goals": [
+        "Find out what heats the corona",
+        "Trace how the solar wind is accelerated",
+        "Study energetic particles near the Sun"
+      ],
+      "sources": [
+        {
+          "title": "NASA Science: Parker Solar Probe",
+          "url": "https://science.nasa.gov/mission/parker-solar-probe/"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#ff6b6b",
+      "priority": 60
+    },
+    {
+      "id": -61,
+      "name": "Juno",
+      "aliases": [],
+      "type": "spacecraft",
+      "parent": 599,
+      "launch": "2011-08-05",
+      "status": {
+        "state": "unclear",
+        "as_of": "2026-11-26",
+        "note": "Its extended mission was due to end on 30 September 2025; reports through 2026 show it still flying perijove passes, but its funding status is not stated by NASA."
+      },
+      "agency": "NASA",
+      "summary": "Juno has orbited Jupiter since July 2016 on long, looping polar orbits that skim low over the cloud tops. Its measurements of gravity and magnetism probe the planet's deep interior, and in its extended mission it has also flown close to the moons Ganymede, Europa and Io.",
+      "goals": [
+        "Measure Jupiter's interior, gravity and magnetic field",
+        "Study the atmosphere and polar aurorae",
+        "Observe the Galilean moons and the rings"
+      ],
+      "sources": [
+        {
+          "title": "NASA Science: Juno",
+          "url": "https://science.nasa.gov/mission/juno/"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#ffd36b",
+      "priority": 60
+    },
+    {
+      "id": -159,
+      "name": "Europa Clipper",
+      "aliases": ["Clipper"],
+      "type": "spacecraft",
+      "parent": 10,
+      "launch": "2024-10-14",
+      "status": {
+        "state": "operating",
+        "as_of": "2026-11-26"
+      },
+      "agency": "NASA",
+      "summary": "Europa Clipper is on its way to Jupiter, using flybys of Mars and Earth to gain speed, and is due to arrive in 2030. Once there it will make dozens of close passes of Europa to judge whether the ocean beneath the moon's icy crust could support life.",
+      "goals": [
+        "Measure Europa's ice shell and the ocean beneath it",
+        "Study its composition and geology",
+        "Look for current activity such as plumes"
+      ],
+      "sources": [
+        {
+          "title": "NASA Science: Europa Clipper",
+          "url": "https://science.nasa.gov/mission/europa-clipper/"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#6bd1ff",
+      "priority": 60
+    },
+    {
+      "id": -28,
+      "name": "JUICE",
+      "horizons_name": "JUICE",
+      "aliases": ["Jupiter Icy Moons Explorer"],
+      "type": "spacecraft",
+      "parent": 10,
+      "launch": "2023-04-14",
+      "status": {
+        "state": "operating",
+        "as_of": "2026-11-26"
+      },
+      "agency": "ESA",
+      "summary": "The European Space Agency's Jupiter Icy Moons Explorer is cruising to Jupiter on a path that uses flybys of the Moon, Earth and Venus, with arrival planned for 2031. It will study Ganymede, Callisto and Europa and then become the first spacecraft to orbit a moon of another planet, Ganymede.",
+      "goals": [
+        "Characterise Ganymede, Callisto and Europa as possible habitats",
+        "Orbit Ganymede and study its magnetic field",
+        "Study Jupiter's atmosphere and magnetosphere"
+      ],
+      "sources": [
+        {
+          "title": "ESA: Juice",
+          "url": "https://www.esa.int/Science_Exploration/Space_Science/Juice"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#7be0a8",
+      "priority": 60
+    },
+    {
+      "id": -49,
+      "name": "Lucy",
+      "aliases": [],
+      "type": "spacecraft",
+      "parent": 10,
+      "launch": "2021-10-16",
+      "status": {
+        "state": "operating",
+        "as_of": "2026-11-26"
+      },
+      "agency": "NASA",
+      "summary": "Lucy is touring the Trojan asteroids, two swarms that share Jupiter's orbit and may be leftovers from the planets' formation. Using Earth flybys to reshape its path, it passed the main-belt asteroids Dinkinesh in 2023 and Donaldjohanson in 2025 and is due to reach its first Trojans in 2027.",
+      "goals": ["Visit several Jupiter Trojan asteroids", "Map their surfaces, composition and densities"],
+      "sources": [
+        {
+          "title": "NASA Science: Lucy",
+          "url": "https://science.nasa.gov/mission/lucy/"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#ff8fd0",
+      "priority": 60
+    },
+    {
+      "id": -255,
+      "name": "Psyche",
+      "aliases": [],
+      "type": "spacecraft",
+      "parent": 10,
+      "launch": "2023-10-13",
+      "status": {
+        "state": "operating",
+        "as_of": "2026-11-26"
+      },
+      "agency": "NASA",
+      "summary": "Psyche is flying to the asteroid of the same name, a body rich in metal that may be part of the core of an early planet. Driven by electric thrusters and a Mars flyby, it is due to arrive in 2029 and orbit the asteroid to map it.",
+      "goals": [
+        "Find out whether asteroid Psyche is an exposed planetary core",
+        "Map its surface, magnetism and composition"
+      ],
+      "sources": [
+        {
+          "title": "NASA Science: Psyche",
+          "url": "https://science.nasa.gov/mission/psyche/"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#b0b8ff",
+      "priority": 60
+    },
+    {
+      "id": -64,
+      "name": "OSIRIS-APEX",
+      "horizons_name": "OSIRIS-REx",
+      "aliases": ["OSIRIS-REx"],
+      "type": "spacecraft",
+      "parent": 10,
+      "launch": "2016-09-08",
+      "status": {
+        "state": "operating",
+        "as_of": "2026-11-26"
+      },
+      "agency": "NASA",
+      "summary": "This spacecraft collected a sample from asteroid Bennu as OSIRIS-REx and dropped it off at Earth in 2023. Renamed OSIRIS-APEX, it is now heading for Apophis, which will pass very close to Earth in April 2029, and will study how that encounter changes the asteroid.",
+      "goals": [
+        "Study asteroid Apophis after its 2029 close approach to Earth",
+        "Earlier: return a sample of asteroid Bennu"
+      ],
+      "sources": [
+        {
+          "title": "NASA Science: OSIRIS-APEX",
+          "url": "https://science.nasa.gov/mission/osiris-apex/"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#ffe08a",
+      "priority": 60
+    },
+    {
+      "id": -85,
+      "name": "LRO",
+
+      "aliases": ["Lunar Reconnaissance Orbiter"],
+      "type": "spacecraft",
+      "parent": 301,
+      "launch": "2009-06-18",
+      "status": {
+        "state": "operating",
+        "as_of": "2026-11-26"
+      },
+      "agency": "NASA",
+      "summary": "The Lunar Reconnaissance Orbiter has circled the Moon in a low orbit since 2009, mapping its surface in great detail. Its maps of terrain, temperature and lighting support the choice of landing sites, and it has photographed the Apollo landing sites from orbit.",
+      "goals": [
+        "Map the Moon's surface at high resolution",
+        "Find safe landing sites and possible resources such as ice",
+        "Measure the lunar radiation environment"
+      ],
+      "sources": [
+        {
+          "title": "NASA Science: LRO",
+          "url": "https://science.nasa.gov/mission/lro/"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#d8d8d8",
+      "priority": 60
+    },
+    {
+      "id": -1176,
+      "name": "CAPSTONE",
+      "aliases": [],
+      "type": "spacecraft",
+      "parent": 301,
+      "launch": "2022-06-28",
+      "status": {
+        "state": "ended",
+        "as_of": "2026-11-26",
+        "note": "NASA's extended mission ended in June 2026; the spacecraft remains in lunar orbit, operated by Advanced Space."
+      },
+      "agency": "NASA (operated by Advanced Space)",
+      "summary": "CAPSTONE is a small CubeSat that was the first spacecraft to fly the near-rectilinear halo orbit, a long, stretched path over the Moon's poles chosen for the future Gateway station. It tested navigation and communication methods for that orbit.",
+      "goals": [
+        "Show that a spacecraft can hold a near-rectilinear halo orbit",
+        "Test navigation between spacecraft without ground tracking"
+      ],
+      "sources": [
+        {
+          "title": "NASA: CAPSTONE",
+          "url": "https://www.nasa.gov/capstone/"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#a8ffef",
+      "priority": 60
+    },
+    {
+      "id": -170,
+      "name": "James Webb Space Telescope",
+      "aliases": ["JWST", "Webb"],
+      "type": "spacecraft",
+      "parent": 10,
+      "launch": "2021-12-25",
+      "status": {
+        "state": "operating",
+        "as_of": "2026-11-26"
+      },
+      "agency": "NASA, ESA and CSA",
+      "summary": "The James Webb Space Telescope is the largest space telescope yet, with a 6.5 m segmented gold mirror that sees in infrared. It works from a halo orbit around the Sun-Earth L2 point, about 1.5 million km beyond Earth, where a large sunshield keeps it cold.",
+      "goals": [
+        "See the first galaxies after the Big Bang",
+        "Watch stars and planets form",
+        "Study the atmospheres of exoplanets"
+      ],
+      "sources": [
+        {
+          "title": "NASA Science: Webb",
+          "url": "https://science.nasa.gov/mission/webb/"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#ffc94d",
+      "priority": 60
+    }
+  ]
+}

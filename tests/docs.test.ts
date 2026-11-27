@@ -99,7 +99,8 @@ describe("data sources (T-024)", () => {
 
   it("VN-DOC-002: the listing test itself catches an unlisted file", () => {
     expect(listed("public/ephem/399/2020.bin")).toBe(true);
-    expect(listed("data/catalog.json")).toBe(false);
+    expect(listed("data/catalog.json")).toBe(true);
+    expect(listed("data/unlisted-example.json")).toBe(false);
     expect(listed("public/stars.bin")).toBe(true);
   });
 
