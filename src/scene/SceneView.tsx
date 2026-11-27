@@ -11,6 +11,7 @@ import { Labels } from "./labels/Labels";
 import { Markers } from "./labels/Markers";
 import { createScreenFrame } from "./labels/screen";
 import { Orbits } from "./orbits/Orbits";
+import { Picker } from "./Picker";
 import { createRig, RigContext } from "./rig";
 import { OriginCamera, PRIORITY } from "./Scene";
 
@@ -82,6 +83,7 @@ export function SceneView() {
           <Bodies frame={frame} />
           <Orbits eph={eph} frame={frame} />
           <Markers frame={frame} screen={screen} />
+          <Picker screen={screen} />
           <ReadyMarker frame={frame} failed={failed} />
         </RigContext.Provider>
       </Canvas>
