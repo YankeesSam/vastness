@@ -27,5 +27,6 @@ notes:
   - URL fragment: `#v=1&t=..&r=..&p=0|1&s=..&c=target,km,az,el&l=bmo..` (src/core/share/fragment.ts); written every 1 s with replaceState. Scale mode is not in it yet: add an optional field in M5 T-055 (version stays 1).
   - Presets and shared cameras are placed at once (no fly-to); the store's cameraRequest/cameraSeq carries them to Controls.
   - Flaky under parallel load, pass alone: ephemeris.perf.test.ts allocation test, tests/nightly-build.test.ts.
+  - nightly 2711d33-nightly ok; LAN http://192.168.1.166:8770/ (200)
 open_defects_blocking: []
 optimizations_applied: []
