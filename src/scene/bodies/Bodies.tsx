@@ -5,23 +5,11 @@ import { viewStore } from "../../app/store/view";
 import { toCamera } from "../origin";
 import { useRig } from "../rig";
 import { PRIORITY } from "../Scene";
+import { colourOf } from "../colours";
 import { DRAWN_BODIES } from "./positions";
 
 // VN-SCN-001: plain spheres with true mean radii at their ephemeris positions, placed camera-relative each frame
-// (the world positions come from the shared frame buffer the rig fills). Colours are placeholders until the
-// catalog carries them.
-const COLOURS: Record<number, string> = {
-  10: "#ffd27a",
-  199: "#9a948c",
-  299: "#e3cf9a",
-  399: "#4f7fc9",
-  301: "#b9b6ae",
-  499: "#c1623b",
-  599: "#d6b48c",
-  699: "#e2cf98",
-  799: "#9fd6dc",
-  899: "#5577d8",
-};
+// (the world positions come from the shared frame buffer the rig fills).
 
 export interface BodyFrame {
   /** World positions of DRAWN_BODIES this frame, 3 per body. */
@@ -69,9 +57,9 @@ export function Bodies({ frame }: { frame: BodyFrame }) {
         >
           <sphereGeometry args={[b.radiusKm, 64, 32]} />
           {b.horizonsId === 10 ? (
-            <meshBasicMaterial color={COLOURS[10] ?? "#fff"} />
+            <meshBasicMaterial color={colourOf(10)} />
           ) : (
-            <meshLambertMaterial color={COLOURS[b.horizonsId] ?? "#fff"} />
+            <meshLambertMaterial color={colourOf(b.horizonsId)} />
           )}
         </mesh>
       ))}

@@ -7,6 +7,9 @@ import { Bodies, createBodyFrame, type BodyFrame } from "./bodies/Bodies";
 import { worldPositions } from "./bodies/positions";
 import { FAR_KM, MIN_NEAR_KM } from "./origin";
 import { Controls } from "./camera/Controls";
+import { Labels } from "./labels/Labels";
+import { Markers } from "./labels/Markers";
+import { createScreenFrame } from "./labels/screen";
 import { createRig, RigContext } from "./rig";
 import { OriginCamera, PRIORITY } from "./Scene";
 
@@ -45,6 +48,7 @@ function ReadyMarker({ frame, failed }: { frame: BodyFrame; failed: boolean }) {
 export function SceneView() {
   const rig = useMemo(() => createRig(), []);
   const frame = useMemo(() => createBodyFrame(), []);
+  const screen = useMemo(() => createScreenFrame(), []);
   const [eph, setEph] = useState<Ephemeris | null>(null);
   const [failed, setFailed] = useState(false);
 
@@ -64,18 +68,22 @@ export function SceneView() {
   }, []);
 
   return (
-    <Canvas
-      camera={{ position: [0, 0, 0], fov: 50, near: MIN_NEAR_KM, far: FAR_KM }}
-      gl={{ antialias: true, logarithmicDepthBuffer: true }}
-    >
-      <RigContext.Provider value={rig}>
-        <FrameClock />
-        <BodyStates eph={eph} frame={frame} />
-        <Controls frame={frame} />
-        <OriginCamera />
-        <Bodies frame={frame} />
-        <ReadyMarker frame={frame} failed={failed} />
-      </RigContext.Provider>
-    </Canvas>
+    <div style={{ position: "absolute", inset: 0 }}>
+      <Canvas
+        camera={{ position: [0, 0, 0], fov: 50, near: MIN_NEAR_KM, far: FAR_KM }}
+        gl={{ antialias: true, logarithmicDepthBuffer: true }}
+      >
+        <RigContext.Provider value={rig}>
+          <FrameClock />
+          <BodyStates eph={eph} frame={frame} />
+          <Controls frame={frame} />
+          <OriginCamera />
+          <Bodies frame={frame} />
+          <Markers frame={frame} screen={screen} />
+          <ReadyMarker frame={frame} failed={failed} />
+        </RigContext.Provider>
+      </Canvas>
+      <Labels screen={screen} />
+    </div>
   );
 }

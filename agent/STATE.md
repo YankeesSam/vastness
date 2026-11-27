@@ -2,12 +2,12 @@ schema: 1
 project: vastness
 milestone: M2
 phase: 2
-status: ready
+status: running
 active_task_id: T-029
 active_task: "P0 @phase2 slice: screen-space markers and labels with priority declutter (pure layout in core)  req: VN-SCN-003"
 next_skill: vastness-execute
-session: 8
-updated: 2026-11-26T19:22:47-05:00
+session: 9
+updated: 2026-11-26T20:00:00-05:00
 branch: main
 last_commit: 19c1a8d
 push: ok
