@@ -1,7 +1,7 @@
 schema: 1
-from_session: 17
-to_session: 18
-completed: [T-071, T-067, T-068, T-069, T-077]
+from_session: 18
+to_session: 19
+completed: [T-072, T-073, T-075, T-070, T-074]
 failed: []
 next_task_id: T-097
 next_task: "T-097 LRO whole mission under 5 MB (non-singular elements, format v3); WIP in git stash"
@@ -17,18 +17,14 @@ do_not_read:
   - docs/REQUIREMENTS.md (grep VN-* IDs instead)
   - docs/architecture/VASTNESS_ARCHITECTURE.md
   - public/ephem, public/stars.bin, testdata, .cache, dist
-tests: pass (vitest 469; e2e 48/48; typecheck, prettier, check-deps, check-size clean)
-commit: 085613d
-push: ok
+tests: pass (vitest 481; e2e 59/59; typecheck, prettier, check-deps, check-size clean)
+commit: PENDING
+push: PENDING
 notes:
-  - Session 17 batch at the user's request: M7 accessibility and settings (T-071, T-067, T-068, T-069, T-077). T-097 still stashed (`git stash list`: "T-097 WIP").
-  - T-065 no longer needs the user: SVS 403s every /vis/ file to the user's browser too. PLAN now points at ESO eso0932a (CC BY 4.0, credit ESO/S. Brunier), which curl downloads; check its projection before reprojecting.
-  - Keys: / search, Space play/pause (not on a focused button), N now, F follow selection, ? help. Dialogs catch Escape in the capture phase so closing one keeps the camera following.
-  - Live region throttled to one message per 1.5 s, latest wins; a fly-to to another object says only the arrival. The store gains `following` (set by Controls when follow changes).
-  - Themes: dark, light, contrast (menu checkbox). Large text sets the root to 125% of 14 px; everything is in rem. List buttons now at least 24 px tall (axe target-size), which slightly lengthens the side panel.
-  - New dev dependency: @axe-core/playwright (T-069 named axe-core). Dark, light, contrast and large text pass WCAG 2.2 AA tags.
-  - Preferences: theme, largeText, units, zone, sky in `vastness.prefs`; layers and quality are not saved (links carry layers; quality tiers are T-072).
+  - Session 18 batch at the user's request: M7 performance and mobile (T-072, T-073, T-075, T-070, T-074). M7 now has only T-076 (Firefox/WebKit) left. T-097 still stashed (`git stash list`: "T-097 WIP").
+  - Quality: auto is high on a desktop with 4+ cores, 8 GB and an 8k texture limit, so this machine and the 4-core CI runner both render high and no visual baseline changed. The budget spec asserts the tier is high; if CI ever reports another tier, that is why baselines moved.
+  - Budgets (docs/TESTBED.md): 64 draw calls, 100k triangles, 64 MB textures, from 32 / 28,290 / 20 KB. T-062 textures must fit 64 MB at the high tier (4k maps with mipmaps are ~85 MB each uncompressed, so use 2k or fewer).
+  - VN-PRF-001 (D) needs the user: open the app with ?stats on the reference machine at 1920x1080 and 3440x1440 and fill the table in docs/TESTBED.md (Chrome version, fps, p95).
+  - T-074: Controls already did one-finger orbit, pinch and two-finger pan, and the picker already ignores a pinch; no scene change was needed. Under 768 px the panel is an opaque bottom sheet, closed at first; the "Scale" word is hidden (the select keeps its name).
+  - Fallback: WebGL 2 probed once (src/app/device.ts); without it Shell renders src/app/fallback instead of the canvas and the scale overlay.
   - No visual baselines changed.
-  - nightly 08012fc-nightly ok; LAN http://192.168.1.166:8770/ (200)
-open_defects_blocking: []
-optimizations_applied: []

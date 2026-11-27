@@ -29,6 +29,16 @@ Set from the first real measurements (T-035, T-073) and only tightened: draw cal
 
 First measurements (T-035, session 4, shell with a placeholder Sun): initial download 323 kB compressed (JS 322 kB, of which three.js and React are nearly all); first render 1.0 s on fast 4G in headless Chromium with SwiftShader.
 
+Render budgets (T-073, e2e/budget.spec.ts). Reference scene: `?t=2026-01-01T00:00:00Z&still=1&cam=10,1.2e9,30,25` at 1920x1080, high tier: all planets, the Moon, every catalog spacecraft and Earth satellite with trails a year back and ahead, labels, markers, orbits and the 8,404 stars. Read from `renderer.info` of the last frame (canvas `data-draw-calls`, `data-triangles`, `data-textures`) and the scene's texture memory (`data-texture-bytes`: each texture's data size, or RGBA8 at its size, plus a third for mipmaps).
+
+| Measure | First measurement (session 18) | Budget |
+|---|---|---|
+| Draw calls | 32 | 64 |
+| Triangles | 28,290 | 100,000 |
+| Texture memory | 20 KB (2 textures) | 64 MB (textures and topographic maps, T-062, must fit) |
+
+Quality tiers (T-072, src/core/quality.ts): low (pixel ratio 1, 1k textures, 513-point trails, stars to V 5), medium (1.5, 2k, 1025, V 6), high (2, 4k, 2049, V 6.5). Auto picks high on a desktop with at least 4 cores, 8 GB and an 8k texture limit (this machine and the CI runner), low on small GPUs, 2 cores or a phone with 4 GB or 4 cores, medium otherwise. The setting (side panel, Quality) is saved in the preferences.
+
 ## Reference machine (VN-PRF-001, OI-9)
 
 Recorded 2026-11-26 from the user (OI-9, W-008):
@@ -41,6 +51,12 @@ Recorded 2026-11-26 from the user (OI-9, W-008):
 | Display | ultrawide panel, 3440x1440 (confirmed by the user) |
 
 VN-PRF-001 is demonstrated at 1920x1080 and at the panel's native resolution.
+
+Procedure (T-075; a demonstration, D, done by the user on this machine): open the deployed app with `?stats` in Chrome, in a window sized to 1920x1080 and then full screen at 3440x1440, quality High (or Auto, which picks High). Leave the default view playing for 30 s, then open the Whole system preset with Trails "1 year" (two years in all), and note the overlay's fps and p95 frame time and the Chrome version (`chrome://version`) here. Pass: fps at least 59 and p95 under 20 ms at both sizes. The overlay also shows the drawing buffer size (to confirm the resolution) and the renderer counts. In SwiftShader (CI) the same view runs at about 24 fps on the CPU, which says nothing about the GPU.
+
+| Date | Chrome | 1920x1080 | 3440x1440 |
+|---|---|---|---|
+| (to record) | | | |
 
 ## Secrets
 

@@ -61,4 +61,11 @@ describe("test params (F5)", () => {
     applyTestParams(parseTestParams("?scale=exaggerated"), store);
     expect(store.getState().scale).toBe("exaggerated");
   });
+
+  it("VN-PRF-001: ?stats (or stats=1) turns the stats overlay on; stats=0 does not", () => {
+    expect(parseTestParams("?stats").stats).toBe(true);
+    expect(parseTestParams("?stats=1").stats).toBe(true);
+    expect(parseTestParams("?stats=0").stats).toBeUndefined();
+    expect(parseTestParams("").stats).toBeUndefined();
+  });
 });

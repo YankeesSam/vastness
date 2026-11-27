@@ -2,7 +2,8 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useState } from "react";
 import { BufferAttribute, BufferGeometry, CustomBlending, OneFactor, Points, ShaderMaterial } from "three";
 import { loadAsset } from "../../app/assets/loader";
-import { viewStore } from "../../app/store/view";
+import { useView, viewStore } from "../../app/store/view";
+import { QUALITY } from "../../core/quality";
 import { sceneFromEcliptic } from "../../core/frames";
 import { colourFromBv, decodeStars, STAR_STRIDE, starAlpha, starSizePx, type StarSet } from "../../core/sky/stars";
 
@@ -39,15 +40,19 @@ void main() {
 }
 `;
 
-function starPoints(set: StarSet, pixelRatio: number): Points<BufferGeometry, ShaderMaterial> {
-  const pos = new Float32Array(3 * set.count);
-  const tint = new Float32Array(3 * set.count);
-  const size = new Float32Array(set.count);
-  const alpha = new Float32Array(set.count);
+/** VN-PRF-003: the stars to magLimit (the quality tier's). */
+function starPoints(set: StarSet, pixelRatio: number, magLimit: number): Points<BufferGeometry, ShaderMaterial> {
+  let n = 0;
+  for (let k = 0; k < set.count; k++) if (set.data[STAR_STRIDE * k + 3]! <= magLimit) n++;
+  const pos = new Float32Array(3 * n);
+  const tint = new Float32Array(3 * n);
+  const size = new Float32Array(n);
+  const alpha = new Float32Array(n);
   const ecl = new Float64Array(3);
   const sc = new Float64Array(3);
-  for (let i = 0; i < set.count; i++) {
-    const o = STAR_STRIDE * i;
+  for (let k = 0, i = 0; k < set.count; k++) {
+    const o = STAR_STRIDE * k;
+    if (set.data[o + 3]! > magLimit) continue;
     ecl[0] = set.data[o]!;
     ecl[1] = set.data[o + 1]!;
     ecl[2] = set.data[o + 2]!;
@@ -59,6 +64,7 @@ function starPoints(set: StarSet, pixelRatio: number): Points<BufferGeometry, Sh
     colourFromBv(set.data[o + 4]!, tint, 3 * i);
     size[i] = starSizePx(mag);
     alpha[i] = starAlpha(mag);
+    i++;
   }
   const g = new BufferGeometry();
   g.setAttribute("position", new BufferAttribute(pos, 3));
@@ -106,7 +112,8 @@ export function Stars() {
     };
   }, [firstFrame, set]);
 
-  const points = useMemo(() => (set ? starPoints(set, dpr) : null), [set, dpr]);
+  const magLimit = useView((s) => QUALITY[s.quality].starMagLimit);
+  const points = useMemo(() => (set ? starPoints(set, dpr, magLimit) : null), [set, dpr, magLimit]);
   useEffect(() => {
     if (!points) return;
     canvas.dataset.stars = String(points.geometry.getAttribute("size").count);

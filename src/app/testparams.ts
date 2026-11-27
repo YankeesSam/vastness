@@ -9,6 +9,7 @@ import type { Layer, ViewState } from "./store/view";
 //   still=1                    time paused, so two frames are the same
 //   layers=bodies,orbits       only these layers on
 //   scale=exaggerated          exaggerated scale, placed at once (VN-SCL-002)
+//   stats                      the frame-time and renderer overlay (VN-PRF-001); not a test-only switch
 // Anything that does not parse is ignored; with no parameters the app starts as usual.
 
 export interface TestCamera {
@@ -26,6 +27,7 @@ export interface TestParams {
   still?: boolean;
   layers?: Record<Layer, boolean>;
   scale?: "exaggerated";
+  stats?: boolean;
 }
 
 const LAYERS: readonly Layer[] = ["bodies", "labels", "markers", "orbits", "trails", "callouts", "stars"];
@@ -62,6 +64,7 @@ export function parseTestParams(search: string): TestParams {
     for (const l of layers) if ((LAYERS as readonly string[]).includes(l)) out.layers[l as Layer] = true;
   }
   if (q.get("scale") === "exaggerated") out.scale = "exaggerated";
+  if (q.has("stats") && q.get("stats") !== "0") out.stats = true;
   return out;
 }
 

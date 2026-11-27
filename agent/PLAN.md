@@ -41,11 +41,6 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 
 ### M7 accessibility, mobile and performance
 
-- [ ] T-070 P1 @phase7 slice: no-WebGL fallback view  req: VN-ACC-004, VN-GEN-011  files: src/app/fallback/  test: e2e/no-webgl.spec.ts
-- [ ] T-072 P0 @phase7 slice: quality tiers chosen from the device and in settings  req: VN-PRF-003, VN-UI-003  files: src/core/quality.ts, src/app/settings/  test: src/core/quality.test.ts
-- [ ] T-073 P0 @phase7 slice: render budgets from renderer.info on the reference scene in CI  req: VN-PRF-002  files: e2e/budget.spec.ts, docs/TESTBED.md  test: e2e/budget.spec.ts
-- [ ] T-074 P1 @phase7 slice: touch gestures and bottom sheets under 768 px  req: VN-PRF-005  files: src/scene/camera/Controls.tsx, src/app/shell/  test: e2e/mobile.spec.ts
-- [ ] T-075 P1 @phase7 slice: `?stats` frame-time overlay and the 60 fps demonstration; reference machine in docs/TESTBED.md (OI-9 answered)  req: VN-PRF-001  files: src/app/stats/, docs/TESTBED.md  test: e2e/perf.spec.ts
 - [ ] T-076 P1 @phase7 slice: browser matrix: Playwright Firefox and WebKit projects  req: VN-GEN-011  files: playwright.config.ts  test: npm run e2e
 
 ### M8 release 1.0
@@ -66,6 +61,12 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 - [ ] T-088 P2 @phase9 slice: command light-time animation to and from a spacecraft  req: VN-EXT-004  files: src/scene/signal/  test: src/scene/signal/signal.test.ts
 
 ## Done
+
+- [x] T-072 quality tiers (src/core/quality.ts): low/medium/high set pixel-ratio cap, texture size (for T-062), trail points (513/1025/2049) and star limit (V 5/6/6.5); auto from a WebGL 2 probe (src/app/device.ts: cores, deviceMemory, MAX_TEXTURE_SIZE, coarse pointer); side panel Quality select, saved in prefs; canvas data-quality; session 18
+- [x] T-073 render budgets (e2e/budget.spec.ts): renderer.info on the reference scene at 1920x1080 via canvas data-draw-calls/triangles/textures/texture-bytes (src/scene/stats/RenderStatsProbe.tsx); measured 32 calls, 28,290 triangles, 20 KB; budgets 64, 100k, 64 MB in docs/TESTBED.md; low tier checked to draw fewer stars; session 18
+- [x] T-075 `?stats` overlay (src/app/stats/): fps and mean/p95 frame time over 120 frames, buffer size, tier, renderer counts; e2e perf; the 60 fps demonstration procedure and an empty results table in docs/TESTBED.md (the user records Chrome version and numbers); session 18
+- [x] T-070 no-WebGL 2 fallback (src/app/fallback/): plain message and a table of every object's distance from the Sun and Earth, its own frame clock; side panel, info panel and time bar unchanged; e2e no-webgl (WebGL removed by an init script); session 18
+- [x] T-074 mobile (e2e/mobile.spec.ts): touch already handled by Controls (one finger orbits, two pinch and pan, a second finger cancels the tap); under 768 px the side panel is an opaque bottom sheet above the time bar, closed at first, and the top bar wraps to two rows; session 18
 
 - [x] T-071 reduced motion: planFlight(..., reducedMotion) gives a zero-length flight, so fly-to is an instant cut (src/core/camera/flyto.ts, src/scene/motion.ts); there is no auto-rotation to turn off; e2e camera VN-CAM-006; session 17
 - [x] T-067 keyboard map (src/app/keys/): / search, Space play/pause, N now, F follow the selection, ? help; help dialog (also in the menu) lists every shortcut with the camera's; Escape in a dialog no longer releases follow; e2e keyboard; session 17

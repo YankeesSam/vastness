@@ -2,14 +2,14 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo } from "react";
 import { BufferAttribute, BufferGeometry, Color, Line, ShaderMaterial, Vector3 } from "three";
 import { CATALOG_BY_ID } from "../../app/catalog";
-import { viewStore } from "../../app/store/view";
+import { useView, viewStore } from "../../app/store/view";
+import { QUALITY } from "../../core/quality";
 import type { Ephemeris } from "../../core/ephem/ephemeris";
 import { sceneFromEcliptic } from "../../core/frames";
 import { splitDouble, type Evaluate } from "../../core/orbits/sample";
 import {
   createTrailSamples,
   sampleTrail,
-  TRAIL_MAX_POINTS,
   trailRange,
   trailStale,
   type TrailRange,
@@ -72,13 +72,15 @@ export function Trails({ eph, frame }: { eph: Ephemeris | null; frame: BodyFrame
   const rig = useRig();
   const canvas = useThree((s) => s.gl.domElement);
   const gate = useMemo(() => ({ open: false }), []);
+  // VN-PRF-003: the tier sets each trail's point budget
+  const points = useView((s) => QUALITY[s.quality].trailPoints);
 
   const trails = useMemo<Trail[]>(() => {
     if (!eph) return [];
     const out: Trail[] = [];
     SCENE_OBJECTS.forEach((o, index) => {
       if (o.kind !== "spacecraft" || !eph.has(o.id)) return;
-      const samples = createTrailSamples(TRAIL_MAX_POINTS);
+      const samples = createTrailSamples(points);
       const high = new Float32Array(3 * samples.capacity);
       const low = new Float32Array(3 * samples.capacity);
       const u = new Float32Array(samples.capacity);
@@ -126,7 +128,7 @@ export function Trails({ eph, frame }: { eph: Ephemeris | null; frame: BodyFrame
       });
     });
     return out;
-  }, [eph, gate]);
+  }, [eph, gate, points]);
 
   useEffect(
     () => () => {

@@ -2,7 +2,8 @@ import { reducedMotion } from "./motion";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useState } from "react";
 import { preloadEphemeris, streamSpacecraft } from "../app/assets/loader";
-import { viewStore } from "../app/store/view";
+import { useView, viewStore } from "../app/store/view";
+import { QUALITY } from "../core/quality";
 import { testParams } from "../app/testparams";
 import { VERTICAL_FOV_DEG } from "../core/camera/presets";
 import type { Ephemeris } from "../core/ephem/ephemeris";
@@ -31,6 +32,7 @@ import { Stars } from "./stars/Stars";
 import { SunGlow } from "./sun/SunGlow";
 import { Trails } from "./trails/Trails";
 import { Picker } from "./Picker";
+import { RenderStatsProbe } from "./stats/RenderStatsProbe";
 import { createRig, RigContext, useRig } from "./rig";
 import { OriginCamera, PRIORITY } from "./Scene";
 
@@ -123,6 +125,16 @@ function ReadyMarker({ frame, failed, onFirstFrame }: { frame: BodyFrame; failed
   return null;
 }
 
+/** For e2e specs: data-quality on the canvas names the tier drawn (VN-PRF-003). */
+function QualityMarker() {
+  const canvas = useThree((s) => s.gl.domElement);
+  const quality = useView((s) => s.quality);
+  useEffect(() => {
+    canvas.dataset.quality = quality;
+  }, [canvas, quality]);
+  return null;
+}
+
 // VN-UI-001, VN-SCN-004: the full-window 3D view. Render units are km; the camera sits at the origin (floating
 // origin) and the depth buffer is logarithmic (ADR-0004).
 export function SceneView() {
@@ -139,6 +151,8 @@ export function SceneView() {
   const callouts = useMemo(() => createCalloutFrame(), []);
   const [eph, setEph] = useState<Ephemeris | null>(null);
   const [failed, setFailed] = useState(false);
+  // VN-PRF-003: the tier caps the pixel ratio
+  const quality = useView((s) => s.quality);
 
   useEffect(() => {
     let live = true;
@@ -160,9 +174,12 @@ export function SceneView() {
       <Canvas
         camera={{ position: [0, 0, 0], fov: VERTICAL_FOV_DEG, near: MIN_NEAR_KM, far: FAR_KM }}
         gl={{ antialias: true, logarithmicDepthBuffer: true }}
+        dpr={[1, QUALITY[quality].maxPixelRatio]}
       >
         <RigContext.Provider value={rig}>
           <FrameClock />
+          <QualityMarker />
+          <RenderStatsProbe />
           <BodyStates eph={eph} frame={frame} />
           <Controls frame={frame} />
           <OriginCamera />

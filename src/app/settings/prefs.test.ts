@@ -1,6 +1,15 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { createViewStore, DEFAULT_SKY } from "../store/view";
-import { bindSkyPrefs, createPrefsStore, DEFAULT_PREFS, loadPrefs, PREFS_KEY, resetPrefs, savePrefs } from "./prefs";
+import {
+  bindQualityPrefs,
+  bindSkyPrefs,
+  createPrefsStore,
+  DEFAULT_PREFS,
+  loadPrefs,
+  PREFS_KEY,
+  resetPrefs,
+  savePrefs,
+} from "./prefs";
 
 beforeEach(() => localStorage.clear());
 
@@ -60,6 +69,23 @@ describe("preferences", () => {
     prefs.getState().reset();
     expect(view.getState().sky).toEqual(DEFAULT_SKY);
     expect(localStorage.length).toBe(0);
+    unbind();
+  });
+
+  it("VN-PRF-003, VN-UI-003: the quality setting is saved; auto takes the device's tier, a chosen tier wins", () => {
+    const phone = { pixelRatio: 3, cores: 8, memoryGb: 4, maxTextureSize: 4096, coarsePointer: true };
+    const prefs = createPrefsStore();
+    const view = createViewStore({ t: 0 });
+    const unbind = bindQualityPrefs(view, prefs, phone);
+    expect(prefs.getState().prefs.quality).toBe("auto");
+    expect(view.getState().quality).toBe("low");
+    prefs.getState().update({ quality: "high" });
+    expect(view.getState().quality).toBe("high");
+    expect(stored()).toEqual({ quality: "high" });
+    localStorage.setItem(PREFS_KEY, JSON.stringify({ quality: "ultra" }));
+    expect(loadPrefs().quality).toBe("auto");
+    prefs.getState().reset();
+    expect(view.getState().quality).toBe("low");
     unbind();
   });
 });

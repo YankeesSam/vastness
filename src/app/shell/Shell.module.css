@@ -166,3 +166,45 @@
   border: 1px solid var(--border);
   border-radius: 4px;
 }
+
+/* VN-PRF-005: under 768 px the side panel is a bottom sheet over the view, above the time bar; the bars wrap */
+@media (max-width: 767.98px) {
+  .top {
+    flex-wrap: wrap;
+    gap: 0.4rem 0.6rem;
+  }
+
+  .search {
+    order: 10;
+    flex: 1 1 100%;
+    margin-left: 0;
+  }
+
+  .scale {
+    margin-left: auto;
+  }
+
+  /* the select's own name stays (aria-label); the visible word goes to keep one row */
+  .scale > span {
+    display: none;
+  }
+
+  .side {
+    grid-area: main;
+    align-self: end;
+    z-index: 2;
+    width: auto;
+    box-sizing: border-box;
+    max-height: 55vh;
+    border-right: 0;
+    border-top: 1px solid var(--border);
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 -4px 16px rgb(0 0 0 / 35%);
+    background: var(--bg); /* opaque: labels and the scale bar must not show through */
+  }
+
+  .bottom {
+    flex-wrap: wrap;
+    gap: 0.4rem 1rem;
+  }
+}

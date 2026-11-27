@@ -4,6 +4,7 @@
 // VN-UI-003: the settings the interface offers read and write them through the prefs store.
 
 import { createStore, type StoreApi } from "zustand/vanilla";
+import { QUALITY_SETTINGS, resolveTier, type DeviceInfo, type QualitySetting } from "../../core/quality";
 import type { DistanceUnit } from "../../core/readouts";
 import { DEFAULT_SKY, type SkySettings, type ViewState } from "../store/view";
 import type { Zone } from "../time/zone";
@@ -23,9 +24,18 @@ export interface Prefs {
   zone: Zone;
   /** VN-SCN-005, VN-SCN-007: star brightness and the Sun's glow. */
   sky: SkySettings;
+  /** VN-PRF-003: a quality tier, or auto (from the device). */
+  quality: QualitySetting;
 }
 
-export const DEFAULT_PREFS: Prefs = { theme: "dark", units: "km", largeText: false, zone: "utc", sky: DEFAULT_SKY };
+export const DEFAULT_PREFS: Prefs = {
+  theme: "dark",
+  units: "km",
+  largeText: false,
+  zone: "utc",
+  sky: DEFAULT_SKY,
+  quality: "auto",
+};
 
 const THEMES: readonly Theme[] = ["dark", "light", "contrast"];
 const UNITS: readonly DistanceUnit[] = ["km", "au", "mi"];
@@ -56,6 +66,7 @@ export function loadPrefs(): Prefs {
       largeText: p?.largeText === true,
       zone: ZONES.find((z) => z === p?.zone) ?? DEFAULT_PREFS.zone,
       sky: skyFrom(p?.sky),
+      quality: QUALITY_SETTINGS.find((q) => q === p?.quality) ?? DEFAULT_PREFS.quality,
     };
   } catch {
     return { ...DEFAULT_PREFS };
@@ -70,6 +81,7 @@ export function savePrefs(prefs: Prefs): void {
     if (prefs.units !== DEFAULT_PREFS.units) diff.units = prefs.units;
     if (prefs.largeText !== DEFAULT_PREFS.largeText) diff.largeText = prefs.largeText;
     if (prefs.zone !== DEFAULT_PREFS.zone) diff.zone = prefs.zone;
+    if (prefs.quality !== DEFAULT_PREFS.quality) diff.quality = prefs.quality;
     const sky: Partial<SkySettings> = {};
     for (const k of SKY_KEYS) if (prefs.sky[k] !== DEFAULT_SKY[k]) sky[k] = prefs.sky[k];
     if (Object.keys(sky).length > 0) diff.sky = sky;
@@ -127,4 +139,19 @@ export function bindSkyPrefs(view: StoreApi<ViewState>, prefs: StoreApi<PrefsSta
     offView();
     offPrefs();
   };
+}
+
+/**
+ * VN-PRF-003: the view's quality tier (which the scene reads) follows the saved setting: the setting's tier, or the
+ * device's when it is auto. Returns the unbinding function.
+ */
+export function bindQualityPrefs(
+  view: StoreApi<ViewState>,
+  prefs: StoreApi<PrefsState>,
+  device: DeviceInfo,
+): () => void {
+  view.getState().setQuality(resolveTier(prefs.getState().prefs.quality, device));
+  return prefs.subscribe((s, prev) => {
+    if (s.prefs.quality !== prev.prefs.quality) view.getState().setQuality(resolveTier(s.prefs.quality, device));
+  });
 }

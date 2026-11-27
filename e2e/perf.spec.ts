@@ -34,3 +34,27 @@ test("VN-PRF-004: first render under 3 s on simulated fast 4G with an empty cach
     timeout: 20_000,
   });
 });
+
+// T-075 (VN-PRF-001): the ?stats overlay shows the frame rate and frame times, the drawing buffer and the renderer
+// counts. 60 fps itself is demonstrated on the reference machine (docs/TESTBED.md), not in SwiftShader.
+test("VN-PRF-001: ?stats shows a live frame rate, frame times, buffer size, tier and renderer counts", async ({
+  page,
+}) => {
+  await page.goto("./?stats");
+  await expect(page.locator("canvas")).toHaveAttribute("data-first-frame", "1", { timeout: 20_000 });
+  const stats = page.getByLabel("Render statistics");
+  await expect(stats).toBeVisible();
+  await expect(stats).not.toHaveAttribute("data-fps", "0.0", { timeout: 5_000 });
+  const fps = Number(await stats.getAttribute("data-fps"));
+  console.log(`?stats frame rate in SwiftShader: ${fps} fps`);
+  expect(fps).toBeGreaterThan(0);
+  await expect(stats).toContainText("1280×800");
+  await expect(stats).toContainText(/p95 \d+\.\d ms/);
+  await expect(stats).toContainText(/draws\s*[1-9]/);
+});
+
+test("VN-PRF-001: without ?stats there is no overlay", async ({ page }) => {
+  await page.goto("./");
+  await expect(page.locator("canvas")).toHaveAttribute("data-first-frame", "1", { timeout: 20_000 });
+  await expect(page.getByLabel("Render statistics")).toHaveCount(0);
+});

@@ -8,6 +8,13 @@ import { parseUtc } from "../../core/time/scales";
 
 // WebGL is not available in jsdom; the 3D view is covered by the e2e smoke test (T-005).
 vi.mock("../../scene/SceneView", () => ({ SceneView: () => <div data-testid="scene" /> }));
+// A desktop with WebGL 2 (the fallback view without it: src/app/fallback).
+vi.mock("../device", () => ({
+  getDevice: () => ({
+    webgl2: true,
+    info: { pixelRatio: 1, cores: 16, memoryGb: 8, maxTextureSize: 16384, coarsePointer: false },
+  }),
+}));
 
 beforeEach(() => localStorage.clear());
 afterEach(() => cleanup());
@@ -269,5 +276,16 @@ describe("preferences across a reload", () => {
     expect((screen.getByRole("combobox", { name: "Time zone" }) as HTMLSelectElement).value).toBe("utc");
     expect(viewStore.getState().sky.stars).toBe(0.8);
     expect(localStorage.getItem(PREFS_KEY)).toBeNull();
+  });
+
+  it("VN-PRF-003, VN-UI-003: quality is auto (the device's tier) until a tier is chosen, and the choice is kept", () => {
+    render(<App />);
+    const q = screen.getByRole("combobox", { name: "Quality" });
+    expect(q).toHaveProperty("value", "auto");
+    expect(within(q).getByRole("option", { name: "Auto (High)" })).toBeTruthy();
+    expect(viewStore.getState().quality).toBe("high");
+    fireEvent.change(q, { target: { value: "low" } });
+    expect(viewStore.getState().quality).toBe("low");
+    expect(JSON.parse(localStorage.getItem(PREFS_KEY) ?? "{}")).toEqual({ quality: "low" });
   });
 });

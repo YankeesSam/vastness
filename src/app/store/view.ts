@@ -2,6 +2,7 @@ import { useStore } from "zustand";
 import { createStore, type StoreApi } from "zustand/vanilla";
 import { advanceTime, clampToRange, MAX_FRAME_DT_S, PLANET_COVERAGE, reverse, stepRate } from "../../core/time/clock";
 import { tdbFromUtc } from "../../core/time/scales";
+import type { QualityTier } from "../../core/quality";
 import type { FragmentCamera } from "../../core/share/fragment";
 import type { ScaleMode } from "../../core/scale/mapping";
 import type { Pulse, PulseOrigin } from "../../scene/pulse/pulse";
@@ -54,6 +55,8 @@ export interface ViewState {
   /** VN-CAT-004: spacecraft trail range, days back and ahead (Infinity: the whole coverage). */
   trailDays: number;
   sky: SkySettings;
+  /** VN-PRF-003: the quality tier the scene draws at. */
+  quality: QualityTier;
   tick(dtRealS: number): void;
   setTime(t: number): void;
   setRate(rate: number): void;
@@ -77,6 +80,7 @@ export interface ViewState {
   setPulse(origin: PulseOrigin | null): void;
   /** Values are clamped to their ranges. */
   setSky(patch: Partial<SkySettings>): void;
+  setQuality(quality: QualityTier): void;
 }
 
 /** TDB seconds for the current wall-clock instant (UTC to TDB at the edge, ADR-0003). */
@@ -102,6 +106,7 @@ export function createViewStore(init: ViewInit = {}): StoreApi<ViewState> {
     following: null,
     layers: { bodies: true, labels: true, markers: true, orbits: true, trails: true, callouts: true, stars: true },
     sky: { ...DEFAULT_SKY },
+    quality: "high",
     trailDays: TRAIL_DEFAULT_DAYS,
     scale: "true",
     pulse: null,
@@ -135,6 +140,7 @@ export function createViewStore(init: ViewInit = {}): StoreApi<ViewState> {
           glowSize: clamp(patch.glowSize ?? s.sky.glowSize, 0.25, 4),
         },
       })),
+    setQuality: (quality) => set({ quality }),
     setTrailDays: (trailDays) => set({ trailDays: trailDays > 0 ? trailDays : TRAIL_DEFAULT_DAYS }),
   }));
 }

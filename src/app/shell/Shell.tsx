@@ -17,8 +17,14 @@ import { ScaleBar } from "../scale/ScaleBar";
 import { LayerSwitches, ScaleNote, ScaleSelect } from "../scale/ScaleControls";
 import { Share } from "../share/Share";
 import { SkyControls } from "../sky/SkyControls";
-import { bindSkyPrefs, createPrefsStore, type Prefs } from "../settings/prefs";
+import { chooseTier } from "../../core/quality";
+import { getDevice } from "../device";
+import { Fallback } from "../fallback/Fallback";
+import { QualitySelect } from "../settings/QualitySelect";
+import { bindQualityPrefs, bindSkyPrefs, createPrefsStore, type Prefs } from "../settings/prefs";
+import { StatsOverlay } from "../stats/StatsOverlay";
 import { useView, viewStore } from "../store/view";
+import { testParams } from "../testparams";
 import styles from "./Shell.module.css";
 import { SelectionTimeline } from "../time/Timeline";
 import { TimeBar } from "../time/TimeBar";
@@ -28,6 +34,11 @@ import { TimeBar } from "../time/TimeBar";
 // (VN-CAM-002); the info panel shows its read-outs (VN-INF-001). Scale mode and layers: VN-SCL-001, VN-SCL-002.
 /** The Sun, planets and Moon in the order they are listed (from the Sun outwards). */
 const OBJECT_ORDER = DRAWN_BODIES.map((b) => b.horizonsId);
+/** VN-ACC-004: every catalog object for the fallback table: the bodies in OBJECT_ORDER, then the rest as listed. */
+const FALLBACK_OBJECTS = [
+  ...OBJECT_ORDER.flatMap((id) => CATALOG.objects.filter((o) => o.id === id)),
+  ...CATALOG.objects.filter((o) => !(OBJECT_ORDER as readonly number[]).includes(o.id)),
+];
 
 const rangeLabel = (d: number): string =>
   d === TRAIL_WHOLE ? "Whole coverage" : d >= 365 ? `${d / 365} year${d === 365 ? "" : "s"}` : `${d} days`;
@@ -59,12 +70,22 @@ function TrailRangeSelect() {
   );
 }
 
+/** VN-PRF-005: the width under which panels become bottom sheets. */
+export const NARROW_QUERY = "(max-width: 767.98px)";
+const narrow = (): boolean => typeof matchMedia === "function" && matchMedia(NARROW_QUERY).matches;
+
 export function Shell() {
   // VN-GEN-008: preferences in localStorage, read once per page load; the sky settings follow them both ways
   const [prefsStore] = useState(createPrefsStore);
   const prefs = useStore(prefsStore, (s) => s.prefs);
   useEffect(() => bindSkyPrefs(viewStore, prefsStore), [prefsStore]);
-  const [panelOpen, setPanelOpen] = useState(true);
+  // VN-PRF-003: the quality tier from the setting or the device
+  useEffect(() => bindQualityPrefs(viewStore, prefsStore, getDevice().info), [prefsStore]);
+  const [autoTier] = useState(() => chooseTier(getDevice().info));
+  // VN-ACC-004, VN-GEN-011: without WebGL 2, a plain view with the objects' distances instead of the 3D view
+  const [webgl2] = useState(() => getDevice().webgl2);
+  // VN-PRF-005: on a narrow screen the panel is a bottom sheet, closed at first so the view shows
+  const [panelOpen, setPanelOpen] = useState(() => !narrow());
   const [query, setQuery] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -102,9 +123,13 @@ export function Shell() {
 
   return (
     <div className={styles.shell}>
-      <DescribedView className={styles.view}>
-        <SceneView />
-      </DescribedView>
+      {webgl2 ? (
+        <DescribedView className={styles.view}>
+          <SceneView />
+        </DescribedView>
+      ) : (
+        <Fallback objects={FALLBACK_OBJECTS} units={prefs.units} onChoose={(id) => viewStore.getState().select(id)} />
+      )}
       <Announcements />
 
       <header className={styles.top}>
@@ -225,6 +250,14 @@ export function Shell() {
           <h2>Sky</h2>
           <SkyControls className={styles.objects} />
         </section>
+        <section aria-label="Quality">
+          <h2>Quality</h2>
+          <QualitySelect
+            value={prefs.quality}
+            autoTier={autoTier}
+            onChange={(quality) => update({ ...prefs, quality })}
+          />
+        </section>
         <section aria-label="Light pulse">
           <h2>Light pulse</h2>
           <PulseControl />
@@ -243,15 +276,18 @@ export function Shell() {
         </section>
       </aside>
 
-      <div className={styles.overlay}>
-        <ScaleNote className={styles.note} />
-        <ScaleBar />
-      </div>
+      {webgl2 && (
+        <div className={styles.overlay}>
+          <ScaleNote className={styles.note} />
+          <ScaleBar />
+        </div>
+      )}
 
       <TimeBar className={styles.bottom} zone={prefs.zone} onZone={(zone) => update({ ...prefs, zone })}>
         <SelectionTimeline />
       </TimeBar>
 
+      {testParams.stats && <StatsOverlay />}
       {aboutOpen && <About onClose={() => setAboutOpen(false)} />}
       {helpOpen && <HelpDialog onClose={() => setHelpOpen(false)} />}
     </div>

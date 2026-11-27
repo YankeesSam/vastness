@@ -1,0 +1,59 @@
+/* VN-ACC-004: the view area without WebGL 2: a readable card that scrolls */
+.fallback {
+  grid-area: main;
+  min-height: 0;
+  overflow: auto;
+  padding: 1rem;
+  pointer-events: auto;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.card {
+  max-width: 44rem;
+  margin: 0 auto;
+}
+
+.card h1 {
+  font-size: 1.3rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.table caption {
+  text-align: left;
+  color: var(--muted);
+  padding-bottom: 0.4rem;
+}
+
+.table th,
+.table td {
+  padding: 0.2rem 0.4rem;
+  border-bottom: 1px solid var(--border);
+  text-align: right;
+}
+
+.table th[scope="row"],
+.table th:first-child {
+  text-align: left;
+}
+
+.table button {
+  min-height: 1.75rem; /* WCAG 2.5.8 */
+  padding: 0.2rem 0.3rem;
+  border: 0;
+  background: none;
+  color: var(--fg);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.table button[aria-current="true"] {
+  background: var(--border);
+}
