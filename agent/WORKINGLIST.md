@@ -26,3 +26,4 @@ Answers to open items: `- [x] W-002 → OI-1 Apache-2.0, VN-GEN-007, T-010 kind:
 - [x] W-011 → VN-SCN-009, T-098; T-062 pulled to Next kind:feature populate the planet textures with actual topology maps, with proper orientation and spin
 - [x] W-012 → T-096 pulled to Next kind:feature the spacecraft with 3D models where possible
 - [x] W-013 → VN-SCN-010, T-099 (absorbs D-003) kind:feature planets should cast a shadow, for example Saturn on its rings, Earth on the Moon
+- [x] W-014 → VN-EXT-001 widened, VN-EXT-005..007; T-086 to Next, T-100, T-101, T-102 kind:feature space weather depicted as a storm, with mass and energy (CDAW), and NOAA measured near-Earth solar wind; after rotation, textures and shadows (session 18 chat)

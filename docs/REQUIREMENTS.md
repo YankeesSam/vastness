@@ -8,6 +8,7 @@ Requirement IDs are stable. A retired requirement is struck through and kept; it
 | A | 2026-11-26 | Initial baseline, from the Vastness Project Design Document v1.0 (2026-11-26) and the seeding chat; hosted on GitHub (user's choice in the seeding chat) |
 | B | 2026-11-26 | Lunar orbiters stored as orbital elements, measured before choosing full mission or window (seeding chat): VN-EPH-003 adds a 2 km tolerance, VN-EPH-009 reworded, new VN-EPH-011, OI-6 reworded |
 | C | 2026-11-26 | Open items answered through WORKINGLIST (W-001..W-009): OI-1 Apache-2.0 (VN-GEN-007), OI-3 GitHub Pages, OI-4 list is a minimum plus JWST (VN-CAT-002) and Earth satellites (new VN-CAT-007, VN-DAT-009), OI-5 default kept, OI-7 build time plus a manual refresh run (VN-DAT-006), OI-8 NASA public domain and CC BY with credit, OI-9 reference machine recorded (VN-PRF-001), OI-10 order confirmed |
+| F | 2026-11-27 | User (session 18, W-014): space weather as storms: VN-EXT-001 widened to DONKI's archive, VN-EXT-005 storm visual, VN-EXT-006 CDAW mass and energy, VN-EXT-007 NOAA SWPC solar wind; ordered after rotation, textures and shadows |
 | E | 2026-11-27 | User (session 18, W-011..W-013): VN-SCN-009 body orientation and spin (IAU rotation models), VN-SCN-010 eclipse shadows; textures with topographic maps and spacecraft models pulled forward |
 | D | 2026-11-26 | User (session 9): positions and orbits come only from Horizons data, never approximated. VN-EPH-006 reworded (no Standish fallback: outside coverage a planet is not drawn and the UI says why), VN-SCN-002 adds that every orbit sample is ephemeris data, loaded after the first render. VN-SCN-006 adds public topographic maps; VN-SCN-008 widens to the major moons of every planet |
 
@@ -183,9 +184,12 @@ Out of scope (non-goals)
 
 ### 4.15 Expansion (EXT)
 
-- **VN-EXT-001** (T, M9) Space weather: recent coronal mass ejections and flares from NASA DONKI, fetched by the build pipeline with the project's API key (never in the client), shown as an optional layer with dates.
+- **VN-EXT-001** (T, M9) Space weather: coronal mass ejections (CME analyses: start time at 21.5 solar radii, direction, half-angle, speed, type), flares (class, source location), geomagnetic storms (Kp) and WSA-Enlil arrival predictions from NASA DONKI over its whole archive (2010 on), fetched by the build pipeline with the project's API key (never in the client), shown as an optional layer with dates.
 - **VN-EXT-002** (T, M9) Close approaches: near-Earth objects passing within 0.05 AU in the next 60 days, from the CNEOS close-approach API, fetched at build time, with SBDB orbits for drawing.
 - **VN-EXT-003** (T, M9) More spacecraft by catalog entry alone (no code change), including missions that ended (Cassini, Galileo, Rosetta, Pioneer 10 and 11) where Horizons has them.
+- **VN-EXT-005** (T, M9) CMEs drawn as storms: an expanding cone or shell from the Sun along the DONKI direction, at its half-angle and speed, from its start time; density or brightness from its mass where known (VN-EXT-006), colour from speed class or kinetic energy; flares marked at their source on the Sun; predicted arrivals at Earth and spacecraft marked, with the storm's Kp where known; the info panel gives each value and its source, and says when mass is unknown.
+- **VN-EXT-006** (T, M9) CME mass and kinetic energy from the CDAW SOHO/LASCO CME catalog (NASA GSFC), matched to DONKI events by time and position angle, fetched at build time; values the catalog flags as poor are marked as such.
+- **VN-EXT-007** (T, M9) Measured near-Earth solar wind from NOAA SWPC (plasma density, speed, interplanetary magnetic field Bz, Kp), fetched at build time for the span SWPC serves, shown at Earth's L1 point with dates.
 - **VN-EXT-004** (T, M9) Light-time animation of a command to and the reply from a selected spacecraft, at true speed or scaled.
 
 ## 5. Reference objects
