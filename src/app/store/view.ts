@@ -1,14 +1,15 @@
 import { useStore } from "zustand";
 import { createStore, type StoreApi } from "zustand/vanilla";
+import { advanceTime, clampToRange, MAX_FRAME_DT_S, PLANET_COVERAGE, reverse, stepRate } from "../../core/time/clock";
 import { tdbFromUtc } from "../../core/time/scales";
 import { TRAIL_DEFAULT_DAYS } from "../../core/trails/sample";
 
 // VN-TIM-004: the view store. Simulation time is one float64 TDB seconds value since J2000 (ADR-0003), advanced by
-// the frame clock (rate x real seconds, with one frame clamped so a hidden tab never jumps). Selection, the camera
+// the frame clock (rate x real seconds, with one frame clamped so a hidden tab never jumps; src/core/time/clock.ts)
+// and held inside the planets' coverage (VN-TIM-001), pausing at an edge. Selection, the camera
 // target and the layer switches live here too. Per-frame camera state does not: it is mutable scene state.
 
-/** Longest real time one frame may advance the clock, seconds. */
-export const MAX_FRAME_DT_S = 0.25;
+export { advanceTime, MAX_FRAME_DT_S };
 
 export type Layer = "bodies" | "labels" | "markers" | "orbits" | "trails";
 
@@ -31,16 +32,17 @@ export interface ViewState {
   setTime(t: number): void;
   setRate(rate: number): void;
   setPaused(paused: boolean): void;
+  /** VN-TIM-002 */
+  togglePlay(): void;
+  faster(): void;
+  slower(): void;
+  reverse(): void;
+  /** VN-TIM-003: the current UTC instant (ms since the Unix epoch, default the wall clock), playing at real time. */
+  now(ms?: number): void;
   select(id: number | null): void;
   setTarget(id: number): void;
   setLayer(layer: Layer, on: boolean): void;
   setTrailDays(days: number): void;
-}
-
-/** The frame clock step: rate x dt, dt clamped to [0, MAX_FRAME_DT_S]; nothing while paused. */
-export function advanceTime(t: number, rate: number, dtRealS: number, paused: boolean): number {
-  if (paused || !(dtRealS > 0)) return t;
-  return t + rate * Math.min(dtRealS, MAX_FRAME_DT_S);
 }
 
 /** TDB seconds for the current wall-clock instant (UTC to TDB at the edge, ADR-0003). */
@@ -65,10 +67,19 @@ export function createViewStore(init: ViewInit = {}): StoreApi<ViewState> {
     targetSeq: 0,
     layers: { bodies: true, labels: true, markers: true, orbits: true, trails: true },
     trailDays: TRAIL_DEFAULT_DAYS,
-    tick: (dt) => set((s) => ({ t: advanceTime(s.t, s.rate, dt, s.paused) })),
-    setTime: (t) => set({ t }),
+    tick: (dt) =>
+      set((s) => {
+        const c = clampToRange(advanceTime(s.t, s.rate, dt, s.paused), PLANET_COVERAGE.start, PLANET_COVERAGE.end);
+        return c.atEdge ? { t: c.t, paused: true } : { t: c.t };
+      }),
+    setTime: (t) => set({ t: clampToRange(t, PLANET_COVERAGE.start, PLANET_COVERAGE.end).t }),
     setRate: (rate) => set({ rate }),
     setPaused: (paused) => set({ paused }),
+    togglePlay: () => set((s) => ({ paused: !s.paused })),
+    faster: () => set((s) => ({ rate: stepRate(s.rate, 1) })),
+    slower: () => set((s) => ({ rate: stepRate(s.rate, -1) })),
+    reverse: () => set((s) => ({ rate: reverse(s.rate) })),
+    now: (ms) => set({ t: tdbNow(ms), rate: 1, paused: false }),
     select: (selection) => set({ selection }),
     setTarget: (target) => set((s) => ({ target, targetSeq: s.targetSeq + 1 })),
     setLayer: (layer, on) => set((s) => ({ layers: { ...s.layers, [layer]: on } })),

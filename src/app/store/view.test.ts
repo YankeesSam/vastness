@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { parseUtc } from "../../core/time/scales";
-import { advanceTime, createViewStore, MAX_FRAME_DT_S } from "./view";
+import { PLANET_COVERAGE } from "../../core/time/clock";
+import { advanceTime, createViewStore, MAX_FRAME_DT_S, tdbNow } from "./view";
 
 describe("view store", () => {
   it("VN-TIM-004: simulation time is TDB seconds, set from UTC at the edge", () => {
@@ -67,5 +68,45 @@ describe("view store", () => {
     store.getState().setTime(123.5);
     expect(store.getState().t).toBe(123.5);
     expect(store.getState().rate).toBe(60);
+  });
+
+  it("VN-TIM-002: play, pause, reverse and the rate ladder", () => {
+    const store = createViewStore({ t: 0 });
+    const s = store.getState();
+    s.togglePlay();
+    expect(store.getState().paused).toBe(true);
+    s.togglePlay();
+    expect(store.getState().paused).toBe(false);
+    s.faster();
+    expect(store.getState().rate).toBe(60);
+    s.reverse();
+    expect(store.getState().rate).toBe(-60);
+    s.faster();
+    expect(store.getState().rate).toBe(-3600);
+    s.slower();
+    s.slower();
+    s.slower();
+    expect(store.getState().rate).toBe(-1);
+  });
+
+  it("VN-TIM-003: Now jumps to the current UTC time and plays at real time", () => {
+    const store = createViewStore({ t: 0 });
+    store.getState().setRate(-86400);
+    store.getState().setPaused(true);
+    const ms = Date.UTC(2026, 10, 27, 12);
+    store.getState().now(ms);
+    expect(store.getState().t).toBe(tdbNow(ms));
+    expect(store.getState().rate).toBe(1);
+    expect(store.getState().paused).toBe(false);
+  });
+
+  it("VN-TIM-001: the clock stops at the edge of the planets' coverage", () => {
+    const store = createViewStore({ t: PLANET_COVERAGE.end - 10 });
+    store.getState().setRate(86400);
+    store.getState().tick(0.1);
+    expect(store.getState().t).toBe(PLANET_COVERAGE.end);
+    expect(store.getState().paused).toBe(true);
+    store.getState().setTime(PLANET_COVERAGE.start - 1e6);
+    expect(store.getState().t).toBe(PLANET_COVERAGE.start);
   });
 });
