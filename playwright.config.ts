@@ -4,6 +4,14 @@ import { defineConfig, devices } from "@playwright/test";
 // the production build served by `vite preview` (T-005).
 const port = 4173;
 
+const browser = {
+  ...devices["Desktop Chrome"],
+  viewport: { width: 1280, height: 800 },
+  deviceScaleFactor: 1,
+  launchOptions: { args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"] },
+};
+const TIMED = /(perf|camera)\.spec\.ts/;
+
 export default defineConfig({
   testDir: "e2e",
   fullyParallel: true,
@@ -14,15 +22,21 @@ export default defineConfig({
     baseURL: `http://127.0.0.1:${port}/`,
     trace: "retain-on-failure",
   },
+  // Specs that time wall-clock budgets (first render, fly-to) run after the rest, one at a time: SwiftShader renders
+  // on the CPU, so parallel specs would be measuring each other.
   projects: [
     {
       name: "chromium",
-      use: {
-        ...devices["Desktop Chrome"],
-        viewport: { width: 1280, height: 800 },
-        deviceScaleFactor: 1,
-        launchOptions: { args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"] },
-      },
+      use: browser,
+      testIgnore: TIMED,
+    },
+    {
+      name: "timed",
+      use: browser,
+      testMatch: TIMED,
+      dependencies: ["chromium"],
+      fullyParallel: false,
+      workers: 1,
     },
   ],
   webServer: {

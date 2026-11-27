@@ -1,0 +1,39 @@
+.name {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.type {
+  margin: 0.1rem 0 0.6rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.readouts {
+  margin: 0 0 0.75rem;
+}
+
+.readouts dt {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.readouts dd {
+  margin: 0 0 0.45rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.note {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.3;
+}
+
+.units {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
