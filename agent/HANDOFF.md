@@ -18,8 +18,8 @@ do_not_read:
   - docs/architecture/VASTNESS_ARCHITECTURE.md
   - public/ephem, public/stars.bin, testdata, .cache, dist
 tests: pass (vitest 469; e2e 48/48; typecheck, prettier, check-deps, check-size clean)
-commit: pending
-push: pending
+commit: 085613d
+push: ok
 notes:
   - Session 17 batch at the user's request: M7 accessibility and settings (T-071, T-067, T-068, T-069, T-077). T-097 still stashed (`git stash list`: "T-097 WIP").
   - T-065 no longer needs the user: SVS 403s every /vis/ file to the user's browser too. PLAN now points at ESO eso0932a (CC BY 4.0, credit ESO/S. Brunier), which curl downloads; check its projection before reprojecting.
