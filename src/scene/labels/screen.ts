@@ -1,5 +1,5 @@
 import { createLabelSet, type LabelSet } from "../../core/labels/declutter";
-import { DRAWN_BODIES } from "../bodies/positions";
+import { SCENE_OBJECTS } from "../bodies/positions";
 
 // VN-SCN-003, VN-CAT-005: where each drawn object lands on screen this frame. Filled once per frame by the marker
 // layout (after the camera is placed) and read by the label DOM and by picking.
@@ -17,7 +17,7 @@ export interface ScreenFrame {
   height: number;
 }
 
-export function createScreenFrame(n = DRAWN_BODIES.length): ScreenFrame {
+export function createScreenFrame(n = SCENE_OBJECTS.length): ScreenFrame {
   return {
     set: createLabelSet(n),
     radiusPx: new Float64Array(n),

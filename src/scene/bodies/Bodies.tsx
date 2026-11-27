@@ -6,20 +6,23 @@ import { toCamera } from "../origin";
 import { useRig } from "../rig";
 import { PRIORITY } from "../Scene";
 import { colourOf } from "../colours";
-import { DRAWN_BODIES } from "./positions";
+import { DRAWN_BODIES, SCENE_OBJECTS } from "./positions";
 
 // VN-SCN-001: plain spheres with true mean radii at their ephemeris positions, placed camera-relative each frame
 // (the world positions come from the shared frame buffer the rig fills).
 
 export interface BodyFrame {
-  /** World positions of DRAWN_BODIES this frame, 3 per body. */
+  /** World positions of SCENE_OBJECTS this frame, 3 per object (bodies first, in DRAWN_BODIES order). */
   readonly world: Float64Array;
-  /** 1 where the body has a position this frame. */
+  /** 1 where the object has a position this frame. */
   readonly ok: Uint8Array;
+  /** 1 where the object has no position to load at this time (outside its coverage, VN-EPH-007). */
+  readonly outside: Uint8Array;
 }
 
 export function createBodyFrame(): BodyFrame {
-  return { world: new Float64Array(3 * DRAWN_BODIES.length), ok: new Uint8Array(DRAWN_BODIES.length) };
+  const n = SCENE_OBJECTS.length;
+  return { world: new Float64Array(3 * n), ok: new Uint8Array(n), outside: new Uint8Array(n) };
 }
 
 export function Bodies({ frame }: { frame: BodyFrame }) {

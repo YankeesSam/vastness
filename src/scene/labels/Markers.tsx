@@ -20,7 +20,8 @@ import {
   project,
 } from "../../core/labels/declutter";
 import type { BodyFrame } from "../bodies/Bodies";
-import { DRAWN_BODIES } from "../bodies/positions";
+import { CATALOG_BY_ID } from "../../app/catalog";
+import { SCENE_OBJECTS } from "../bodies/positions";
 import { colourOf } from "../colours";
 import { toCamera } from "../origin";
 import { useRig } from "../rig";
@@ -54,7 +55,7 @@ export function Markers({ frame, screen }: { frame: BodyFrame; screen: ScreenFra
   const camera = useThree((s) => s.camera);
   const canvas = useThree((s) => s.gl.domElement);
   const size = useThree((s) => s.size);
-  const n = DRAWN_BODIES.length;
+  const n = SCENE_OBJECTS.length;
 
   const points = useMemo(() => {
     const geometry = new BufferGeometry();
@@ -90,7 +91,7 @@ export function Markers({ frame, screen }: { frame: BodyFrame; screen: ScreenFra
       rel: new Float64Array(3 * n),
       viewProj: new Matrix4(),
       pt: { x: 0, y: 0, ok: false },
-      colours: DRAWN_BODIES.map((b) => new Color(colourOf(b.horizonsId))),
+      colours: SCENE_OBJECTS.map((b) => new Color(CATALOG_BY_ID.get(b.id)?.colour ?? colourOf(b.id))),
       lastShown: new Uint8Array(n),
       labels: "",
     }),
@@ -129,8 +130,11 @@ export function Markers({ frame, screen }: { frame: BodyFrame; screen: ScreenFra
       s.x[i] = p.x;
       s.y[i] = p.y;
       s.ok[i] = 1;
-      const b = DRAWN_BODIES[i]!;
-      s.priority[i] = bodyPriority(b.horizonsId, st.selection === b.horizonsId);
+      const b = SCENE_OBJECTS[i]!;
+      s.priority[i] =
+        b.kind === "body"
+          ? bodyPriority(b.id, st.selection === b.id)
+          : (CATALOG_BY_ID.get(b.id)?.priority ?? 0) + (st.selection === b.id ? 1000 : 0);
       screen.radiusPx[i] = pixelRadius(b.radiusKm, Math.hypot(x, y, z), fov, size.height);
       if (st.layers.markers && markerShown(screen.radiusPx[i]!)) {
         screen.marker[i] = 1;
@@ -160,7 +164,7 @@ export function Markers({ frame, screen }: { frame: BodyFrame; screen: ScreenFra
     }
     // For e2e specs: the names of the labels shown, in body order (rebuilt only when the set changes).
     if (changed) {
-      scratch.labels = DRAWN_BODIES.filter((_, i) => scratch.lastShown[i])
+      scratch.labels = SCENE_OBJECTS.filter((_, i) => scratch.lastShown[i])
         .map((b) => b.name)
         .join(",");
       canvas.dataset.labels = scratch.labels;

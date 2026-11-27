@@ -5,7 +5,7 @@ import { viewStore } from "../app/store/view";
 import { testParams } from "../app/testparams";
 import type { Ephemeris } from "../core/ephem/ephemeris";
 import { Bodies, createBodyFrame, type BodyFrame } from "./bodies/Bodies";
-import { worldPositions } from "./bodies/positions";
+import { DRAWN_BODIES, worldPositions } from "./bodies/positions";
 import { FAR_KM, MIN_NEAR_KM } from "./origin";
 import { Controls } from "./camera/Controls";
 import { Labels } from "./labels/Labels";
@@ -25,23 +25,32 @@ function FrameClock() {
 /** Fills the frame's body positions from the ephemeris at the store's time (missing chunks load lazily). */
 function BodyStates({ eph, frame }: { eph: Ephemeris | null; frame: BodyFrame }) {
   useFrame(() => {
-    if (eph) worldPositions(eph, viewStore.getState().t, frame.world, frame.ok);
+    if (eph) worldPositions(eph, viewStore.getState().t, frame.world, frame.ok, frame.outside);
   }, PRIORITY.states);
   return null;
 }
 
 /**
- * Sets data-scene-ready="1" on the canvas once a frame has rendered with every body placed (or the ephemeris
- * failed to load), and data-bodies to the count placed. e2e specs wait for the first.
+ * Sets data-scene-ready="1" on the canvas once a frame has rendered with every object placed or known to be outside
+ * its coverage (or the ephemeris failed to load), data-bodies to the count placed and data-spacecraft to the
+ * spacecraft placed. e2e specs wait for the first.
  */
 function ReadyMarker({ frame, failed }: { frame: BodyFrame; failed: boolean }) {
   const canvas = useThree((s) => s.gl.domElement);
   useFrame(() => {
     let n = 0;
-    for (let i = 0; i < frame.ok.length; i++) n += frame.ok[i]!;
-    const bodies = String(n);
+    let settled = 0;
+    for (let i = 0; i < frame.ok.length; i++) {
+      n += frame.ok[i]!;
+      settled += frame.ok[i]! | frame.outside[i]!;
+    }
+    let b = 0;
+    for (let i = 0; i < DRAWN_BODIES.length; i++) b += frame.ok[i]!;
+    const bodies = String(b);
+    const craft = String(n - b);
     if (canvas.dataset.bodies !== bodies) canvas.dataset.bodies = bodies;
-    if (canvas.dataset.sceneReady !== "1" && (n === frame.ok.length || failed)) canvas.dataset.sceneReady = "1";
+    if (canvas.dataset.spacecraft !== craft) canvas.dataset.spacecraft = craft;
+    if (canvas.dataset.sceneReady !== "1" && (settled === frame.ok.length || failed)) canvas.dataset.sceneReady = "1";
   });
   return null;
 }

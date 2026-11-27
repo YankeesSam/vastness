@@ -1,4 +1,4 @@
-import { DRAWN_BODIES } from "../bodies/positions";
+import { SCENE_OBJECTS } from "../bodies/positions";
 import type { ScreenFrame } from "./screen";
 
 // VN-SCN-003, VN-ACC-002: labels are DOM text (crisp, readable by screen readers) over the canvas. The marker
@@ -6,9 +6,9 @@ import type { ScreenFrame } from "./screen";
 export function Labels({ screen }: { screen: ScreenFrame }) {
   return (
     <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }} data-testid="labels">
-      {DRAWN_BODIES.map((b, i) => (
+      {SCENE_OBJECTS.map((b, i) => (
         <span
-          key={b.horizonsId}
+          key={b.id}
           ref={(el) => {
             screen.spans[i] = el;
           }}

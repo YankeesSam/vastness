@@ -14,6 +14,8 @@ function fakeEphemeris(): Ephemeris {
     10: [0, 0, 0, 0, 0, 0],
   };
   return {
+    has: (id: number) => id in states || id === -170,
+    coverage: (id: number) => (id === -170 ? { start: 693_700_000, end: 1_005_826_000 } : null),
     state(id: number, _t: number, out: Float64Array) {
       const s = states[id];
       if (!s) return "outside";
@@ -67,6 +69,20 @@ describe("info panel", () => {
       vi.advanceTimersByTime(1000);
     });
     expect(spy.mock.calls.length - first).toBe(2 * 4);
+  });
+
+  it("VN-EPH-007: a spacecraft outside its coverage shows why instead of read-outs", async () => {
+    viewStore.getState().setTime(0); // 2000: before JWST's launch
+    render(<InfoPanel selection={-170} units="km" onUnits={() => {}} ephemeris={Promise.resolve(fakeEphemeris())} />);
+    expect(await screen.findByRole("heading", { name: "James Webb Space Telescope" })).toBeTruthy();
+    expect(screen.getByText("Spacecraft")).toBeTruthy();
+    expect((await screen.findByText(/has not launched yet/)).textContent).toBe(
+      "James Webb Space Telescope has not launched yet at this time (launch 2021-12-25).",
+    );
+    viewStore.getState().setTime(1_100_000_000); // 2034: beyond the predictions
+    cleanup();
+    render(<InfoPanel selection={-170} units="km" onUnits={() => {}} ephemeris={Promise.resolve(fakeEphemeris())} />);
+    expect((await screen.findByText(/beyond Horizons' predictions/)).textContent).toMatch(/end on 2031-11-16/);
   });
 
   it("VN-INF-001: nothing selected asks for a selection", () => {

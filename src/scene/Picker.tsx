@@ -1,7 +1,7 @@
 import { useThree } from "@react-three/fiber";
 import { useEffect } from "react";
 import { viewStore } from "../app/store/view";
-import { DRAWN_BODIES } from "./bodies/positions";
+import { SCENE_OBJECTS } from "./bodies/positions";
 import type { ScreenFrame } from "./labels/screen";
 import { isClick, pick } from "./pick";
 
@@ -19,8 +19,8 @@ export function Picker({ screen }: { screen: ScreenFrame }) {
       down = null;
       if (!d || d.id !== e.pointerId || !isClick(d.x, d.y, e.clientX, e.clientY)) return;
       const r = el.getBoundingClientRect();
-      const i = pick(screen.set, screen.radiusPx, DRAWN_BODIES.length, e.clientX - r.left, e.clientY - r.top);
-      viewStore.getState().select(i < 0 ? null : DRAWN_BODIES[i]!.horizonsId);
+      const i = pick(screen.set, screen.radiusPx, SCENE_OBJECTS.length, e.clientX - r.left, e.clientY - r.top);
+      viewStore.getState().select(i < 0 ? null : SCENE_OBJECTS[i]!.id);
     };
     const cancel = () => {
       down = null;

@@ -15,7 +15,7 @@ import {
 } from "../../core/camera/orbit";
 import { flightAt, frameDistance, planFlight, type Flight } from "../../core/camera/flyto";
 import type { BodyFrame } from "../bodies/Bodies";
-import { DRAWN_BODIES } from "../bodies/positions";
+import { objectIndex, SCENE_OBJECTS } from "../bodies/positions";
 import { useRig, type Rig } from "../rig";
 import { PRIORITY } from "../Scene";
 
@@ -23,14 +23,10 @@ import { PRIORITY } from "../Scene";
 // arrow keys. VN-CAM-002: a new camera target starts a fly-to; VN-CAM-003: once there the camera follows it, and
 // Escape or a pan releases it. The maths is in src/core/camera; this turns DOM events into calls on the rig.
 
-function bodyIndex(id: number | null): number {
-  return id === null ? -1 : DRAWN_BODIES.findIndex((b) => b.horizonsId === id);
-}
-
 /** The closest the camera may come to the rig's focus. */
 export function minDistance(rig: Rig): number {
-  const i = bodyIndex(rig.follow);
-  return i >= 0 ? minDistanceFor(DRAWN_BODIES[i]!.radiusKm) : MIN_DISTANCE_KM;
+  const i = objectIndex(rig.follow);
+  return i >= 0 ? minDistanceFor(SCENE_OBJECTS[i]!.radiusKm) : MIN_DISTANCE_KM;
 }
 
 /** A fly-to in progress: from a fixed start focus to a body, timed in real seconds. */
@@ -140,11 +136,11 @@ export function Controls({ frame }: { frame: BodyFrame }) {
     // A camera target request starts a fly-to from the current focus (VN-CAM-002).
     const unsubscribe = viewStore.subscribe((s, prev) => {
       if (s.targetSeq === prev.targetSeq) return;
-      const i = bodyIndex(s.target);
+      const i = objectIndex(s.target);
       if (i < 0) return;
       rig.follow = null;
       flying.current = {
-        plan: planFlight(0, rig.orbit.distance, frameDistance(DRAWN_BODIES[i]!.radiusKm)),
+        plan: planFlight(0, rig.orbit.distance, frameDistance(SCENE_OBJECTS[i]!.radiusKm)),
         to: s.target,
         start: Float64Array.from(rig.focus),
         elapsed: 0,
@@ -175,7 +171,7 @@ export function Controls({ frame }: { frame: BodyFrame }) {
   // distance respects its radius. Then the eye sits on the orbit.
   useFrame((_, dt) => {
     const f = flying.current;
-    const j = f ? bodyIndex(f.to) : -1;
+    const j = f ? objectIndex(f.to) : -1;
     if (f && j >= 0 && frame.ok[j]) {
       const ex = frame.world[3 * j]!;
       const ey = frame.world[3 * j + 1]!;
@@ -197,7 +193,7 @@ export function Controls({ frame }: { frame: BodyFrame }) {
         flying.current = null;
       }
     }
-    const i = bodyIndex(rig.follow);
+    const i = objectIndex(rig.follow);
     if (i >= 0 && frame.ok[i]) {
       rig.focus[0] = frame.world[3 * i]!;
       rig.focus[1] = frame.world[3 * i + 1]!;

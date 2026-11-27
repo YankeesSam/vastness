@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { BODIES } from "../../core/constants";
 import { createEphemeris, type Ephemeris, type EphemerisManifest } from "../../core/ephem/ephemeris";
 import { parseUtc } from "../../core/time/scales";
-import { DRAWN_BODIES, worldPositions } from "./positions";
+import { DRAWN_BODIES, SCENE_OBJECTS, worldPositions } from "./positions";
 
 const dir = new URL("../../../public/ephem/", import.meta.url);
 
@@ -32,6 +32,7 @@ describe("bodies", () => {
   it("VN-SCN-001: world positions are the ephemeris states mapped to the scene frame (ecliptic z up to y up)", () => {
     const states: Record<number, number[]> = { 10: [0, 0, 0], 399: [1e8, 2e7, 3e3] };
     const eph = {
+      has: (id: number) => id > 0,
       state(id: number, _t: number, out: Float64Array, o = 0) {
         const s = states[id];
         if (!s) return "loading";
@@ -41,9 +42,13 @@ describe("bodies", () => {
         return "ok";
       },
     } as unknown as Ephemeris;
-    const out = new Float64Array(3 * DRAWN_BODIES.length);
-    const ok = new Uint8Array(DRAWN_BODIES.length);
-    expect(worldPositions(eph, 0, out, ok)).toBe(2);
+    const out = new Float64Array(3 * SCENE_OBJECTS.length);
+    const ok = new Uint8Array(SCENE_OBJECTS.length);
+    const outside = new Uint8Array(SCENE_OBJECTS.length);
+    expect(worldPositions(eph, 0, out, ok, outside)).toBe(2);
+    // VN-EPH-007: an object the ephemeris does not hold is outside, not loading.
+    const craft = SCENE_OBJECTS.findIndex((o) => o.kind === "spacecraft");
+    expect([ok[craft], outside[craft]]).toEqual([0, 1]);
     const e = DRAWN_BODIES.findIndex((b) => b.horizonsId === 399);
     expect([...out.subarray(3 * e, 3 * e + 3)]).toEqual([1e8, 3e3, -2e7]);
     expect(ok[e]).toBe(1);
@@ -54,9 +59,10 @@ describe("bodies", () => {
     const eph = realEphemeris();
     const t = parseUtc("2026-01-01T00:00:00Z");
     await eph.load(t);
-    const out = new Float64Array(3 * DRAWN_BODIES.length);
-    const ok = new Uint8Array(DRAWN_BODIES.length);
-    expect(worldPositions(eph, t, out, ok)).toBe(DRAWN_BODIES.length);
+    const out = new Float64Array(3 * SCENE_OBJECTS.length);
+    const ok = new Uint8Array(SCENE_OBJECTS.length);
+    worldPositions(eph, t, out, ok);
+    expect([...ok.subarray(0, DRAWN_BODIES.length)].every((x) => x === 1)).toBe(true);
     // Earth about 1 AU from the Sun, the Moon about 384 000 km from Earth (sanity, not accuracy: ephem:check does that).
     const at = (id: number) => 3 * DRAWN_BODIES.findIndex((b) => b.horizonsId === id);
     const d = (i: number, j: number) =>

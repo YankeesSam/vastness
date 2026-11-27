@@ -160,8 +160,8 @@ export function Orbits({ eph, frame }: { eph: Ephemeris | null; frame: BodyFrame
     const st = viewStore.getState();
     if (!gate.open) {
       let all = 1;
-      for (let i = 0; i < frame.ok.length; i++) all &= frame.ok[i]!;
-      gate.open = all === 1; // the first frame with every body placed has been drawn: now the paths may load
+      for (let i = 0; i < frame.ok.length; i++) all &= frame.ok[i]! | frame.outside[i]!;
+      gate.open = all === 1; // the first frame with every object placed (or outside its coverage) has been drawn: now the paths may load
     }
     let complete = 0;
     for (const tr of tracks) {

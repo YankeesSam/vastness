@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BODIES, type BodyId } from "../../core/constants";
+import { BODIES } from "../../core/constants";
 import type { Ephemeris } from "../../core/ephem/ephemeris";
 import {
   createReadout,
@@ -11,7 +11,10 @@ import {
   type DistanceUnit,
   type Readout,
 } from "../../core/readouts";
+import { coverageState, reasonText } from "../../scene/spacecraft/coverage";
+import { parseUtc } from "../../core/time/scales";
 import { loadEphemeris } from "../assets/loader";
+import { CATALOG_BY_ID, launchTdb } from "../catalog";
 import { viewStore } from "../store/view";
 import styles from "./InfoPanel.module.css";
 
@@ -22,14 +25,24 @@ import styles from "./InfoPanel.module.css";
 const EARTH = 399;
 
 export function bodyType(id: number): string {
+  if (id < 0) return "Spacecraft";
   if (id === 10) return "Star";
   if (id > 100 && id % 100 === 99) return "Planet";
   return "Moon";
 }
 
-type Shown = { status: "ok"; r: Readout } | { status: "loading" } | { status: "none" };
+type Shown =
+  { status: "ok"; r: Readout } | { status: "loading" } | { status: "none" } | { status: "outside"; reason: string };
 
 function compute(eph: Ephemeris, id: number, t: number, body: Float64Array, earth: Float64Array): Shown {
+  // VN-EPH-007: outside a spacecraft's coverage, say why instead of showing numbers.
+  if (id < 0) {
+    const entry = CATALOG_BY_ID.get(id);
+    const cov = eph.has?.(id) ? eph.coverage(id) : null;
+    const c = coverageState(t, cov, entry, launchTdb(entry, parseUtc));
+    if (!c.drawn)
+      return { status: "outside", reason: reasonText(c.reason!, entry?.name ?? `${id}`, cov, entry?.launch) };
+  }
   const a = eph.state(id, t, body);
   const b = eph.state(EARTH, t, earth);
   if (a === "ok" && b === "ok") return { status: "ok", r: readouts(body, earth, createReadout()) };
@@ -72,10 +85,10 @@ export function InfoPanel({ selection, units, onUnits, ephemeris }: InfoPanelPro
     return () => clearInterval(timer);
   }, [eph, selection]);
 
-  if (selection === null || !(selection in BODIES)) {
+  const name = selection === null ? undefined : (CATALOG_BY_ID.get(selection)?.name ?? BODIES[selection as 10]?.name);
+  if (selection === null || name === undefined) {
     return <p data-muted>Select an object to see its details.</p>;
   }
-  const name = BODIES[selection as BodyId].name;
   const isEarth = selection === EARTH;
   return (
     <div>
@@ -103,7 +116,13 @@ export function InfoPanel({ selection, units, onUnits, ephemeris }: InfoPanelPro
           <dd>{isEarth ? "—" : formatSpeed(shown.r.earthSpeedKmS, units)}</dd>
         </dl>
       ) : (
-        <p>{shown.status === "loading" ? "Loading positions…" : "No position at this time."}</p>
+        <p data-testid="no-position">
+          {shown.status === "loading"
+            ? "Loading positions…"
+            : shown.status === "outside"
+              ? shown.reason
+              : "No position at this time."}
+        </p>
       )}
       <label className={styles.units}>
         Units{" "}
