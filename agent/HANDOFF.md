@@ -28,3 +28,4 @@ notes:
   - T-074: Controls already did one-finger orbit, pinch and two-finger pan, and the picker already ignores a pinch; no scene change was needed. Under 768 px the panel is an opaque bottom sheet, closed at first; the "Scale" word is hidden (the select keeps its name).
   - Fallback: WebGL 2 probed once (src/app/device.ts); without it Shell renders src/app/fallback instead of the canvas and the scale overlay.
   - No visual baselines changed.
+  - nightly 0f3ed31-nightly ok; LAN http://192.168.1.166:8770/ (200)
