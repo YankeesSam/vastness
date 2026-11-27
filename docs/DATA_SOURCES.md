@@ -12,6 +12,7 @@ Every data set and asset Vastness ships or uses, with its terms (ADR-0006, VN-DO
 | Vastness (this project) | data/bodies.json: which bodies, centres, sample steps and tolerances the pipeline generates | Apache-2.0 (this repository) | tools/ephem/main.ts | 2026-11-26 |
 | Vastness (this project), with mission facts from NASA, ESA and JPL mission pages | data/catalog.json: names, types, parents, launch dates, mission status with as-of date, agencies, summaries and goals written in our own words, source links, colours and priorities (VN-CAT-001) | Apache-2.0 (this repository); facts are not copyrightable, no text copied; each entry links its sources | src/core/catalog/schema.ts; IDs verified by `npm run ephem:check-ids` | 2026-11-26 |
 | Textures | planet and Moon surfaces, Saturn's rings | NASA public domain or CC BY with credit (OI-8) | public/textures | (T-062) |
+| NASA 3D Resources (https://science.nasa.gov/3d-resources/), ESA for JUICE | spacecraft 3D models | check and record per model in T-096; credit as each asks | public/models via tools/models | (T-096) |
 | Bright-star catalog | background stars | per T-064 | public/stars.bin | (T-064) |
 
 ## Credits
