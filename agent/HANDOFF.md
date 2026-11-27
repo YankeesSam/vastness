@@ -1,36 +1,35 @@
 schema: 1
-from_session: 8
-to_session: 9
-completed: [T-025, T-026, T-027, T-030, T-031]
+from_session: 9
+to_session: 10
+completed: [T-029, T-028, T-032, T-033, T-034]
 failed: []
-next_task_id: T-029
-next_task: "P0 @phase2 slice: screen-space markers and labels with priority declutter (pure layout in core)  req: VN-SCN-003"
+next_task_id: T-036
+next_task: "P0 @phase3 slice: catalog schema and data/catalog.json: the VN-CAT-002 spacecraft (now including JWST) and the bodies, summaries in our own words, sources, status with as-of date  req: VN-CAT-001, VN-CAT-002"
 next_skill: vastness-execute
 read_next:
   - agent/STATE.md
   - agent/PLAN.md
-  - src/scene/SceneView.tsx
-  - src/scene/Scene.tsx
-  - src/scene/bodies/Bodies.tsx
-  - src/scene/bodies/positions.ts
-  - src/scene/camera/Controls.tsx
-  - src/app/store/view.ts
+  - src/core/constants.ts
+  - src/scene/colours.ts
+  - src/core/labels/declutter.ts
+  - src/app/info/InfoPanel.tsx
+  - data/
 do_not_read:
   - docs/REQUIREMENTS.md (grep VN-* IDs instead)
   - docs/ROADMAP.md (only the current milestone section)
   - docs/architecture/VASTNESS_ARCHITECTURE.md
-  - node_modules/, dist/, nightly/, public/ephem/ (read manifest.json keys only), .cache/, testdata/, THIRD_PARTY_NOTICES.txt
-tests: pass (vitest 213/213; e2e 6/6; typecheck, prettier, check-deps, check-size 331 kB clean)
-commit: 19c1a8d
-push: ok
+  - node_modules/, dist/, nightly/, public/ephem/ (read manifest.json keys only), .cache/, testdata/, test-results/, e2e/*-snapshots/, THIRD_PARTY_NOTICES.txt
+tests: pass (vitest 252/252; e2e 15/15; typecheck, prettier, check-deps, check-size 338 kB clean)
+commit: 1bf0d45
+push: pending
 notes:
-  - Batch session (user asked for 4-6 tasks in one area): scene and camera. T-025 view store, T-026 floating origin, T-027 bodies, T-030 camera controller, T-031 fly-to and follow; one commit each.
-  - T-029 made NOW ahead of T-028: at true scale every planet is sub-pixel once the camera leaves it, so markers are what makes the scene usable; T-032 picking needs them too.
-  - Frame order is by negative useFrame priorities (Scene.tsx PRIORITY: clock, states, rig, camera, objects); a positive priority would take over rendering in R3F. Body world positions are filled once per frame into BodyFrame and shared.
-  - Canvas data attributes for specs: data-scene-ready (all 10 bodies placed), data-bodies, data-camera-distance (4 sig. digits), data-follow, data-flying. T-034 should build on them.
-  - Fly-to: van Wijk-Nuij path (r = -asinh(b) for large interplanetary b); timed by wall-clock dt (a clamp stretched flights under SwiftShader load). Escape is ignored if a dialog already handled it (defaultPrevented).
-  - VN-PRF-004 headroom: first render now waits for all body chunks (~630 kB uncompressed for the 2020s): 2.0 s alone, 2.3-2.8 s with e2e workers in parallel, budget 3 s. The ephemeris preloads from main.tsx. If it gets tight, render first and mark ready per body, or split the manifest.
-  - Side panel object list now lists the 10 bodies and flies to them (stand-in until search T-042 and picking T-032).
-  - D-001 (low, env) unchanged. Nightly 274b282-nightly ok; LAN http://192.168.1.166:8770/ (200).
+  - Batch session (user asked for 4-6 tasks in one area): the rest of M2 (scene). T-029 labels, T-028 orbits (+ follow-up), T-032 picking, T-033 info panel, T-034 reference views; one commit each. M2 exit criteria all met; milestone now M3.
+  - Screen layout: Markers (scene/labels) projects every body each frame into ScreenFrame (x, y, ok, radiusPx, label sizes); labels and picking read it. Labels are DOM spans measured once. Canvas attrs added: data-labels (names shown), data-orbits (orbits with every sample).
+  - Orbits: Ephemeris.peek(id, t) evaluates loaded chunks without requesting any. Samples within 1 yr of now use state() (may load); further out loaded chunks, else Standish approximate elements, so outer orbits do not pull ~4 MB of chunks. User may prefer full-ephemeris orbits loaded in the background: say so in WORKINGLIST.
+  - Snapshot baselines CREATED with --update-snapshots (new F5): e2e/scale.spec.ts-snapshots (earth-moon, inner, outer, 150au, jitter), maxDiffPixelRatio 0.002. They were made locally (WSL, SwiftShader); if CI renders differently, regenerate them from a CI artifact, do not loosen.
+  - Jitter: identical still loads give identical frames; a 1 m move changes 2 px by 1 level; the check allows 10 px.
+  - Playwright: perf.spec and camera.spec run in project "timed" after the rest, 1 worker. With 10+ specs in parallel SwiftShader contention pushed first render to >3 s and fly-to past 4.5 s; alone they are 2.0 s and 3.8 s.
+  - Selection only highlights and raises label priority; it does not fly (object list still selects and flies). Unit pref covers distances (km, AU, mi); UTC/local time pref is still to do with the time bar (M4).
+  - D-001 (low, env) unchanged.
 open_defects_blocking: []
 optimizations_applied: []

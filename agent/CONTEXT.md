@@ -1,10 +1,9 @@
-# Context (session 9, T-029)
+# Context (session 10, T-036)
 
 - agent/STATE.md
 - agent/PLAN.md
-- src/scene/SceneView.tsx
-- src/scene/Scene.tsx
-- src/scene/bodies/Bodies.tsx
-- src/scene/bodies/positions.ts
-- src/scene/camera/Controls.tsx
-- src/app/store/view.ts
+- src/core/constants.ts
+- src/scene/colours.ts
+- src/core/labels/declutter.ts
+- src/app/info/InfoPanel.tsx
+- data/
