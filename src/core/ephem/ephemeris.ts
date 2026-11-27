@@ -1,4 +1,6 @@
-import { readEphemeris, type EphemerisFile } from "./format.ts";
+import { evaluateElementSegment } from "./elements.ts";
+import { evaluateSegment } from "./chebyshev.ts";
+import { findSegment, KIND_ELEMENTS, readEphemeris, type EphemerisFile } from "./format.ts";
 
 // VN-EPH-005, VN-EPH-009, VN-EPH-010: the runtime ephemeris. It reads the manifest's chunk index, loads chunk files
 // through an injected loader (the app passes its own-origin asset loader; tests pass files from disk), evaluates
@@ -88,6 +90,25 @@ function findChunk(chunks: readonly ChunkSlot[], t: number): number {
     else hi = mid - 1;
   }
   return lo;
+}
+
+const fileClock = new Float64Array(1);
+
+/**
+ * State relative to the file's centre at TDB time t from one file of either segment kind, into out[o..o+5].
+ * False outside the file's coverage. For tools and checks; the runtime uses createEphemeris.
+ */
+export function evaluateFile(f: EphemerisFile, t: number, out: Float64Array, o = 0): boolean {
+  const s = findSegment(f, t);
+  if (s < 0) return false;
+  if (f.kind === KIND_ELEMENTS) {
+    fileClock[0] = t;
+    evaluateElementSegment(f, s, fileClock, out, o);
+  } else {
+    const n = f.degree + 1;
+    evaluateSegment(f.coeffs, s * 3 * n, n, f.t0[s]!, f.t1[s]!, t, out, o);
+  }
+  return true;
 }
 
 export function createEphemeris(manifest: EphemerisManifest, loader: ChunkLoader): Ephemeris {
@@ -221,6 +242,10 @@ export function createEphemeris(manifest: EphemerisManifest, loader: ChunkLoader
       const mid = (s + e + 1) >> 1;
       if (t0[mid]! <= t) s = mid;
       else e = mid - 1;
+    }
+    if (f.kind === KIND_ELEMENTS) {
+      evaluateElementSegment(f, s, clock, out, o);
+      return "ok";
     }
     const a0 = t0[s]!;
     const span = f.t1[s]! - a0;

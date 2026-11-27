@@ -9,7 +9,7 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { evaluateSegment } from "../../src/core/ephem/chebyshev.ts";
+import { evaluateFile } from "../../src/core/ephem/ephemeris.ts";
 import { findSegment, readEphemeris, type EphemerisFile } from "../../src/core/ephem/format.ts";
 import { J2000_JD } from "../../src/core/time/scales.ts";
 import { HorizonsClient } from "./client.ts";
@@ -110,9 +110,7 @@ export function checkEphemerides(
         row.uncovered++;
         continue;
       }
-      const i = findSegment(f, s.t);
-      const n = f.degree + 1;
-      evaluateSegment(f.coeffs, i * 3 * n, n, f.t0[i]!, f.t1[i]!, s.t, out, 0);
+      evaluateFile(f, s.t, out, 0);
       const e = Math.hypot(out[0]! - s.x, out[1]! - s.y, out[2]! - s.z);
       row.checked++;
       if (e > row.maxErrorKm || row.worstJd === "") {

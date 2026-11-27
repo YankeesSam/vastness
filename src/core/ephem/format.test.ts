@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { evaluateSegment } from "./chebyshev";
 import {
   FORMAT_VERSION,
+  POSITION_FILE_VERSION,
   HEADER_BYTES,
   MAGIC,
   SEGMENT_ENTRY_BYTES,
@@ -33,7 +34,7 @@ describe("binary ephemeris format", () => {
     const bytes = writeEphemeris(sample());
     const dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
     expect(new TextDecoder().decode(bytes.subarray(0, 4))).toBe(MAGIC);
-    expect(dv.getUint16(4, true)).toBe(FORMAT_VERSION);
+    expect(dv.getUint16(4, true)).toBe(POSITION_FILE_VERSION);
     expect(dv.getUint16(6, true)).toBe(HEADER_BYTES);
     expect(dv.getInt32(8, true)).toBe(-31);
     expect(dv.getInt32(12, true)).toBe(10);
@@ -103,7 +104,7 @@ describe("binary ephemeris format", () => {
         b[0] = 0x58;
       }),
     ).toThrow(/magic/);
-    expect(bad((_, dv) => dv.setUint16(4, FORMAT_VERSION + 1, true))).toThrow(/version 2/);
+    expect(bad((_, dv) => dv.setUint16(4, FORMAT_VERSION + 1, true))).toThrow(/version 3/);
     expect(bad((b) => b.subarray(0, b.byteLength - 8))).toThrow(/length/);
     expect(bad((_, dv) => dv.setFloat64(HEADER_BYTES + SEGMENT_ENTRY_BYTES, 10.5, true))).toThrow(/contiguous/);
     expect(() => writeEphemeris({ ...sample(), degree: 3 })).toThrow(RangeError);
@@ -129,6 +130,9 @@ describe("binary ephemeris format", () => {
       "coverage_end",
       "segment_table_offset",
       "coefficients_offset",
+      "kind",
+      "mu",
+      "mean_motion",
     ]) {
       expect(doc).toContain(`\`${field}\``);
     }

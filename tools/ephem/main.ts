@@ -10,7 +10,7 @@ import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { FORMAT_VERSION, writeEphemeris } from "../../src/core/ephem/format.ts";
+import { POSITION_FILE_VERSION, writeEphemeris } from "../../src/core/ephem/format.ts";
 import { J2000_JD, SECONDS_PER_DAY, calendarToJd } from "../../src/core/time/scales.ts";
 import { HorizonsClient, type CachedResponse } from "./client.ts";
 import { TOLERANCE_KM, fitAdaptive, type FitResult } from "./fit.ts";
@@ -256,7 +256,7 @@ export async function generate(o: GenerateOptions): Promise<Map<string, Uint8Arr
     });
   }
   const manifest = {
-    format_version: FORMAT_VERSION,
+    format_version: POSITION_FILE_VERSION, // every file the pipeline writes so far holds position segments
     frame: "ecliptic J2000 (Horizons REF_PLANE=ECLIPTIC, REF_SYSTEM=ICRF), geometric; km; TDB seconds since J2000",
     credit: CREDIT,
     chunk_years: span,
