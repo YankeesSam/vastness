@@ -18,8 +18,8 @@ do_not_read:
   - docs/architecture/VASTNESS_ARCHITECTURE.md
   - public/ephem, public/stars.bin, testdata, .cache, dist
 tests: pass (vitest 481; e2e 59/59; typecheck, prettier, check-deps, check-size clean)
-commit: PENDING
-push: PENDING
+commit: 690daba
+push: ok
 notes:
   - Session 18 batch at the user's request: M7 performance and mobile (T-072, T-073, T-075, T-070, T-074). M7 now has only T-076 (Firefox/WebKit) left. T-097 still stashed (`git stash list`: "T-097 WIP").
   - Quality: auto is high on a desktop with 4+ cores, 8 GB and an 8k texture limit, so this machine and the 4-core CI runner both render high and no visual baseline changed. The budget spec asserts the tier is high; if CI ever reports another tier, that is why baselines moved.
