@@ -1,6 +1,17 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
-import { Color, Matrix4, MeshLambertMaterial, PerspectiveCamera, type Mesh, type PointLight } from "three";
+import {
+  Color,
+  Matrix4,
+  MeshBasicMaterial,
+  MeshLambertMaterial,
+  PerspectiveCamera,
+  type Mesh,
+  type PointLight,
+} from "three";
+import { sceneFromEcliptic } from "../../core/frames";
+import { saturnPole } from "../../core/rings";
+import { eclipsePossible } from "../../core/shadow";
 import { useView, viewStore } from "../../app/store/view";
 import { QUALITY } from "../../core/quality";
 import { toCamera } from "../origin";
@@ -9,6 +20,7 @@ import { PRIORITY } from "../Scene";
 import { colourOf } from "../colours";
 import { BodyTextures, radiusPx, wantTexture } from "./materials";
 import { bodyMeshMatrix } from "./orient";
+import { ringLookup, shadowedLambert, shadowUniforms } from "./shadow";
 import { DRAWN_BODIES, SCENE_OBJECTS } from "./positions";
 
 // VN-SCN-009: each body is oriented and spins by its IAU rotation model (orient.ts).
@@ -49,6 +61,14 @@ export function createBodyFrame(): BodyFrame {
 /** VN-SCN-005: the Sun's emissive disc, near white (the catalog colour stays for its marker and label). */
 const SUN_DISC = "#fff3d6";
 
+/** VN-SCN-010: the drawn bodies that can shadow each body (DRAWN_BODIES indices): Earth and the Moon each other. */
+const EARTH = DRAWN_BODIES.findIndex((b) => b.horizonsId === 399);
+const MOON = DRAWN_BODIES.findIndex((b) => b.horizonsId === 301);
+const SATURN = DRAWN_BODIES.findIndex((b) => b.horizonsId === 699);
+const OCCLUDERS: readonly (readonly number[])[] = DRAWN_BODIES.map((_, i) =>
+  i === EARTH ? [MOON] : i === MOON ? [EARTH] : [],
+);
+
 /** Each body's plain colour (VN-SCN-001), shown until its map is in. */
 const plain = DRAWN_BODIES.map((b) => new Color(colourOf(b.horizonsId)));
 
@@ -67,6 +87,26 @@ export function Bodies({ frame }: { frame: BodyFrame }) {
   const maps = useMemo(() => new BodyTextures(edge, () => invalidate()), [edge, invalidate]);
   useEffect(() => () => maps.dispose(), [maps]);
   const white = useMemo(() => new Color("#ffffff"), []);
+  // VN-SCN-010: per body the shadow uniforms its material reads (the Sun's disc is not shadowed)
+  const shadows = useMemo(() => DRAWN_BODIES.map(() => shadowUniforms()), []);
+  const materials = useMemo(
+    () =>
+      DRAWN_BODIES.map((b, i) =>
+        b.horizonsId === 10
+          ? new MeshBasicMaterial({ color: SUN_DISC, toneMapped: false })
+          : shadowedLambert(shadows[i]!, colourOf(b.horizonsId)),
+      ),
+    [shadows],
+  );
+  const ringLook = useMemo(() => ringLookup(), []);
+  useEffect(
+    () => () => {
+      for (const m of materials) m.dispose();
+      ringLook.dispose();
+    },
+    [materials, ringLook],
+  );
+  const pole = useMemo(() => ({ ecl: new Float64Array(3), scene: new Float64Array(3) }), []);
 
   useFrame(() => {
     const st = viewStore.getState();
@@ -97,6 +137,44 @@ export function Bodies({ frame }: { frame: BodyFrame }) {
       }
       if (i === 0 && light.current) light.current.position.copy(m.position);
     }
+    // VN-SCN-010: eclipse shadows from the drawn Sun, occluders and rings (camera-relative, as the meshes)
+    const sun = meshes.current[0];
+    for (let i = 1; i < DRAWN_BODIES.length; i++) {
+      const u = shadows[i]!;
+      const m = meshes.current[i];
+      if (!m || !m.visible || !sun) continue;
+      u.shadowSun.value.set(sun.position.x, sun.position.y, sun.position.z, frame.radius[0]!);
+      const occ = OCCLUDERS[i]!;
+      for (let k = 0; k < 2; k++) {
+        const v = k === 0 ? u.shadowOcc0.value : u.shadowOcc1.value;
+        const j = occ[k];
+        const o = j === undefined ? null : meshes.current[j];
+        // VN-PRF-002: only while an eclipse is geometrically possible (two short seasons a year)
+        if (
+          j !== undefined &&
+          o &&
+          o.visible &&
+          eclipsePossible(
+            frame.world.subarray(3 * i, 3 * i + 3),
+            frame.radius[i]!,
+            frame.world.subarray(0, 3),
+            frame.radius[0]!,
+            frame.world.subarray(3 * j, 3 * j + 3),
+            frame.radius[j]!,
+          )
+        )
+          v.set(o.position.x, o.position.y, o.position.z, frame.radius[j]!);
+        else v.w = 0;
+      }
+      if (i === SATURN) {
+        u.shadowRingOn.value = 1;
+        u.shadowRingCentre.value.copy(m.position);
+        sceneFromEcliptic(saturnPole(st.t, pole.ecl), pole.scene);
+        u.shadowRingPole.value.set(pole.scene[0]!, pole.scene[1]!, pole.scene[2]!);
+        u.shadowRingScale.value = frame.radius[i]! / DRAWN_BODIES[i]!.radiusKm;
+        u.shadowRingLookup.value = ringLook;
+      }
+    }
     // For e2e specs: which bodies have their map in.
     const held = maps.held().join(",");
     if (canvas.dataset.surfaces !== held) canvas.dataset.surfaces = held;
@@ -115,11 +193,7 @@ export function Bodies({ frame }: { frame: BodyFrame }) {
           }}
         >
           <sphereGeometry args={[b.radiusKm, 64, 32]} />
-          {b.horizonsId === 10 ? (
-            <meshBasicMaterial color={SUN_DISC} toneMapped={false} />
-          ) : (
-            <meshLambertMaterial color={colourOf(b.horizonsId)} />
-          )}
+          <primitive object={materials[i]!} attach="material" />
         </mesh>
       ))}
     </>

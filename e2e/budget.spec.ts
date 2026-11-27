@@ -12,8 +12,21 @@ async function settled(page: Page) {
   const canvas = page.locator("canvas");
   await expect(canvas).toHaveAttribute("data-scene-ready", "1", { timeout: 30_000 });
   await expect(canvas).toHaveAttribute("data-stars", /^\d+$/, { timeout: 30_000 });
-  await page.waitForTimeout(1000); // trails sampled and a few frames drawn with everything in
   const n = async (k: string) => Number(await canvas.getAttribute(k));
+  // Trails sampled and a few frames drawn with everything in: the draw calls hold for a second (under load the
+  // trails can take several seconds after the scene is ready).
+  let last = -1;
+  await expect
+    .poll(
+      async () => {
+        const now = await n("data-draw-calls");
+        const same = now === last;
+        last = now;
+        return same;
+      },
+      { intervals: [1000], timeout: 30_000 },
+    )
+    .toBe(true);
   return {
     drawCalls: await n("data-draw-calls"),
     triangles: await n("data-triangles"),

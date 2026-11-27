@@ -48,10 +48,27 @@ test.describe("visual baselines", () => {
   });
 
   // At Saturn's northern summer solstice the rings are open to the Sun (26.7 degrees); in 2026 they are near edge-on.
+  // T-099 (VN-SCN-010, D-003): Saturn's shadow darkens the ring arc behind it, and the rings shade Saturn.
   test("VN-SCN-006, VN-SCN-005: Saturn and its rings at the 2017 solstice, lit only by the Sun", async ({ page }) => {
     expect(await shot(page, "699,7e5,200,40", "bodies,stars", "2017-05-24T00:00:00Z")).toMatchSnapshot("saturn.png", {
       maxDiffPixelRatio: 0.002,
     });
+  });
+
+  // T-099 (VN-SCN-010): eclipse shadows, analytic umbra and penumbra (src/core/shadow.ts).
+  // Both cameras look from the Sun's side (azimuth from the ephemeris), so an unshadowed body would be fully lit.
+  test("VN-SCN-010: the 2025-03-14 total lunar eclipse: the Moon in Earth's umbra", async ({ page }) => {
+    expect(await shot(page, "301,2e4,84,10", "bodies,stars", "2025-03-14T06:58:43Z")).toMatchSnapshot(
+      "lunar-eclipse-2025.png",
+      { maxDiffPixelRatio: 0.002 },
+    );
+  });
+
+  test("VN-SCN-010: the 2024-04-08 total solar eclipse: the Moon's shadow on Earth", async ({ page }) => {
+    expect(await shot(page, "399,3e4,109,15", "bodies,stars", "2024-04-08T18:17:16Z")).toMatchSnapshot(
+      "solar-eclipse-2024.png",
+      { maxDiffPixelRatio: 0.002 },
+    );
   });
 
   test("VN-SCN-007: the stars layer can be turned off from the side panel", async ({ page }) => {

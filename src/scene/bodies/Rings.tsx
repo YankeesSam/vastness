@@ -1,33 +1,35 @@
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo } from "react";
-import { DataTexture, DoubleSide, LinearFilter, Mesh, RingGeometry, ShaderMaterial, FloatType, Vector3 } from "three";
+import { DataTexture, DoubleSide, Mesh, RingGeometry, ShaderMaterial, Vector3, Vector4 } from "three";
 import { viewStore } from "../../app/store/view";
 import { sceneFromEcliptic } from "../../core/frames";
-import { RINGS_INNER_KM, RINGS_OUTER_KM, ringAt, saturnPole } from "../../core/rings";
+import { RINGS_INNER_KM, RINGS_OUTER_KM, saturnPole } from "../../core/rings";
 import { toCamera } from "../origin";
 import { useRig } from "../rig";
 import { PRIORITY } from "../Scene";
 import type { BodyFrame } from "./Bodies";
 import { DRAWN_BODIES } from "./positions";
+import { ringLookup, SHADOW_GLSL } from "./shadow";
 
 // VN-SCN-006: Saturn's rings, a flat annulus in Saturn's equator plane (src/core/rings.ts: radii, optical depths and
 // albedos from the NSSDCA fact sheet, the pole from IAU WGCCRE 2015). A radial lookup holds tau and albedo; the
 // shader turns them into opacity 1 - exp(-tau / mu) for the viewing angle and brightness from the albedo and the
 // Sun's elevation over the rings (the Sun is the only light, VN-SCN-005). The rings scale with Saturn's drawn radius
-// (VN-SCL-002). Saturn's shadow on the rings is not drawn.
+// (VN-SCL-002). Saturn's shadow falls on them, and they shade Saturn (VN-SCN-010, src/scene/bodies/shadow.ts).
 
 const SATURN = DRAWN_BODIES.findIndex((b) => b.horizonsId === 699);
 const SUN = 0;
 const SATURN_RADIUS_KM = DRAWN_BODIES[SATURN]!.radiusKm;
-const LOOKUP = 1024;
 
 const vertex = /* glsl */ `
 #include <common>
 #include <logdepthbuf_pars_vertex>
 varying vec3 vLocal;
 varying vec3 vView;
+varying vec3 vWorld;
 void main() {
   vLocal = position;
+  vWorld = (modelMatrix * vec4(position, 1.0)).xyz;
   vec4 mv = modelViewMatrix * vec4(position, 1.0);
   vView = mv.xyz;
   gl_Position = projectionMatrix * mv;
@@ -37,6 +39,10 @@ void main() {
 
 const fragment = /* glsl */ `
 #include <logdepthbuf_pars_fragment>
+uniform vec4 shadowSun;
+uniform vec4 shadowOcc;
+varying vec3 vWorld;
+${SHADOW_GLSL}
 uniform sampler2D lookup;
 uniform vec2 span;
 uniform vec3 normalView;
@@ -53,27 +59,12 @@ void main() {
   if (tau <= 0.0) discard;
   float mu = max(1e-3, abs(dot(normalize(vView), normalView)));
   float a = 1.0 - exp(-tau / mu);
-  gl_FragColor = vec4(color * (0.4 + 1.2 * s.g) * sunLight, a);
+  // VN-SCN-010 (D-003): Saturn's shadow on the rings
+  float lit = shadowSunVisible(vWorld, shadowSun, shadowOcc);
+  gl_FragColor = vec4(color * (0.4 + 1.2 * s.g) * sunLight * (0.03 + 0.97 * lit), a);
   #include <colorspace_fragment>
 }
 `;
-
-/** Radial lookup, inner to outer edge: R = optical depth, G = albedo (0 in the gaps). */
-function lookupTexture(): DataTexture {
-  const data = new Float32Array(4 * LOOKUP);
-  for (let i = 0; i < LOOKUP; i++) {
-    const r = RINGS_INNER_KM + ((i + 0.5) / LOOKUP) * (RINGS_OUTER_KM - RINGS_INNER_KM);
-    const ring = ringAt(r);
-    data[4 * i] = ring?.tau ?? 0;
-    data[4 * i + 1] = ring?.albedo ?? 0;
-    data[4 * i + 3] = 1;
-  }
-  const tex = new DataTexture(data, LOOKUP, 1, undefined, FloatType);
-  tex.magFilter = LinearFilter;
-  tex.minFilter = LinearFilter;
-  tex.needsUpdate = true;
-  return tex;
-}
 
 export function SaturnRings({ frame }: { frame: BodyFrame }) {
   const rig = useRig();
@@ -84,7 +75,9 @@ export function SaturnRings({ frame }: { frame: BodyFrame }) {
         vertexShader: vertex,
         fragmentShader: fragment,
         uniforms: {
-          lookup: { value: lookupTexture() },
+          lookup: { value: ringLookup() },
+          shadowSun: { value: new Vector4(0, 0, 0, 1) },
+          shadowOcc: { value: new Vector4() },
           span: { value: [RINGS_INNER_KM, RINGS_OUTER_KM] },
           normalView: { value: new Vector3(0, 0, 1) },
           sunLight: { value: 1 },
@@ -143,6 +136,9 @@ export function SaturnRings({ frame }: { frame: BodyFrame }) {
         frame.world[2]! - frame.world[3 * SATURN + 2]!,
       );
       u.sunLight!.value = 0.15 + 0.85 * Math.sqrt(Math.abs(s.sun.normalize().dot(s.normal)));
+      toCamera(frame.world, rig.cam, s.rel, 0);
+      (u.shadowSun!.value as Vector4).set(s.rel[0]!, s.rel[1]!, s.rel[2]!, frame.radius[SUN]!);
+      (u.shadowOcc!.value as Vector4).set(mesh.position.x, mesh.position.y, mesh.position.z, frame.radius[SATURN]!);
     }
   }, PRIORITY.objects);
 

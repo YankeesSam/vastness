@@ -30,6 +30,8 @@ test.describe("accessibility", () => {
   });
 
   test("VN-ACC-003: light and high-contrast themes and large text also pass axe", async ({ page }) => {
+    // Four axe audits while a textured Mars fills the view; SwiftShader renders on the CPU (T-062).
+    test.slow();
     await page.getByRole("button", { name: "Mars" }).click();
     await menu(page, "Light theme");
     await expect(page.locator("html")).toHaveAttribute("data-theme", "light");

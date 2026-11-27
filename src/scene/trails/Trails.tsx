@@ -56,6 +56,9 @@ void main() {
 }
 `;
 
+/** Frames between retries of a trail whose last sample had positions missing. */
+const RETRY_FRAMES = 10;
+
 interface Trail {
   index: number;
   id: number;
@@ -71,6 +74,8 @@ interface Trail {
   complete: boolean;
   /** Points in the drawn geometry. */
   drawn: number;
+  /** Frames since the last resample that had positions missing. */
+  waited: number;
   /** Index of the drawn point at the simulation time it was sampled for. */
   split: number;
   /** The drawn samples (true positions, scene frame km; times, TDB s). */
@@ -146,6 +151,7 @@ export function Trails({ eph, frame }: { eph: Ephemeris | null; frame: BodyFrame
         u,
         complete: false,
         drawn: 0,
+        waited: 0,
         split: 0,
         pos: new Float64Array(3 * samples.capacity),
         t: new Float64Array(samples.capacity),
@@ -230,7 +236,10 @@ export function Trails({ eph, frame }: { eph: Ephemeris | null; frame: BodyFrame
       // D-004: a resample with positions missing (chunks loading) would join its neighbours by chords across the
       // gap, so it replaces the drawn trail only when nothing complete is drawn yet; it is retried each frame.
       let upload = false;
-      if (trailStale(s, tr.range)) {
+      // While chunks are loading (positions missing) a trail is retried every RETRY_FRAMES frames, not every frame:
+      // a full resample is thousands of evaluations and would hold up the downloads it waits for.
+      if (trailStale(s, tr.range) && (s.missing === 0 || ++tr.waited >= RETRY_FRAMES)) {
+        tr.waited = 0;
         sampleTrail(tr.evaluate, tr.range, s);
         upload = !(s.missing > 0 && tr.complete);
       }
