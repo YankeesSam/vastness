@@ -33,6 +33,17 @@ export function satelliteId(norad: number): number {
   return -(100000 + norad);
 }
 
+/** VN-TIM-005: what kind of event a timeline mark is. Launch comes from `launch`. */
+export const EVENT_KINDS = ["flyby", "arrival", "milestone"] as const;
+export type EventKind = (typeof EVENT_KINDS)[number];
+
+export interface CatalogEvent {
+  /** UTC date, YYYY-MM-DD. */
+  date: string;
+  kind: EventKind;
+  label: string;
+}
+
 export interface CatalogObject {
   id: number;
   /** Satellites only: NORAD catalogue number; `id` is satelliteId(norad). */
@@ -49,6 +60,8 @@ export interface CatalogObject {
   launch?: string;
   /** Spacecraft only. */
   status?: MissionStatus;
+  /** Spacecraft only: past flybys, arrivals and milestones in date order (VN-TIM-005). */
+  events?: CatalogEvent[];
   agency?: string;
   summary: string;
   goals: string[];
@@ -95,6 +108,7 @@ const KEYS = new Set([
   "parent",
   "launch",
   "status",
+  "events",
   "agency",
   "summary",
   "goals",
@@ -102,6 +116,22 @@ const KEYS = new Set([
   "colour",
   "priority",
 ]);
+
+/** VN-TIM-005: dated, known kind, labelled, in order, between launch and the status check (no planned events). */
+function checkEvents(o: Record<string, unknown>, bad: (m: string) => void): void {
+  if (!Array.isArray(o.events)) return void bad("events must be a list");
+  const asOf = (o.status as { as_of?: unknown } | undefined)?.as_of;
+  let prev = "";
+  (o.events as Record<string, unknown>[]).forEach((e, j) => {
+    if (!isDate(e?.date)) return void bad(`events[${j}].date must be a YYYY-MM-DD date`);
+    if (!EVENT_KINDS.includes(e.kind as EventKind)) bad(`events[${j}].kind must be one of ${EVENT_KINDS.join(", ")}`);
+    if (!isStr(e.label)) bad(`events[${j}].label missing`);
+    if (isDate(o.launch) && e.date < o.launch) bad(`events[${j}] is before launch`);
+    if (isDate(asOf) && e.date > asOf) bad(`events[${j}] is after status.as_of`);
+    if (e.date < prev) bad("events must be in date order");
+    prev = e.date;
+  });
+}
 
 /** Checks the parsed JSON; returns it typed or throws one error listing every problem. */
 export function validateCatalog(json: unknown): Catalog {
@@ -155,9 +185,13 @@ export function validateCatalog(json: unknown): Catalog {
         if (isDate(o.launch) && isDate(s.as_of) && s.as_of < o.launch) bad("status.as_of is before launch");
       }
       if (!isStr(o.agency)) bad("agency missing");
+      if (o.events !== undefined) checkEvents(o, bad);
     } else {
       if (o.launch !== undefined) bad("only spacecraft and satellites have a launch date");
       if (o.status !== undefined) bad("only spacecraft and satellites have a mission status");
+    }
+    if (o.events !== undefined && o.type !== "spacecraft") {
+      bad("only spacecraft have events");
     }
     if (!isStr(o.summary)) bad("summary missing");
     else if (o.summary.length < 80 || o.summary.length > 900) bad("summary should be one paragraph (80..900 chars)");

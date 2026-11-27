@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { useStore } from "zustand";
 import type { StoreApi } from "zustand/vanilla";
 import { PLANET_COVERAGE, rateIndex, rateLabel, RATE_LADDER } from "../../core/time/clock";
@@ -17,9 +17,11 @@ export interface TimeBarProps {
   store?: StoreApi<ViewState>;
   /** The local zone's offset (tests pass a fixed one). */
   offsetMinutes?: OffsetFn;
+  /** A first row (the timeline, VN-TIM-005). */
+  children?: ReactNode;
 }
 
-export function TimeBar({ className, store = viewStore, offsetMinutes = browserOffset }: TimeBarProps) {
+export function TimeBar({ className, store = viewStore, offsetMinutes = browserOffset, children }: TimeBarProps) {
   const [zone, setZone] = useState<Zone>("utc");
   // Strings, so the bar re-renders once per shown second and not per frame.
   const shown = useStore(store, (s) => inputValue(s.t, zone, offsetMinutes));
@@ -40,6 +42,7 @@ export function TimeBar({ className, store = viewStore, offsetMinutes = browserO
   const index = rateIndex(rate);
   return (
     <footer className={`${className ?? ""} ${styles.bar}`} aria-label="Time">
+      {children}
       <time dateTime={utc + "Z"} className={styles.label}>
         {label}
       </time>

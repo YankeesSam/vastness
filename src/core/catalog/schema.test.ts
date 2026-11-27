@@ -90,6 +90,19 @@ describe("catalog schema", () => {
     ["unknown parent", { parent: 599 }, /parent 599 is not in the catalog/],
     ["priority out of range", { priority: 101 }, /priority/],
     ["no goals", { goals: [] }, /goal/],
+    ["event kind", { events: [{ date: "1979-03-05", kind: "party", label: "Jupiter" }] }, /events\[0\]\.kind/],
+    ["event before launch", { events: [{ date: "1970-01-01", kind: "flyby", label: "x" }] }, /before launch/],
+    ["event after as_of", { events: [{ date: "2030-01-01", kind: "arrival", label: "x" }] }, /after status\.as_of/],
+    [
+      "events out of order",
+      {
+        events: [
+          { date: "1980-11-12", kind: "flyby", label: "Saturn" },
+          { date: "1979-03-05", kind: "flyby", label: "Jupiter" },
+        ],
+      },
+      /in date order/,
+    ],
   ])("rejects %s", (_n, over, re) => {
     expect(check(craft(over as Partial<CatalogObject>))).toThrow(re);
   });
@@ -104,6 +117,25 @@ describe("catalog schema", () => {
     expect(msg).toMatch(/duplicate id -31/);
     expect(msg).toMatch(/also used by -31/);
     expect(msg).toMatch(/colour/);
+  });
+
+  it("VN-TIM-005: spacecraft events (flybys, arrivals, milestones) are dated, in order and no later than as_of", () => {
+    const events = [
+      { date: "1979-03-05", kind: "flyby", label: "Jupiter flyby" },
+      { date: "2012-08-25", kind: "milestone", label: "Enters interstellar space" },
+    ];
+    expect(check(craft({ events } as Partial<CatalogObject>))).not.toThrow();
+    for (const o of validateCatalog(catalogJson).objects.filter((x) => x.events)) {
+      for (const e of o.events!) expect(e.date >= o.launch!, `${o.name} ${e.label}`).toBe(true);
+    }
+    expect(
+      validateCatalog(catalogJson).objects.filter((o) => o.events && o.events.length > 0).length,
+    ).toBeGreaterThanOrEqual(10);
+  });
+
+  it("rejects events on a planet", () => {
+    const planet = { ...sun, id: 399, name: "Earth", type: "planet", parent: 10, events: [] };
+    expect(check(planet)).toThrow(/only spacecraft have events/);
   });
 
   it("rejects a launch date on a planet", () => {

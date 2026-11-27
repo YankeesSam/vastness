@@ -10,6 +10,7 @@ import { InfoPanel } from "../info/InfoPanel";
 import { loadPrefs, resetPrefs, savePrefs, type Prefs } from "../prefs";
 import { useView, viewStore } from "../store/view";
 import styles from "./Shell.module.css";
+import { SelectionTimeline } from "../time/Timeline";
 import { TimeBar } from "../time/TimeBar";
 
 // VN-UI-001: full-window 3D view under a top bar (search, time, scale mode, menu), a collapsible side panel
@@ -166,7 +167,9 @@ export function Shell() {
         </section>
       </aside>
 
-      <TimeBar className={styles.bottom} />
+      <TimeBar className={styles.bottom}>
+        <SelectionTimeline />
+      </TimeBar>
 
       {aboutOpen && <About onClose={() => setAboutOpen(false)} />}
     </div>

@@ -1,0 +1,72 @@
+.timeline {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 0 0 100%;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.name {
+  flex: 0 0 auto;
+  max-width: 12rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+.track {
+  position: relative;
+  flex: 1 1 auto;
+  height: 1.4rem;
+}
+
+.band {
+  position: absolute;
+  top: 50%;
+  height: 6px;
+  transform: translateY(-50%);
+  background: var(--accent, #4a8cff);
+  opacity: 0.6;
+  border-radius: 3px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.slider {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.mark {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  min-width: 0;
+  height: 0.45rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  transform: translateX(-1px);
+  background: var(--fg);
+  cursor: pointer;
+  z-index: 2;
+}
+
+.mark:focus-visible {
+  outline: 2px solid var(--accent, #4a8cff);
+  outline-offset: 2px;
+}
+
+.launch {
+  background: var(--accent);
+}

@@ -221,6 +221,23 @@
         "as_of": "2026-11-26",
         "note": "Several instruments switched off to save power; a few still return data."
       },
+      "events": [
+        {
+          "date": "1979-03-05",
+          "kind": "flyby",
+          "label": "Jupiter flyby"
+        },
+        {
+          "date": "1980-11-12",
+          "kind": "flyby",
+          "label": "Saturn and Titan flyby"
+        },
+        {
+          "date": "2012-08-25",
+          "kind": "milestone",
+          "label": "Crosses the heliopause into interstellar space"
+        }
+      ],
       "agency": "NASA",
       "summary": "Launched in 1977 for a tour of Jupiter and Saturn, Voyager 1 flew past both planets and Saturn's moon Titan, then headed out of the plane of the planets. In 2012 it became the first spacecraft to cross into interstellar space, and it is the most distant object people have made.",
       "goals": [
@@ -252,6 +269,33 @@
         "as_of": "2026-11-26",
         "note": "Several instruments switched off to save power; a few still return data."
       },
+      "events": [
+        {
+          "date": "1979-07-09",
+          "kind": "flyby",
+          "label": "Jupiter flyby"
+        },
+        {
+          "date": "1981-08-26",
+          "kind": "flyby",
+          "label": "Saturn flyby"
+        },
+        {
+          "date": "1986-01-24",
+          "kind": "flyby",
+          "label": "Uranus flyby"
+        },
+        {
+          "date": "1989-08-25",
+          "kind": "flyby",
+          "label": "Neptune flyby"
+        },
+        {
+          "date": "2018-11-05",
+          "kind": "milestone",
+          "label": "Crosses the heliopause into interstellar space"
+        }
+      ],
       "agency": "NASA",
       "summary": "The only spacecraft to have visited all four giant planets, Voyager 2 passed Jupiter, Saturn, Uranus and Neptune between 1979 and 1989. It crossed into interstellar space in 2018, six years after its twin, and still sends back measurements of the space it travels through.",
       "goals": [
@@ -282,6 +326,23 @@
         "state": "operating",
         "as_of": "2026-11-26"
       },
+      "events": [
+        {
+          "date": "2007-02-28",
+          "kind": "flyby",
+          "label": "Jupiter flyby"
+        },
+        {
+          "date": "2015-07-14",
+          "kind": "flyby",
+          "label": "Pluto flyby"
+        },
+        {
+          "date": "2019-01-01",
+          "kind": "flyby",
+          "label": "Arrokoth flyby"
+        }
+      ],
       "agency": "NASA",
       "summary": "The first mission to Pluto, New Horizons flew past it and its moon Charon in July 2015, revealing nitrogen ice plains and mountains of water ice. On New Year's Day 2019 it passed Arrokoth, a small, two-lobed body in the Kuiper Belt, and it keeps studying the outer solar system on its way out.",
       "goals": ["Map Pluto and Charon", "Explore Kuiper Belt objects", "Measure the outer heliosphere"],
@@ -309,6 +370,23 @@
         "state": "operating",
         "as_of": "2026-11-26"
       },
+      "events": [
+        {
+          "date": "2018-10-03",
+          "kind": "flyby",
+          "label": "First Venus flyby"
+        },
+        {
+          "date": "2018-11-06",
+          "kind": "milestone",
+          "label": "First perihelion"
+        },
+        {
+          "date": "2024-12-24",
+          "kind": "milestone",
+          "label": "Closest approach to the Sun"
+        }
+      ],
       "agency": "NASA",
       "summary": "Parker Solar Probe dives through the Sun's outer atmosphere, the corona, protected by a thick carbon heat shield. Repeated Venus flybys tightened its orbit until, from late 2024, it passes within about 6 million km of the solar surface, faster than any spacecraft before it.",
       "goals": [
@@ -341,6 +419,33 @@
         "as_of": "2026-11-26",
         "note": "Its extended mission was due to end on 30 September 2025; reports through 2026 show it still flying perijove passes, but its funding status is not stated by NASA."
       },
+      "events": [
+        {
+          "date": "2013-10-09",
+          "kind": "flyby",
+          "label": "Earth flyby"
+        },
+        {
+          "date": "2016-07-05",
+          "kind": "arrival",
+          "label": "Jupiter orbit insertion"
+        },
+        {
+          "date": "2021-06-07",
+          "kind": "flyby",
+          "label": "Ganymede flyby"
+        },
+        {
+          "date": "2022-09-29",
+          "kind": "flyby",
+          "label": "Europa flyby"
+        },
+        {
+          "date": "2023-12-30",
+          "kind": "flyby",
+          "label": "Io flyby"
+        }
+      ],
       "agency": "NASA",
       "summary": "Juno has orbited Jupiter since July 2016 on long, looping polar orbits that skim low over the cloud tops. Its measurements of gravity and magnetism probe the planet's deep interior, and in its extended mission it has also flown close to the moons Ganymede, Europa and Io.",
       "goals": [
@@ -372,6 +477,13 @@
         "state": "operating",
         "as_of": "2026-11-26"
       },
+      "events": [
+        {
+          "date": "2025-03-01",
+          "kind": "flyby",
+          "label": "Mars flyby"
+        }
+      ],
       "agency": "NASA",
       "summary": "Europa Clipper is on its way to Jupiter, using flybys of Mars and Earth to gain speed, and is due to arrive in 2030. Once there it will make dozens of close passes of Europa to judge whether the ocean beneath the moon's icy crust could support life.",
       "goals": [
@@ -404,6 +516,23 @@
         "state": "operating",
         "as_of": "2026-11-26"
       },
+      "events": [
+        {
+          "date": "2024-08-19",
+          "kind": "flyby",
+          "label": "Moon flyby"
+        },
+        {
+          "date": "2024-08-20",
+          "kind": "flyby",
+          "label": "Earth flyby"
+        },
+        {
+          "date": "2025-08-31",
+          "kind": "flyby",
+          "label": "Venus flyby"
+        }
+      ],
       "agency": "ESA",
       "summary": "The European Space Agency's Jupiter Icy Moons Explorer is cruising to Jupiter on a path that uses flybys of the Moon, Earth and Venus, with arrival planned for 2031. It will study Ganymede, Callisto and Europa and then become the first spacecraft to orbit a moon of another planet, Ganymede.",
       "goals": [
@@ -435,6 +564,28 @@
         "state": "operating",
         "as_of": "2026-11-26"
       },
+      "events": [
+        {
+          "date": "2022-10-16",
+          "kind": "flyby",
+          "label": "Earth flyby"
+        },
+        {
+          "date": "2023-11-01",
+          "kind": "flyby",
+          "label": "Dinkinesh flyby"
+        },
+        {
+          "date": "2024-12-12",
+          "kind": "flyby",
+          "label": "Earth flyby"
+        },
+        {
+          "date": "2025-04-20",
+          "kind": "flyby",
+          "label": "Donaldjohanson flyby"
+        }
+      ],
       "agency": "NASA",
       "summary": "Lucy is touring the Trojan asteroids, two swarms that share Jupiter's orbit and may be leftovers from the planets' formation. Using Earth flybys to reshape its path, it passed the main-belt asteroids Dinkinesh in 2023 and Donaldjohanson in 2025 and is due to reach its first Trojans in 2027.",
       "goals": ["Visit several Jupiter Trojan asteroids", "Map their surfaces, composition and densities"],
@@ -493,6 +644,33 @@
         "state": "operating",
         "as_of": "2026-11-26"
       },
+      "events": [
+        {
+          "date": "2017-09-22",
+          "kind": "flyby",
+          "label": "Earth flyby"
+        },
+        {
+          "date": "2018-12-03",
+          "kind": "arrival",
+          "label": "Arrives at Bennu"
+        },
+        {
+          "date": "2020-10-20",
+          "kind": "milestone",
+          "label": "Collects a sample from Bennu"
+        },
+        {
+          "date": "2021-05-10",
+          "kind": "milestone",
+          "label": "Leaves Bennu"
+        },
+        {
+          "date": "2023-09-24",
+          "kind": "flyby",
+          "label": "Earth flyby, sample capsule delivered"
+        }
+      ],
       "agency": "NASA",
       "summary": "This spacecraft collected a sample from asteroid Bennu as OSIRIS-REx and dropped it off at Earth in 2023. Renamed OSIRIS-APEX, it is now heading for Apophis, which will pass very close to Earth in April 2029, and will study how that encounter changes the asteroid.",
       "goals": [
@@ -523,6 +701,13 @@
         "state": "operating",
         "as_of": "2026-11-26"
       },
+      "events": [
+        {
+          "date": "2009-06-23",
+          "kind": "arrival",
+          "label": "Lunar orbit insertion"
+        }
+      ],
       "agency": "NASA",
       "summary": "The Lunar Reconnaissance Orbiter has circled the Moon in a low orbit since 2009, mapping its surface in great detail. Its maps of terrain, temperature and lighting support the choice of landing sites, and it has photographed the Apollo landing sites from orbit.",
       "goals": [
@@ -555,6 +740,13 @@
         "as_of": "2026-11-26",
         "note": "NASA's extended mission ended in June 2026; the spacecraft remains in lunar orbit, operated by Advanced Space."
       },
+      "events": [
+        {
+          "date": "2022-11-13",
+          "kind": "arrival",
+          "label": "Enters near-rectilinear halo orbit"
+        }
+      ],
       "agency": "NASA (operated by Advanced Space)",
       "summary": "CAPSTONE is a small CubeSat that was the first spacecraft to fly the near-rectilinear halo orbit, a long, stretched path over the Moon's poles chosen for the future Gateway station. It tested navigation and communication methods for that orbit.",
       "goals": [
@@ -585,6 +777,18 @@
         "state": "operating",
         "as_of": "2026-11-26"
       },
+      "events": [
+        {
+          "date": "2022-01-24",
+          "kind": "arrival",
+          "label": "Arrives at Sun-Earth L2"
+        },
+        {
+          "date": "2022-07-12",
+          "kind": "milestone",
+          "label": "First science images released"
+        }
+      ],
       "agency": "NASA, ESA and CSA",
       "summary": "The James Webb Space Telescope is the largest space telescope yet, with a 6.5 m segmented gold mirror that sees in infrared. It works from a halo orbit around the Sun-Earth L2 point, about 1.5 million km beyond Earth, where a large sunshield keeps it cold.",
       "goals": [
