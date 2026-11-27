@@ -1,9 +1,8 @@
-# Context (session 11, T-043)
+# Context (session 12, T-089)
 
 - agent/STATE.md
 - agent/PLAN.md
-- src/app/info/InfoPanel.tsx
-- src/app/info/InfoPanel.test.tsx
-- src/app/catalog.ts
-- src/core/catalog/schema.ts
-- src/scene/spacecraft/coverage.ts
+- tools/ephem/spacecraft.ts
+- tools/ephem/main.ts
+- tools/ephem/fit.ts
+- src/core/ephem/ephemeris.ts
