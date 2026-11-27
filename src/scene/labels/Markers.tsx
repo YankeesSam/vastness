@@ -157,6 +157,13 @@ export function Markers({ frame, screen }: { frame: BodyFrame; screen: ScreenFra
     for (let i = 0; i < n; i++) {
       const on = st.layers.labels && s.shown[i] === 1;
       const span = screen.spans[i];
+      // VN-EPH-011: the "(illustrative orbit)" tag follows the frame; the label is measured again when it changes.
+      const tag = SCENE_OBJECTS[i]!.kind === "spacecraft" ? (span?.lastElementChild as HTMLElement | null) : null;
+      if (tag && tag.hidden !== (frame.illustrative[i] === 0)) {
+        tag.hidden = frame.illustrative[i] === 0;
+        s.w[i] = 0;
+        changed = true;
+      }
       if (span) {
         if (on) span.style.transform = `translate(${s.x[i]! + LABEL_OFFSET_PX}px, ${s.y[i]! - s.h[i]! / 2}px)`;
         if (span.hidden === on) span.hidden = !on;
@@ -172,6 +179,10 @@ export function Markers({ frame, screen }: { frame: BodyFrame; screen: ScreenFra
         .map((b) => b.name)
         .join(",");
       canvas.dataset.labels = scratch.labels;
+      // For e2e specs: the spacecraft drawn on an illustrative orbit (VN-EPH-011).
+      canvas.dataset.illustrative = SCENE_OBJECTS.filter((_, i) => frame.illustrative[i])
+        .map((b) => b.name)
+        .join(",");
     }
   }, PRIORITY.objects);
 

@@ -85,6 +85,22 @@ describe("info panel", () => {
     expect((await screen.findByText(/beyond Horizons' predictions/)).textContent).toMatch(/end on 2031-11-16/);
   });
 
+  it("VN-EPH-011: an orbiter past its stored span says it is drawn on an illustrative orbit, with no read-outs", async () => {
+    const edge = { t: 1_000_000_000, mu: 4902.800118, elements: [1800, 0.04, 1.57, 0, 0, 0] as const };
+    const eph = {
+      has: (id: number) => id === -85,
+      coverage: () => ({ start: 300_000_000, end: 1_000_000_000 }),
+      illustrativeEdge: (_id: number, t: number) => (t > 1_000_000_000 ? edge : undefined),
+      state: () => "outside",
+    } as unknown as Ephemeris;
+    viewStore.getState().setTime(1_100_000_000);
+    render(<InfoPanel selection={-85} units="km" onUnits={() => {}} ephemeris={Promise.resolve(eph)} />);
+    const p = await screen.findByTestId("no-position");
+    await vi.waitFor(() => expect(p.textContent).toMatch(/illustrative orbit \(period 1 h 54 min\)/));
+    expect(p.textContent).toMatch(/not at its true position\.$/);
+    expect(screen.queryByLabelText("Read-outs")).toBeNull();
+  });
+
   it("VN-INF-003: a spacecraft adds launch, status with its as-of date, agency, summary, goals and safe links", async () => {
     viewStore.getState().setTime(0);
     render(<InfoPanel selection={-170} units="km" onUnits={() => {}} ephemeris={Promise.resolve(fakeEphemeris())} />);

@@ -88,7 +88,8 @@ export function SpacecraftModels({ frame }: { frame: BodyFrame }) {
       const c = CRAFT[k]!;
       const m = meshes[k]!;
       m.visible = false;
-      if (!on || !frame.ok[c.i]) continue;
+      // VN-EPH-011: no model on an illustrative orbit; the marker and its label say what it is.
+      if (!on || !frame.ok[c.i] || frame.illustrative[c.i]) continue;
       toCamera(frame.world, rig.cam, scratch.rel, 3 * c.i);
       const x = scratch.rel[0]!;
       const y = scratch.rel[1]!;

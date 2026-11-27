@@ -18,11 +18,18 @@ export interface BodyFrame {
   readonly ok: Uint8Array;
   /** 1 where the object has no position to load at this time (outside its coverage, VN-EPH-007). */
   readonly outside: Uint8Array;
+  /** 1 where an orbiter is drawn on its illustrative orbit, outside its stored span (VN-EPH-011). */
+  readonly illustrative: Uint8Array;
 }
 
 export function createBodyFrame(): BodyFrame {
   const n = SCENE_OBJECTS.length;
-  return { world: new Float64Array(3 * n), ok: new Uint8Array(n), outside: new Uint8Array(n) };
+  return {
+    world: new Float64Array(3 * n),
+    ok: new Uint8Array(n),
+    outside: new Uint8Array(n),
+    illustrative: new Uint8Array(n),
+  };
 }
 
 export function Bodies({ frame }: { frame: BodyFrame }) {

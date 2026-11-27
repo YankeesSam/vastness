@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { BODIES } from "../../core/constants";
 import type { Ephemeris } from "../../core/ephem/ephemeris";
+import { illustrativePeriod, type IllustrativeEdge } from "../../core/ephem/illustrative";
 import {
   createReadout,
   formatDistance,
@@ -41,13 +42,29 @@ function compute(eph: Ephemeris, id: number, t: number, body: Float64Array, eart
     const entry = CATALOG_BY_ID.get(id);
     const cov = eph.has?.(id) ? eph.coverage(id) : null;
     const c = coverageState(t, cov, entry, launchTdb(entry, parseUtc));
-    if (!c.drawn)
-      return { status: "outside", reason: reasonText(c.reason!, entry?.name ?? `${id}`, cov, entry?.launch) };
+    if (!c.drawn) {
+      const reason = reasonText(c.reason!, entry?.name ?? `${id}`, cov, entry?.launch);
+      // VN-EPH-011: on an illustrative orbit the panel says so, and shows no numbers that would look exact.
+      const edge = eph.illustrativeEdge?.(id, t);
+      return { status: "outside", reason: edge ? `${reason} ${illustrativeText(edge)}` : reason };
+    }
   }
   const a = eph.state(id, t, body);
   const b = eph.state(EARTH, t, earth);
   if (a === "ok" && b === "ok") return { status: "ok", r: readouts(body, earth, createReadout()) };
   return a === "loading" || b === "loading" ? { status: "loading" } : { status: "none" };
+}
+
+/** VN-EPH-011: the panel's note for an orbiter drawn on its illustrative orbit. */
+function illustrativeText(edge: IllustrativeEdge): string {
+  const p = illustrativePeriod(edge);
+  const h = Math.floor(p / 3600);
+  const m = Math.round((p - h * 3600) / 60);
+  const period = p >= 2 * 86400 ? `${(p / 86400).toFixed(1)} days` : h > 0 ? `${h} h ${m} min` : `${m} min`;
+  return (
+    `It is drawn on an illustrative orbit (period ${period}) from its nearest stored orbital elements, ` +
+    "not at its true position."
+  );
 }
 
 const STATE_TEXT = { operating: "Operating", ended: "Ended", unclear: "Unclear" } as const;

@@ -55,6 +55,29 @@ describe("bodies", () => {
     expect(ok[DRAWN_BODIES.findIndex((b) => b.horizonsId === 499)]).toBe(0);
   });
 
+  it("VN-EPH-011: an orbiter outside its span is placed on its illustrative orbit and flagged, never as exact", () => {
+    const lro = SCENE_OBJECTS.findIndex((o) => o.id === -85);
+    const jwst = SCENE_OBJECTS.findIndex((o) => o.id === -170);
+    const eph = {
+      has: (id: number) => id === -85 || id === -170,
+      state: () => "outside",
+      illustrative(id: number, _t: number, out: Float64Array) {
+        if (id !== -85) return "outside";
+        out.set([1, 2, 3, 0, 0, 0]);
+        return "ok";
+      },
+    } as unknown as Ephemeris;
+    const n = SCENE_OBJECTS.length;
+    const out = new Float64Array(3 * n);
+    const ok = new Uint8Array(n);
+    const outside = new Uint8Array(n);
+    const ill = new Uint8Array(n);
+    expect(worldPositions(eph, 0, out, ok, outside, ill)).toBe(1);
+    expect([ok[lro], outside[lro], ill[lro]]).toEqual([1, 0, 1]);
+    expect([...out.subarray(3 * lro, 3 * lro + 3)]).toEqual([1, 3, -2]);
+    expect([ok[jwst], outside[jwst], ill[jwst]]).toEqual([0, 1, 0]);
+  });
+
   it("VN-SCN-001: every drawn body has a position from public/ephem at 2026-01-01", async () => {
     const eph = realEphemeris();
     const t = parseUtc("2026-01-01T00:00:00Z");

@@ -3,6 +3,7 @@ import type { ScreenFrame } from "./screen";
 
 // VN-SCN-003, VN-ACC-002: labels are DOM text (crisp, readable by screen readers) over the canvas. The marker
 // layout moves and shows them each frame; they start visible off screen so their size can be measured once.
+// VN-EPH-011: a spacecraft's label carries "(illustrative orbit)", shown while it is drawn on one.
 export function Labels({ screen }: { screen: ScreenFrame }) {
   return (
     <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }} data-testid="labels">
@@ -25,6 +26,7 @@ export function Labels({ screen }: { screen: ScreenFrame }) {
           }}
         >
           {b.name}
+          {b.kind === "spacecraft" && <span hidden> (illustrative orbit)</span>}
         </span>
       ))}
     </div>

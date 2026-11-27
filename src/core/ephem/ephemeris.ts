@@ -1,6 +1,7 @@
 import { evaluateElementSegment } from "./elements.ts";
 import { evaluateSegment } from "./chebyshev.ts";
 import { findSegment, KIND_ELEMENTS, readEphemeris, type EphemerisFile } from "./format.ts";
+import { edgeFor, illustrativeState, type Illustrative, type IllustrativeEdge } from "./illustrative.ts";
 
 // VN-EPH-005, VN-EPH-009, VN-EPH-010: the runtime ephemeris. It reads the manifest's chunk index, loads chunk files
 // through an injected loader (the app passes its own-origin asset loader; tests pass files from disk), evaluates
@@ -19,6 +20,8 @@ export interface ManifestObject {
   origin?: boolean;
   center?: number;
   chunks?: ManifestChunk[];
+  /** Orbiters: the osculating elements at the stored span's edges, for the illustrative orbit (VN-EPH-011). */
+  illustrative?: Illustrative;
 }
 
 export interface EphemerisManifest {
@@ -58,6 +61,7 @@ interface Body {
   starts: Float64Array;
   /** Scratch for composing this body's parent state. */
   scratch: Float64Array;
+  illustrative: Illustrative | undefined;
 }
 
 export interface Ephemeris {
@@ -79,6 +83,14 @@ export interface Ephemeris {
   state(id: number, t: number, out: Float64Array, offset?: number): EvalStatus;
   /** As state, from chunks already in memory only: "loading" where one is missing, and nothing is requested. */
   peek(id: number, t: number, out: Float64Array, offset?: number): EvalStatus;
+  /** VN-EPH-011: the illustrative orbit's edge that applies at t (outside the stored span), or undefined. */
+  illustrativeEdge(id: number, t: number): IllustrativeEdge | undefined;
+  /**
+   * VN-EPH-011: heliocentric state on the illustrative orbit at t, never an exact position: "outside" where none
+   * applies (inside the stored span, or no edge on that side), else the parent's status. Separate from `state` so
+   * a caller always knows which it drew.
+   */
+  illustrative(id: number, t: number, out: Float64Array, offset?: number): EvalStatus;
 }
 
 function findChunk(chunks: readonly ChunkSlot[], t: number): number {
@@ -149,6 +161,7 @@ export function createEphemeris(manifest: EphemerisManifest, loader: ChunkLoader
       chunks,
       starts,
       scratch: new Float64Array(6),
+      illustrative: o.illustrative,
     };
   });
   sorted.forEach((o, i) => {
@@ -335,6 +348,23 @@ export function createEphemeris(manifest: EphemerisManifest, loader: ChunkLoader
       const st = compose(body(id), out, offset);
       quiet = false;
       return st;
+    },
+    illustrativeEdge(id, t) {
+      const b = body(id);
+      if (b.chunks.length === 0) return undefined;
+      return edgeFor(b.illustrative, { start: b.chunks[0]!.start, end: b.chunks[b.chunks.length - 1]!.end }, t);
+    },
+    illustrative(id, t, out, offset = 0) {
+      const b = body(id);
+      const edge = b.chunks.length === 0 ? undefined : this.illustrativeEdge(id, t);
+      if (!edge || b.parent < 0) return "outside";
+      const tmp = b.scratch;
+      clock[0] = t;
+      const st = compose(bodies[b.parent]!, tmp, 0);
+      if (st !== "ok") return st;
+      illustrativeState(edge, t, out, offset);
+      for (let k = 0; k < 6; k++) out[offset + k] = out[offset + k]! + tmp[k]!;
+      return "ok";
     },
   };
 }

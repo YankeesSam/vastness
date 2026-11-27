@@ -18,6 +18,7 @@ import { J2000_JD, SECONDS_PER_DAY, calendarToJd } from "../../src/core/time/sca
 import { HorizonsClient, type CachedResponse } from "./client.ts";
 import { TOLERANCE_KM, fitAdaptive, type FitResult } from "./fit.ts";
 import { HorizonsError, parseVectors, vectorParams, type VectorResponse } from "./horizons.ts";
+import { addIllustrativeEdges } from "./edges.ts";
 import { generateOrbiters, type OrbitersFile } from "./orbiters.ts";
 import { generateSpacecraft, type SpacecraftSpec } from "./spacecraft.ts";
 
@@ -297,6 +298,8 @@ export async function generate(o: GenerateOptions): Promise<Map<string, Uint8Arr
     );
   }
   objects.sort((a, b) => (a as { id: number }).id - (b as { id: number }).id);
+  // VN-EPH-011: the osculating elements at each orbiter's span edges, for the illustrative orbit outside it.
+  addIllustrativeEdges(objects, files);
   const manifest = {
     // The highest file version written: 2 once any orbiter is stored as element segments (VN-EPH-011).
     format_version: elementFiles ? ELEMENTS_FILE_VERSION : POSITION_FILE_VERSION,

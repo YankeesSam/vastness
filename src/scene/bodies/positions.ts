@@ -38,7 +38,8 @@ const scene = new Float64Array(3);
 /**
  * World positions of SCENE_OBJECTS at TDB time t into out (3 per object); ok[i] is 1 where the ephemeris gave a
  * state; outside[i] is 1 where it has none to give (not in the ephemeris, or t outside its coverage, VN-EPH-007).
- * Returns how many were ok. Allocates nothing.
+ * VN-EPH-011: an orbiter outside its stored span with an illustrative orbit is placed on that orbit, ok[i] 1 and
+ * illustrative[i] 1, never at an exact position. Returns how many were ok. Allocates nothing.
  */
 export function worldPositions(
   eph: Ephemeris,
@@ -46,11 +47,21 @@ export function worldPositions(
   out: Float64Array,
   ok: Uint8Array,
   outside?: Uint8Array,
+  illustrative?: Uint8Array,
 ): number {
   let n = 0;
   for (let i = 0; i < SCENE_OBJECTS.length; i++) {
     const id = SCENE_OBJECTS[i]!.id;
-    const st = eph.has(id) ? eph.state(id, t, state) : "outside";
+    let st = eph.has(id) ? eph.state(id, t, state) : "outside";
+    let ill = 0;
+    if (st === "outside" && id < 0 && eph.has(id)) {
+      const s2 = eph.illustrative(id, t, state);
+      if (s2 !== "outside") {
+        st = s2;
+        ill = 1;
+      }
+    }
+    if (illustrative) illustrative[i] = ill;
     if (outside) outside[i] = st === "outside" ? 1 : 0;
     if (st === "ok") {
       sceneFromEcliptic(state, scene);

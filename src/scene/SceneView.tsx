@@ -27,7 +27,7 @@ function FrameClock() {
 /** Fills the frame's body positions from the ephemeris at the store's time (missing chunks load lazily). */
 function BodyStates({ eph, frame }: { eph: Ephemeris | null; frame: BodyFrame }) {
   useFrame(() => {
-    if (eph) worldPositions(eph, viewStore.getState().t, frame.world, frame.ok, frame.outside);
+    if (eph) worldPositions(eph, viewStore.getState().t, frame.world, frame.ok, frame.outside, frame.illustrative);
   }, PRIORITY.states);
   return null;
 }
