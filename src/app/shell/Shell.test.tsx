@@ -135,4 +135,42 @@ describe("app shell", () => {
       expect(within(views).getByRole("button", { name })).toBeTruthy();
     }
   });
+
+  it("VN-SCL-001, VN-SCL-002: the scale switch, the note of the factors, and layer switches", () => {
+    render(<App />);
+    const select = screen.getByRole("combobox", { name: "Scale mode" });
+    expect(screen.queryByRole("note")).toBeNull();
+    fireEvent.change(select, { target: { value: "exaggerated" } });
+    expect(viewStore.getState().scale).toBe("exaggerated");
+    expect(screen.getByRole("note").textContent).toMatch(/Sun ×40.*×1000.*×300.*Moon's distance ×\d+/);
+    fireEvent.change(select, { target: { value: "true" } });
+    expect(screen.queryByRole("note")).toBeNull();
+    // VN-SCL-001: markers and labels can be turned off so the emptiness shows
+    const layers = screen.getByRole("region", { name: "Layers" });
+    for (const name of ["Markers", "Labels"]) {
+      const box = within(layers).getByRole("checkbox", { name });
+      expect((box as HTMLInputElement).checked).toBe(true);
+      fireEvent.click(box);
+    }
+    expect(viewStore.getState().layers).toMatchObject({ markers: false, labels: false, bodies: true });
+    act(() => {
+      viewStore.getState().setLayer("markers", true);
+      viewStore.getState().setLayer("labels", true);
+    });
+  });
+
+  it("VN-SCL-007: the light pulse starts now, says how far it has gone, and stops", () => {
+    render(<App />);
+    const region = screen.getByRole("region", { name: "Light pulse" });
+    act(() => viewStore.getState().setPaused(true));
+    const t0 = viewStore.getState().t;
+    fireEvent.click(within(region).getByRole("button", { name: "From the Sun" }));
+    expect(viewStore.getState().pulse).toEqual({ origin: 10, t0 });
+    expect(region.textContent).toContain("Light from the Sun: 0 m out");
+    act(() => viewStore.getState().setTime(t0 + 500));
+    expect(region.textContent).toContain("Light from the Sun: 150 million km out after 8.33 minutes.");
+    fireEvent.click(within(region).getByRole("button", { name: "Stop" }));
+    expect(viewStore.getState().pulse).toBeNull();
+    expect(within(region).queryByRole("button", { name: "Stop" })).toBeNull();
+  });
 });

@@ -1,0 +1,60 @@
+.scale {
+  margin: 0;
+  width: min(30rem, 100%);
+  padding: 0.35rem 0.6rem 1.3rem;
+  font-size: 0.75rem;
+  color: var(--fg);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.scale figcaption {
+  color: var(--muted);
+  margin-bottom: 1.35rem;
+}
+
+.scale figcaption span {
+  color: var(--fg);
+}
+
+.bar {
+  position: relative;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+}
+
+.mark {
+  position: absolute;
+  top: -4px;
+  width: 1px;
+  height: 12px;
+  background: var(--muted);
+}
+
+.markName {
+  position: absolute;
+  bottom: 14px;
+  left: 0;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  color: var(--muted);
+  font-size: 0.68rem;
+}
+
+.markName.below {
+  bottom: auto;
+  top: 14px;
+}
+
+.pointer {
+  position: absolute;
+  top: -5px;
+  width: 0;
+  height: 0;
+  margin-left: -5px;
+  border: 5px solid transparent;
+  border-top: 7px solid var(--accent, #6cb4ff);
+}

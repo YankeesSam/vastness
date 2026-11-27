@@ -13,7 +13,7 @@ const view: ViewFragment = {
   paused: true,
   selection: -31,
   cam: { target: 399, distanceKm: 1.2e6, azimuth: 30 * DEG, elevation: -25 * DEG },
-  layers: { bodies: true, labels: false, markers: true, orbits: true, trails: false },
+  layers: { bodies: true, labels: false, markers: true, orbits: true, trails: false, callouts: false },
 };
 
 describe("view fragment", () => {
@@ -51,7 +51,9 @@ describe("view fragment", () => {
 
   it("VN-UI-002: every field is validated on its own; bad ones are dropped, good ones kept", () => {
     const d = decodeFragment("v=1&t=2026-02-30T00:00:00Z&r=1e99&p=yes&s=12345&c=399,-5,0,0&l=bxz&extra=1", known);
-    expect(d).toEqual({ layers: { bodies: true, labels: false, markers: false, orbits: false, trails: false } });
+    expect(d).toEqual({
+      layers: { bodies: true, labels: false, markers: false, orbits: false, trails: false, callouts: false },
+    });
     expect(decodeFragment("v=1&s=499&c=999,1e6,0,0", known)).toEqual({ selection: 499 });
     expect(decodeFragment(`v=1&c=399,${MAX_DISTANCE_KM * 10},0,0`, known)).toEqual({});
     expect(decodeFragment("v=1&c=399,1e6,0,95", known).cam!.elevation).toBeCloseTo(89 * DEG, 12); // clamped
@@ -62,6 +64,7 @@ describe("view fragment", () => {
       markers: false,
       orbits: false,
       trails: false,
+      callouts: false,
     });
   });
 
@@ -76,5 +79,15 @@ describe("view fragment", () => {
   it("VN-UI-002: the time stays inside the planets' coverage at both ends", () => {
     const end = decodeFragment(encodeFragment({ ...view, t: PLANET_COVERAGE.end }), known).t!;
     expect(Math.abs(end - PLANET_COVERAGE.end)).toBeLessThan(1e-3);
+  });
+
+  it("VN-SCL-002: exaggerated scale is x=e; true scale leaves the field out, and old links open in true scale", () => {
+    const s = encodeFragment({ ...view, scale: "exaggerated" });
+    expect(s.endsWith("&x=e")).toBe(true);
+    expect(decodeFragment(s, known).scale).toBe("exaggerated");
+    expect(encodeFragment({ ...view, scale: "true" })).toBe(encodeFragment(view));
+    expect(decodeFragment(encodeFragment(view), known).scale).toBeUndefined();
+    expect(decodeFragment("v=1&x=t", known).scale).toBe("true");
+    expect(decodeFragment("v=1&x=huge", known).scale).toBeUndefined();
   });
 });

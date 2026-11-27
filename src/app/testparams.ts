@@ -8,6 +8,7 @@ import type { Layer, ViewState } from "./store/view";
 //   cam=399,1.2e6,30,25        camera target (Horizons ID), distance km, azimuth and elevation in degrees
 //   still=1                    time paused, so two frames are the same
 //   layers=bodies,orbits       only these layers on
+//   scale=exaggerated          exaggerated scale, placed at once (VN-SCL-002)
 // Anything that does not parse is ignored; with no parameters the app starts as usual.
 
 export interface TestCamera {
@@ -24,9 +25,10 @@ export interface TestParams {
   cam?: TestCamera;
   still?: boolean;
   layers?: Record<Layer, boolean>;
+  scale?: "exaggerated";
 }
 
-const LAYERS: readonly Layer[] = ["bodies", "labels", "markers", "orbits", "trails"];
+const LAYERS: readonly Layer[] = ["bodies", "labels", "markers", "orbits", "trails", "callouts"];
 const DEG = Math.PI / 180;
 
 export function parseTestParams(search: string): TestParams {
@@ -48,9 +50,10 @@ export function parseTestParams(search: string): TestParams {
   if (q.get("still") === "1") out.still = true;
   const layers = q.get("layers")?.split(",");
   if (layers && layers.some((l) => (LAYERS as readonly string[]).includes(l))) {
-    out.layers = { bodies: false, labels: false, markers: false, orbits: false, trails: false };
+    out.layers = { bodies: false, labels: false, markers: false, orbits: false, trails: false, callouts: false };
     for (const l of layers) if ((LAYERS as readonly string[]).includes(l)) out.layers[l as Layer] = true;
   }
+  if (q.get("scale") === "exaggerated") out.scale = "exaggerated";
   return out;
 }
 
@@ -64,6 +67,7 @@ export function applyTestParams(p: TestParams, store: StoreApi<ViewState>): void
     patch.cameraRequest = null; // the scene starts at this camera (SceneView), not a fragment's
   }
   if (p.layers) patch.layers = p.layers;
+  if (p.scale) patch.scale = p.scale;
   store.setState(patch);
 }
 

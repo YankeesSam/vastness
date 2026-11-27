@@ -14,7 +14,14 @@ describe("test params (F5)", () => {
       elevation: (25 * Math.PI) / 180,
     });
     expect(p.still).toBe(true);
-    expect(p.layers).toEqual({ bodies: true, orbits: true, markers: false, labels: false, trails: false });
+    expect(p.layers).toEqual({
+      bodies: true,
+      orbits: true,
+      markers: false,
+      labels: false,
+      trails: false,
+      callouts: false,
+    });
   });
 
   it("no params, or junk, change nothing", () => {
@@ -33,8 +40,23 @@ describe("test params (F5)", () => {
     expect(s.paused).toBe(true);
     expect(s.target).toBe(10);
     expect(s.targetSeq).toBe(seq); // no fly-to: the camera starts there
-    expect(s.layers).toEqual({ bodies: true, orbits: false, markers: false, labels: false, trails: false });
+    expect(s.layers).toEqual({
+      bodies: true,
+      orbits: false,
+      markers: false,
+      labels: false,
+      trails: false,
+      callouts: false,
+    });
     s.tick(1);
     expect(store.getState().t).toBe(parseUtc("2026-01-01T00:00:00Z"));
+  });
+
+  it("VN-SCL-002: scale=exaggerated starts in exaggerated scale; anything else is ignored", () => {
+    expect(parseTestParams("?scale=exaggerated").scale).toBe("exaggerated");
+    expect(parseTestParams("?scale=big")).toEqual({});
+    const store = createViewStore({ t: 0 });
+    applyTestParams(parseTestParams("?scale=exaggerated"), store);
+    expect(store.getState().scale).toBe("exaggerated");
   });
 });

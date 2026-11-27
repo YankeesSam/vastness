@@ -7,7 +7,7 @@ import { expect, test, type Page } from "@playwright/test";
 const T = "2026-01-01T00:00:00Z";
 const LAYERS = "bodies,orbits,markers";
 
-/** The shell's panels and bars are masked: the screenshots are of the 3D view. */
+/** The shell's panels, bars and scale indicator are masked: the screenshots are of the 3D view. */
 async function view(page: Page, cam: string): Promise<Buffer> {
   await page.goto(`./?t=${T}&cam=${cam}&still=1&layers=${LAYERS}`);
   const canvas = page.locator("canvas");
@@ -20,7 +20,14 @@ async function view(page: Page, cam: string): Promise<Buffer> {
         requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => r()))),
       ),
   );
-  return page.screenshot({ mask: [page.locator("header"), page.locator("aside"), page.locator("footer")] });
+  return page.screenshot({
+    mask: [
+      page.locator("header"),
+      page.locator("aside"),
+      page.locator("footer"),
+      page.getByRole("figure", { name: "Scale" }), // VN-SCL-004: the scale bar's text follows the camera
+    ],
+  });
 }
 
 const VIEWS = [

@@ -43,7 +43,7 @@ describe("url sync", () => {
         paused: false,
         selection: -31,
         cam,
-        layers: { bodies: true, labels: false, markers: true, orbits: true, trails: true },
+        layers: { bodies: true, labels: false, markers: true, orbits: true, trails: true, callouts: true },
       }),
     );
   });
@@ -56,7 +56,14 @@ describe("url sync", () => {
     expect(s.rate).toBe(-3600);
     expect(s.paused).toBe(true);
     expect(s.selection).toBe(-32);
-    expect(s.layers).toEqual({ bodies: true, labels: false, markers: false, orbits: true, trails: false });
+    expect(s.layers).toEqual({
+      bodies: true,
+      labels: false,
+      markers: false,
+      orbits: true,
+      trails: false,
+      callouts: false,
+    });
     expect(s.cameraSeq).toBe(1);
     expect(s.cameraRequest!.target).toBe(899);
     expect(s.target).toBe(899);

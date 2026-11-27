@@ -30,11 +30,6 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 
 ### M5 scale and education
 
-- [ ] T-054 P0 @phase5 slice: scale mapping (pure): true and exaggerated, per-class factors, moons pushed out; property test that nothing overlaps  req: VN-SCL-002  files: src/core/scale/mapping.ts  test: src/core/scale/mapping.test.ts
-- [ ] T-055 P0 @phase5 slice: true-scale mode with markers and labels off; animated switch that keeps the selection framed  req: VN-SCL-001, VN-SCL-003  files: src/scene/scale/  test: e2e/scale-modes.spec.ts
-- [ ] T-056 P0 @phase5 slice: logarithmic scale indicator with reference marks  req: VN-SCL-004  files: src/core/scale/indicator.ts, src/app/scale/ScaleBar.tsx  test: src/core/scale/indicator.test.ts
-- [ ] T-057 P1 @phase5 slice: distance callouts to the Sun and Earth  req: VN-SCL-005  files: src/scene/callouts/  test: src/scene/callouts/callouts.test.ts
-- [ ] T-058 P1 @phase5 slice: light-speed pulse layer  req: VN-SCL-007  files: src/scene/pulse/  test: src/scene/pulse/pulse.test.ts
 - [ ] T-059 P0 @phase5 slice: overlay engine for "How vast is it?": steps drive camera, time and layers; skip; keyboard  req: VN-SCL-006  files: src/app/tour/  test: src/app/tour/Tour.test.tsx
 - [ ] T-060 P1 @phase5 slice: tour content in docs/content/tour.md wired into steps; needs-user: review of the texts  req: VN-SCL-006  files: docs/content/tour.md, src/app/tour/steps.ts  test: src/app/tour/steps.test.ts
 
@@ -87,6 +82,11 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 - [x] T-051 URL fragment codec v=1 and url-sync (replaceState, hashchange, camera request); session 14; 6ebdf29
 - [x] T-052 Share button, e2e round trip in a new tab; session 14; 92af8a4
 - [x] T-053 preset views (Views section), F5 baselines updated; session 14; vitest 406, e2e 29; cfcee80
+- [x] T-054 scale mapping (src/core/scale/mapping.ts): class factors Sun 40, rocky 1000, giants 300, Moon 1000, Moon stretched ×34 about Earth; small objects pushed out at their altitude; no-overlap property test on 400 ephemeris times; session 15
+- [x] T-055 true/exaggerated switch (store, top-bar select, link x=e, test param scale=), 1 s animation (instant with reduced motion), followed body kept framed, factor note, Layers section; e2e scale-modes; session 15
+- [x] T-056 log scale bar (src/core/scale/indicator.ts, src/app/scale/ScaleBar.tsx): width in km, AU, light-time; marks Earth-Moon, Earth-Sun, Sun-Neptune, Voyager 1; F5 baselines re-taken with the bar masked; session 15
+- [x] T-057 distance callouts to the Sun and Earth (src/scene/callouts/), layer `callouts` (link letter d); e2e callouts; session 15
+- [x] T-058 light-speed pulse from the Sun or Earth (src/scene/pulse/, Light pulse section); e2e pulse; session 15; vitest 430, e2e 35
 
 - [x] T-093 Earth satellites from CelesTrak GP (tools/gp, data/satellites.json, 13 satellites, ISS vs Horizons radial 0.25 / cross 0.13 / along 22.7 km); session 13; 265cf3f
 - [x] T-094 Earth satellite layer (withSatellites, markers near Earth, panel element age, illustrative beyond 14 d); session 13; 953f298

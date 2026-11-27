@@ -3,6 +3,8 @@ import { createStore, type StoreApi } from "zustand/vanilla";
 import { advanceTime, clampToRange, MAX_FRAME_DT_S, PLANET_COVERAGE, reverse, stepRate } from "../../core/time/clock";
 import { tdbFromUtc } from "../../core/time/scales";
 import type { FragmentCamera } from "../../core/share/fragment";
+import type { ScaleMode } from "../../core/scale/mapping";
+import type { Pulse, PulseOrigin } from "../../scene/pulse/pulse";
 import { TRAIL_DEFAULT_DAYS } from "../../core/trails/sample";
 
 // VN-TIM-004: the view store. Simulation time is one float64 TDB seconds value since J2000 (ADR-0003), advanced by
@@ -12,7 +14,8 @@ import { TRAIL_DEFAULT_DAYS } from "../../core/trails/sample";
 
 export { advanceTime, MAX_FRAME_DT_S };
 
-export type Layer = "bodies" | "labels" | "markers" | "orbits" | "trails";
+/** callouts: VN-SCL-005 distance lines from the selection to the Sun and Earth. */
+export type Layer = "bodies" | "labels" | "markers" | "orbits" | "trails" | "callouts";
 
 export interface ViewState {
   /** TDB seconds since J2000. */
@@ -30,6 +33,10 @@ export interface ViewState {
   /** VN-UI-002: a camera to jump to (a shared link), applied by the scene when cameraSeq changes. */
   cameraRequest: FragmentCamera | null;
   cameraSeq: number;
+  /** VN-SCL-001, VN-SCL-002: true or exaggerated scale (the scene animates the switch, VN-SCL-003). */
+  scale: ScaleMode;
+  /** VN-SCL-007: the light-speed pulse, or null when off. */
+  pulse: Pulse | null;
   /** VN-CAT-004: spacecraft trail range, days back and ahead (Infinity: the whole coverage). */
   trailDays: number;
   tick(dtRealS: number): void;
@@ -49,6 +56,9 @@ export interface ViewState {
   /** Places the camera at once (no fly-to) and makes its target the camera target. */
   setCamera(cam: FragmentCamera): void;
   setTrailDays(days: number): void;
+  setScale(scale: ScaleMode): void;
+  /** VN-SCL-007: sends a pulse from the origin now (simulation time); null turns it off. */
+  setPulse(origin: PulseOrigin | null): void;
 }
 
 /** TDB seconds for the current wall-clock instant (UTC to TDB at the edge, ADR-0003). */
@@ -71,8 +81,10 @@ export function createViewStore(init: ViewInit = {}): StoreApi<ViewState> {
     selection: null,
     target: init.target ?? 399,
     targetSeq: 0,
-    layers: { bodies: true, labels: true, markers: true, orbits: true, trails: true },
+    layers: { bodies: true, labels: true, markers: true, orbits: true, trails: true, callouts: true },
     trailDays: TRAIL_DEFAULT_DAYS,
+    scale: "true",
+    pulse: null,
     tick: (dt) =>
       set((s) => {
         const c = clampToRange(advanceTime(s.t, s.rate, dt, s.paused), PLANET_COVERAGE.start, PLANET_COVERAGE.end);
@@ -92,6 +104,8 @@ export function createViewStore(init: ViewInit = {}): StoreApi<ViewState> {
     cameraSeq: 0,
     setCamera: (cam) => set((s) => ({ cameraRequest: cam, cameraSeq: s.cameraSeq + 1, target: cam.target })),
     setLayer: (layer, on) => set((s) => ({ layers: { ...s.layers, [layer]: on } })),
+    setScale: (scale) => set({ scale }),
+    setPulse: (origin) => set((s) => ({ pulse: origin === null ? null : { origin, t0: s.t } })),
     setTrailDays: (trailDays) => set({ trailDays: trailDays > 0 ? trailDays : TRAIL_DEFAULT_DAYS }),
   }));
 }

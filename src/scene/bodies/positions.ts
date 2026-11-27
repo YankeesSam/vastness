@@ -1,7 +1,8 @@
 import { CATALOG } from "../../app/catalog";
-import { BODIES, type Body } from "../../core/constants";
+import { BODIES, type Body, type BodyId } from "../../core/constants";
 import type { Ephemeris } from "../../core/ephem/ephemeris";
 import { sceneFromEcliptic } from "../../core/frames";
+import { mapBodies, mapSmall, scaleTable } from "../../core/scale/mapping";
 
 // VN-SCN-001, VN-CAT-006: the objects in the scene and their float64 world positions (scene frame, km) for a time.
 // Bodies come first (drawn as spheres, in DRAWN_BODIES order), then the catalog's spacecraft (markers only), then its
@@ -11,6 +12,9 @@ import { sceneFromEcliptic } from "../../core/frames";
 export const DRAWN_BODIES: readonly Body[] = [10, 199, 299, 399, 301, 499, 599, 699, 799, 899].map(
   (id) => BODIES[id as keyof typeof BODIES],
 );
+
+/** VN-SCL-002: the scale table for DRAWN_BODIES, in the same order. */
+export const SCALE_TABLE = scaleTable(DRAWN_BODIES.map((b) => b.horizonsId as BodyId));
 
 /** A spacecraft's nominal size for the camera (closest approach, framing), km. Models are T-044. */
 export const SPACECRAFT_RADIUS_KM = 0.005;
@@ -77,4 +81,23 @@ export function worldPositions(
     } else ok[i] = 0;
   }
   return n;
+}
+
+/**
+ * VN-SCL-001..003: drawn positions and radii of SCENE_OBJECTS from their true positions at a scale amount (0 true,
+ * 1 exaggerated): bodies by the scale mapping, spacecraft and satellites carried and pushed out of enlarged bodies.
+ * Allocates nothing.
+ */
+export function drawnPositions(
+  amount: number,
+  truth: Float64Array,
+  ok: Uint8Array,
+  world: Float64Array,
+  radius: Float64Array,
+): void {
+  mapBodies(SCALE_TABLE, amount, truth, ok, world, radius);
+  for (let i = DRAWN_BODIES.length; i < SCENE_OBJECTS.length; i++) {
+    radius[i] = SCENE_OBJECTS[i]!.radiusKm;
+    if (ok[i]) mapSmall(SCALE_TABLE, truth, ok, world, radius, 3 * i, world);
+  }
 }

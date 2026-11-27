@@ -6,7 +6,10 @@ import { testParams } from "../app/testparams";
 import { VERTICAL_FOV_DEG } from "../core/camera/presets";
 import type { Ephemeris } from "../core/ephem/ephemeris";
 import { Bodies, createBodyFrame, type BodyFrame } from "./bodies/Bodies";
-import { DRAWN_BODIES, SCENE_OBJECTS, worldPositions } from "./bodies/positions";
+import { amountFor, stepAmount } from "../core/scale/mapping";
+import { viewWidthKm } from "../core/scale/indicator";
+import { viewReadout } from "../app/scale/readout";
+import { DRAWN_BODIES, drawnPositions, SCENE_OBJECTS, worldPositions } from "./bodies/positions";
 
 /** Satellites come last in SCENE_OBJECTS. */
 const FIRST_SATELLITE = (() => {
@@ -14,7 +17,9 @@ const FIRST_SATELLITE = (() => {
   return i < 0 ? SCENE_OBJECTS.length : i;
 })();
 import { FAR_KM, MIN_NEAR_KM } from "./origin";
+import { CalloutLabels, Callouts, createCalloutFrame } from "./callouts/Callouts";
 import { Controls } from "./camera/Controls";
+import { LightPulse } from "./pulse/Pulse";
 import { Labels } from "./labels/Labels";
 import { Markers } from "./labels/Markers";
 import { createScreenFrame } from "./labels/screen";
@@ -22,7 +27,7 @@ import { Orbits } from "./orbits/Orbits";
 import { SpacecraftModels } from "./spacecraft/Model";
 import { Trails } from "./trails/Trails";
 import { Picker } from "./Picker";
-import { createRig, RigContext } from "./rig";
+import { createRig, RigContext, useRig } from "./rig";
 import { OriginCamera, PRIORITY } from "./Scene";
 
 /** VN-TIM-004: the frame clock advances simulation time by the frame's real seconds. */
@@ -31,11 +36,49 @@ function FrameClock() {
   return null;
 }
 
-/** Fills the frame's body positions from the ephemeris at the store's time (missing chunks load lazily). */
+const reducedMotion = () => typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/**
+ * Fills the frame's true positions from the ephemeris at the store's time (missing chunks load lazily), moves the
+ * scale amount toward the store's mode (VN-SCL-003), and maps true to drawn positions and radii (VN-SCL-002).
+ */
 function BodyStates({ eph, frame }: { eph: Ephemeris | null; frame: BodyFrame }) {
-  useFrame(() => {
-    if (eph) worldPositions(eph, viewStore.getState().t, frame.world, frame.ok, frame.outside, frame.illustrative);
+  const canvas = useThree((s) => s.gl.domElement);
+  const first = useMemo(() => ({ done: false }), []);
+  useFrame((_, dt) => {
+    const st = viewStore.getState();
+    const target = amountFor(st.scale);
+    // a view that starts in exaggerated scale (a link, F5) is placed at once
+    frame.scale.amount = first.done ? stepAmount(frame.scale.amount, target, dt, reducedMotion()) : target;
+    first.done = true;
+    if (eph) worldPositions(eph, st.t, frame.truth, frame.ok, frame.outside, frame.illustrative);
+    drawnPositions(frame.scale.amount, frame.truth, frame.ok, frame.world, frame.radius);
+    // For e2e specs: the scale amount, 2 decimals.
+    const a = frame.scale.amount.toFixed(2);
+    if (canvas.dataset.scaleAmount !== a) canvas.dataset.scaleAmount = a;
   }, PRIORITY.states);
+  return null;
+}
+
+const VOYAGER_1 = SCENE_OBJECTS.findIndex((o) => o.id === -31);
+
+/** VN-SCL-004: measures the view for the scale bar: its width at the focus and Voyager 1's distance from the Sun. */
+function ScaleProbe({ frame }: { frame: BodyFrame }) {
+  const rig = useRig();
+  const size = useThree((s) => s.size);
+  useFrame(() => {
+    const aspect = size.height > 0 ? size.width / size.height : 1;
+    viewReadout.widthKm = viewWidthKm(rig.orbit.distance, (VERTICAL_FOV_DEG * Math.PI) / 180, aspect);
+    const v = VOYAGER_1;
+    viewReadout.voyager1Km =
+      v >= 0 && frame.ok[v] && frame.ok[0]
+        ? Math.hypot(
+            frame.truth[3 * v]! - frame.truth[0]!,
+            frame.truth[3 * v + 1]! - frame.truth[1]!,
+            frame.truth[3 * v + 2]! - frame.truth[2]!,
+          )
+        : null;
+  }, PRIORITY.objects);
   return null;
 }
 
@@ -91,6 +134,7 @@ export function SceneView() {
   }, []);
   const frame = useMemo(() => createBodyFrame(), []);
   const screen = useMemo(() => createScreenFrame(), []);
+  const callouts = useMemo(() => createCalloutFrame(), []);
   const [eph, setEph] = useState<Ephemeris | null>(null);
   const [failed, setFailed] = useState(false);
 
@@ -126,6 +170,9 @@ export function SceneView() {
           <SpacecraftModels frame={frame} />
           <Markers frame={frame} screen={screen} />
           <Picker screen={screen} />
+          <ScaleProbe frame={frame} />
+          <Callouts frame={frame} screen={screen} callouts={callouts} />
+          <LightPulse frame={frame} />
           <ReadyMarker
             frame={frame}
             failed={failed}
@@ -139,6 +186,7 @@ export function SceneView() {
         </RigContext.Provider>
       </Canvas>
       <Labels screen={screen} />
+      <CalloutLabels callouts={callouts} />
     </div>
   );
 }

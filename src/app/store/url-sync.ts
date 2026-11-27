@@ -33,6 +33,7 @@ export function currentFragment(store: StoreApi<ViewState>): string {
     selection: s.selection,
     cam: cameraSource?.() ?? null,
     layers: s.layers,
+    scale: s.scale,
   });
 }
 
@@ -45,6 +46,7 @@ export function applyFragment(hash: string, store: StoreApi<ViewState>): void {
   if (f.paused !== undefined) patch.paused = f.paused;
   if (f.selection !== undefined) patch.selection = f.selection;
   if (f.layers) patch.layers = f.layers;
+  if (f.scale) patch.scale = f.scale;
   store.setState(patch);
   if (f.cam) store.getState().setCamera(f.cam);
 }

@@ -1,7 +1,7 @@
 schema: 1
-from_session: 14
-to_session: 15
-completed: [T-048, T-049, T-050, T-051, T-052, T-053]
+from_session: 15
+to_session: 16
+completed: [T-054, T-055, T-056, T-057, T-058]
 failed: []
 next_task_id: T-097
 next_task: "T-097 LRO whole mission under 5 MB (non-singular elements, format v3); WIP in git stash"
@@ -17,16 +17,16 @@ do_not_read:
   - docs/REQUIREMENTS.md (grep VN-* IDs instead)
   - docs/architecture/VASTNESS_ARCHITECTURE.md
   - public/ephem, testdata, .cache, dist
-tests: pass at cfcee80 (vitest 406; e2e 29/29; typecheck, prettier clean)
-commit: cfcee80
-push: ok
+tests: pass (vitest 430; e2e 35/35; typecheck, prettier, check-deps, check-size clean)
+commit: pending
+push: pending
 notes:
-  - Session 14 batch: all of M4 (T-048..T-053) at the user's request; T-097 stayed stashed (`git stash list`: "T-097 WIP"); its notes from session 13 still hold (main.ts v3, format.test.ts, EPHEMERIS_FORMAT.md, ~1 h `npm run ephem -- --budget=5000`, ephem:check).
-  - F5 baselines (scale.spec.ts-snapshots, all 5) updated with --update-snapshots in T-053: the time bar gained a timeline row, so the masked footer is shorter; the new shots also hold the spacecraft markers the old ones lacked (they were inside the 0.2% tolerance). Checked by eye.
-  - Catalog events (data/catalog.json `events`) are past flybys/arrivals/milestones as UTC dates from mission knowledge (NASA/ESA mission pages already in each entry's sources); worth a human skim. Schema keeps them between launch and status.as_of, so no planned events.
-  - URL fragment: `#v=1&t=..&r=..&p=0|1&s=..&c=target,km,az,el&l=bmo..` (src/core/share/fragment.ts); written every 1 s with replaceState. Scale mode is not in it yet: add an optional field in M5 T-055 (version stays 1).
-  - Presets and shared cameras are placed at once (no fly-to); the store's cameraRequest/cameraSeq carries them to Controls.
+  - Session 15 batch at the user's request: M5 scale tasks T-054..T-058; T-059 (tour engine) and T-060 (needs-user text review) remain in M5. T-097 still stashed (`git stash list`: "T-097 WIP"); session 13 notes hold.
+  - Scale: BodyFrame now has truth (true), world (drawn) and radius (drawn); everything drawn/framed uses world/radius, distances use truth. True scale is the default (F5 views unchanged); `?scale=exaggerated` and link field `x=e`.
+  - Exaggerated factors (src/core/scale/mapping.ts): Sun 40, rocky planets and Moon 1000, giants 300; Moon ×34 about Earth (clearance 1.5 at perigee 356 000 km). Tightest pair over 400 sampled times: Mercury near the Sun, > 1.2 clear.
+  - F5 baselines (all 5) re-taken with --update-snapshots: the new scale bar sits over the view and is masked like the panels; diff checked by eye (only the mask area).
+  - New layer `callouts` (fragment letter d): links made before this session open with callouts off.
+  - D-002 low: trails stay at true positions in exaggerated scale while markers are pushed out.
   - Flaky under parallel load, pass alone: ephemeris.perf.test.ts allocation test, tests/nightly-build.test.ts.
-  - nightly 2711d33-nightly ok; LAN http://192.168.1.166:8770/ (200)
 open_defects_blocking: []
 optimizations_applied: []

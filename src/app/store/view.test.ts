@@ -56,10 +56,28 @@ describe("view store", () => {
     expect(store.getState().targetSeq).toBe(2);
     s.select(null);
     expect(store.getState().selection).toBeNull();
-    expect(store.getState().layers).toEqual({ bodies: true, labels: true, markers: true, orbits: true, trails: true });
+    expect(store.getState().layers).toEqual({
+      bodies: true,
+      labels: true,
+      markers: true,
+      orbits: true,
+      trails: true,
+      callouts: true,
+    });
     s.setLayer("orbits", false);
     expect(store.getState().layers.orbits).toBe(false);
     expect(store.getState().layers.labels).toBe(true);
+    // VN-SCL-001: true scale by default
+    expect(store.getState().scale).toBe("true");
+    s.setScale("exaggerated");
+    expect(store.getState().scale).toBe("exaggerated");
+    // VN-SCL-007: a pulse starts at the current simulation time
+    expect(store.getState().pulse).toBeNull();
+    store.getState().setTime(500);
+    s.setPulse(399);
+    expect(store.getState().pulse).toEqual({ origin: 399, t0: 500 });
+    s.setPulse(null);
+    expect(store.getState().pulse).toBeNull();
   });
 
   it("setTime replaces time without touching the rate", () => {

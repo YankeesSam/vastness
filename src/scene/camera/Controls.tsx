@@ -15,9 +15,10 @@ import {
   wheelSteps,
   zoom,
 } from "../../core/camera/orbit";
+import { keepFramed } from "../../core/scale/mapping";
 import { flightAt, frameDistance, planFlight, type Flight } from "../../core/camera/flyto";
 import type { BodyFrame } from "../bodies/Bodies";
-import { objectIndex, SCENE_OBJECTS } from "../bodies/positions";
+import { objectIndex } from "../bodies/positions";
 import { useRig, type Rig } from "../rig";
 import { PRIORITY } from "../Scene";
 
@@ -25,10 +26,10 @@ import { PRIORITY } from "../Scene";
 // arrow keys. VN-CAM-002: a new camera target starts a fly-to; VN-CAM-003: once there the camera follows it, and
 // Escape or a pan releases it. The maths is in src/core/camera; this turns DOM events into calls on the rig.
 
-/** The closest the camera may come to the rig's focus. */
-export function minDistance(rig: Rig): number {
+/** The closest the camera may come to the rig's focus (the followed object's drawn radius, VN-SCL-002). */
+export function minDistance(rig: Rig, frame: BodyFrame): number {
   const i = objectIndex(rig.follow);
-  return i >= 0 ? minDistanceFor(SCENE_OBJECTS[i]!.radiusKm) : MIN_DISTANCE_KM;
+  return i >= 0 ? minDistanceFor(frame.radius[i]!) : MIN_DISTANCE_KM;
 }
 
 /** A fly-to in progress: from a fixed start focus to a body, timed in real seconds. */
@@ -64,6 +65,8 @@ export function Controls({ frame }: { frame: BodyFrame }) {
   const camera = useThree((s) => s.camera);
   const scratch = useMemo(() => ({ eye: new Float64Array(3), pan: new Float64Array(3), point: { u: 0, w: 0 } }), []);
   const flying = useMemo<{ current: Flying | null }>(() => ({ current: null }), []);
+  /** The followed object's drawn radius last frame (VN-SCL-003). */
+  const lastRadius = useMemo(() => ({ id: null as number | null, r: 0 }), []);
 
   useEffect(() => {
     const fov = () => ((camera instanceof PerspectiveCamera ? camera.fov : 50) * Math.PI) / 180;
@@ -107,7 +110,7 @@ export function Controls({ frame }: { frame: BodyFrame }) {
         p.y = e.clientY;
         const c1 = centroid();
         interrupt();
-        if (s0 > 0) pinch(rig.orbit, spread() / s0, minDistance(rig));
+        if (s0 > 0) pinch(rig.orbit, spread() / s0, minDistance(rig, frame));
         if (c1.x !== c0.x || c1.y !== c0.y) pan(c1.x - c0.x, c1.y - c0.y);
         return;
       }
@@ -128,7 +131,7 @@ export function Controls({ frame }: { frame: BodyFrame }) {
     const wheel = (e: WheelEvent) => {
       e.preventDefault();
       interrupt();
-      zoom(rig.orbit, wheelSteps(e.deltaY, e.deltaMode), minDistance(rig));
+      zoom(rig.orbit, wheelSteps(e.deltaY, e.deltaMode), minDistance(rig, frame));
     };
     const key = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey || e.altKey || isTyping(e.target)) return;
@@ -141,7 +144,7 @@ export function Controls({ frame }: { frame: BodyFrame }) {
       e.preventDefault();
       interrupt();
       if (a.kind === "orbit") orbit(rig.orbit, a.dAz, a.dEl);
-      else zoom(rig.orbit, a.steps, minDistance(rig));
+      else zoom(rig.orbit, a.steps, minDistance(rig, frame));
     };
     const menu = (e: Event) => e.preventDefault();
     // VN-UI-002: a shared camera is placed at once; the URL fragment reads the camera back.
@@ -161,7 +164,7 @@ export function Controls({ frame }: { frame: BodyFrame }) {
       if (i < 0) return;
       rig.follow = null;
       flying.current = {
-        plan: planFlight(0, rig.orbit.distance, frameDistance(SCENE_OBJECTS[i]!.radiusKm)),
+        plan: planFlight(0, rig.orbit.distance, frameDistance(frame.radius[i]!)),
         to: s.target,
         start: Float64Array.from(rig.focus),
         elapsed: 0,
@@ -216,12 +219,19 @@ export function Controls({ frame }: { frame: BodyFrame }) {
       }
     }
     const i = objectIndex(rig.follow);
+    // VN-SCL-003: through a scale switch the followed body keeps its apparent size (close in), so it stays framed.
+    if (i >= 0) {
+      if (lastRadius.id === rig.follow)
+        rig.orbit.distance = keepFramed(rig.orbit.distance, lastRadius.r, frame.radius[i]!);
+      lastRadius.r = frame.radius[i]!;
+    }
+    lastRadius.id = rig.follow;
     if (i >= 0 && frame.ok[i]) {
       rig.focus[0] = frame.world[3 * i]!;
       rig.focus[1] = frame.world[3 * i + 1]!;
       rig.focus[2] = frame.world[3 * i + 2]!;
     }
-    const min = minDistance(rig);
+    const min = minDistance(rig, frame);
     if (rig.orbit.distance < min) rig.orbit.distance = min;
     eyeOffset(rig.orbit, scratch.eye);
     rig.cam[0] = rig.focus[0]! + scratch.eye[0]!;

@@ -150,7 +150,7 @@ export function Markers({ frame, screen }: { frame: BodyFrame; screen: ScreenFra
           : (CATALOG_BY_ID.get(b.id)?.priority ?? 0) + (st.selection === b.id ? 1000 : 0);
       const dist = Math.hypot(x, y, z);
       // VN-CAT-006: within model range a spacecraft is drawn at least icon-sized, and its marker gives way to it.
-      const drawn = b.kind === "spacecraft" ? drawnRadiusKm(dist, fov, size.height) : b.radiusKm;
+      const drawn = b.kind === "spacecraft" ? drawnRadiusKm(dist, fov, size.height) : frame.radius[i]!; // VN-SCL-002: drawn radius
       screen.radiusPx[i] = pixelRadius(drawn, dist, fov, size.height);
       if (st.layers.markers && markerShown(screen.radiusPx[i]!)) {
         screen.marker[i] = 1;

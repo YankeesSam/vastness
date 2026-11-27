@@ -1,4 +1,5 @@
 import { MAX_DISTANCE_KM, MAX_ELEVATION, MIN_DISTANCE_KM } from "../camera/orbit";
+import type { ScaleMode } from "../scale/mapping";
 import { PLANET_COVERAGE, RATE_LADDER } from "../time/clock";
 import { formatUtc, parseUtc } from "../time/scales";
 
@@ -10,7 +11,8 @@ import { formatUtc, parseUtc } from "../time/scales";
 //   t  simulation time, UTC to the millisecond         r  rate, simulation seconds per real second
 //   p  1 paused, 0 playing                                s  selected object (Horizons ID), empty for none
 //   c  camera: target ID, distance km, azimuth and elevation in degrees
-//   l  layers that are on: b bodies, l labels, m markers, o orbits, t trails
+//   l  layers that are on: b bodies, l labels, m markers, o orbits, t trails, d distance callouts
+//   x  scale: e exaggerated, t true; left out for true scale (links made before it still open, VN-SCL-002)
 //
 // Decoding checks each field on its own and drops what does not pass, so a damaged link still opens what it can.
 // A different or missing version gives nothing.
@@ -20,7 +22,7 @@ export const FRAGMENT_VERSION = 1;
 /** Longest fragment decoded; anything longer is not ours. */
 const MAX_LENGTH = 512;
 
-export type FragmentLayer = "bodies" | "labels" | "markers" | "orbits" | "trails";
+export type FragmentLayer = "bodies" | "labels" | "markers" | "orbits" | "trails" | "callouts";
 
 const LAYER_LETTERS: readonly [FragmentLayer, string][] = [
   ["bodies", "b"],
@@ -28,6 +30,7 @@ const LAYER_LETTERS: readonly [FragmentLayer, string][] = [
   ["markers", "m"],
   ["orbits", "o"],
   ["trails", "t"],
+  ["callouts", "d"],
 ];
 
 export interface FragmentCamera {
@@ -47,6 +50,8 @@ export interface ViewFragment {
   selection: number | null;
   cam: FragmentCamera | null;
   layers: Record<FragmentLayer, boolean>;
+  /** Absent means true scale. */
+  scale?: ScaleMode;
 }
 
 const DEG = Math.PI / 180;
@@ -69,6 +74,7 @@ export function encodeFragment(v: ViewFragment): string {
       .map(([, l]) => l)
       .join("")}`,
   );
+  if (v.scale === "exaggerated") parts.push("x=e");
   return parts.join("&");
 }
 
@@ -142,5 +148,7 @@ export function decodeFragment(s: string, known: (id: number) => boolean): Parti
       boolean
     >;
   }
+  const x = f.get("x");
+  if (x === "e" || x === "t") out.scale = x === "e" ? "exaggerated" : "true";
   return out;
 }

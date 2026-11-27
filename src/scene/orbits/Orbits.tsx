@@ -16,13 +16,13 @@ import {
   type OrbitWindow,
 } from "../../core/orbits/sample";
 import type { BodyFrame } from "../bodies/Bodies";
-import { DRAWN_BODIES } from "../bodies/positions";
+import { DRAWN_BODIES, SCALE_TABLE } from "../bodies/positions";
 import { colourOf } from "../colours";
 import { useRig } from "../rig";
 import { PRIORITY } from "../Scene";
 
 // VN-SCN-002: orbit paths for the planets (heliocentric) and the Moon (about Earth, drawn around Earth's current
-// position). VN-SCN-004: vertices are relative-to-eye encoded (high and low float32 parts); the anchor minus the
+// position, stretched with it in exaggerated scale, VN-SCL-002). VN-SCN-004: vertices are relative-to-eye encoded (high and low float32 parts); the anchor minus the
 // camera is taken in float64 on the CPU and split the same way, so a 30 AU path stays exact near the camera.
 //
 // Data (VN-SCN-002, VN-EPH-006): every sample is ephemeris data from Horizons; nothing is approximated. Until the first
@@ -39,9 +39,10 @@ attribute vec3 low;
 attribute float alpha;
 uniform vec3 offHigh;
 uniform vec3 offLow;
+uniform float stretch;
 varying float vAlpha;
 void main() {
-  vec3 rel = (position + offHigh) + (low + offLow);
+  vec3 rel = (position * stretch + offHigh) + (low * stretch + offLow);
   vAlpha = alpha;
   gl_Position = projectionMatrix * viewMatrix * vec4(rel, 1.0);
   #include <logdepthbuf_vertex>
@@ -118,6 +119,7 @@ export function Orbits({ eph, frame }: { eph: Ephemeris | null; frame: BodyFrame
         uniforms: {
           offHigh: { value: new Vector3() },
           offLow: { value: new Vector3() },
+          stretch: { value: 1 },
           color: { value: new Color(colourOf(b.horizonsId)) },
         },
         transparent: true,
@@ -191,6 +193,8 @@ export function Orbits({ eph, frame }: { eph: Ephemeris | null; frame: BodyFrame
       tr.line.visible = st.layers.orbits && anchored && s.missing < s.n;
       if (!tr.line.visible) continue;
       const u = tr.line.material.uniforms;
+      // VN-SCL-002: the Moon's path is stretched about Earth with the Moon (1 in true scale: exact as before)
+      u.stretch!.value = Math.pow(SCALE_TABLE.stretch[tr.index]!, frame.scale.amount);
       const hi = u.offHigh!.value as Vector3;
       const lo = u.offLow!.value as Vector3;
       for (let k = 0; k < 3; k++) {

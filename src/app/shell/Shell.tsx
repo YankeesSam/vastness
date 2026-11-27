@@ -8,6 +8,9 @@ import { SceneView } from "../../scene/SceneView";
 import { About } from "../about/About";
 import { LoadingIndicator } from "../assets/LoadingIndicator";
 import { InfoPanel } from "../info/InfoPanel";
+import { PulseControl } from "../scale/PulseControl";
+import { ScaleBar } from "../scale/ScaleBar";
+import { LayerSwitches, ScaleNote, ScaleSelect } from "../scale/ScaleControls";
 import { Share } from "../share/Share";
 import { loadPrefs, resetPrefs, savePrefs, type Prefs } from "../prefs";
 import { useView, viewStore } from "../store/view";
@@ -17,8 +20,7 @@ import { TimeBar } from "../time/TimeBar";
 
 // VN-UI-001: full-window 3D view under a top bar (search, time, scale mode, menu), a collapsible side panel
 // (object list, info panel) and a bottom time bar. Choosing an object selects it and flies the camera to it
-// (VN-CAM-002); the info panel shows its read-outs (VN-INF-001). The search and scale are placeholders until their
-// tasks (T-042, M5).
+// (VN-CAM-002); the info panel shows its read-outs (VN-INF-001). Scale mode and layers: VN-SCL-001, VN-SCL-002.
 /** The Sun, planets and Moon in the order they are listed (from the Sun outwards). */
 const OBJECT_ORDER = DRAWN_BODIES.map((b) => b.horizonsId);
 
@@ -102,12 +104,7 @@ export function Shell() {
           }}
           onChoose={chooseObject}
         />
-        <label className={styles.scale}>
-          <span>Scale</span>
-          <select aria-label="Scale mode" defaultValue="true">
-            <option value="true">True scale</option>
-          </select>
-        </label>
+        <ScaleSelect className={styles.scale} />
         <Share />
         <div className={styles.menuWrap}>
           <button
@@ -169,6 +166,14 @@ export function Shell() {
             onChoose={chooseObject}
           />
         </section>
+        <section aria-label="Layers">
+          <h2>Layers</h2>
+          <LayerSwitches className={styles.objects} />
+        </section>
+        <section aria-label="Light pulse">
+          <h2>Light pulse</h2>
+          <PulseControl />
+        </section>
         <section aria-label="Trails">
           <h2>Trails</h2>
           <TrailRangeSelect />
@@ -182,6 +187,11 @@ export function Shell() {
           )}
         </section>
       </aside>
+
+      <div className={styles.overlay}>
+        <ScaleNote className={styles.note} />
+        <ScaleBar />
+      </div>
 
       <TimeBar className={styles.bottom}>
         <SelectionTimeline />
