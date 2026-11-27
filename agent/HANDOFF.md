@@ -18,8 +18,8 @@ do_not_read:
   - docs/architecture/VASTNESS_ARCHITECTURE.md
   - public/ephem, testdata, .cache, dist
 tests: pass (vitest 430; e2e 35/35; typecheck, prettier, check-deps, check-size clean)
-commit: pending
-push: pending
+commit: 94a04ac
+push: ok
 notes:
   - Session 15 batch at the user's request: M5 scale tasks T-054..T-058; T-059 (tour engine) and T-060 (needs-user text review) remain in M5. T-097 still stashed (`git stash list`: "T-097 WIP"); session 13 notes hold.
   - Scale: BodyFrame now has truth (true), world (drawn) and radius (drawn); everything drawn/framed uses world/radius, distances use truth. True scale is the default (F5 views unchanged); `?scale=exaggerated` and link field `x=e`.
@@ -27,6 +27,7 @@ notes:
   - F5 baselines (all 5) re-taken with --update-snapshots: the new scale bar sits over the view and is masked like the panels; diff checked by eye (only the mask area).
   - New layer `callouts` (fragment letter d): links made before this session open with callouts off.
   - D-002 low: trails stay at true positions in exaggerated scale while markers are pushed out.
+  - nightly 94a04ac-nightly ok; LAN http://192.168.1.166:8770/ (200)
   - Flaky under parallel load, pass alone: ephemeris.perf.test.ts allocation test, tests/nightly-build.test.ts.
 open_defects_blocking: []
 optimizations_applied: []
