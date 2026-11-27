@@ -1,36 +1,35 @@
 schema: 1
-from_session: 6
-to_session: 7
-completed: [T-015, T-016, T-017, T-018, T-019, T-020]
+from_session: 7
+to_session: 8
+completed: [T-021, T-023, T-024, T-039, T-037]
 failed: []
-next_task_id: T-021
-next_task: "P0 @phase1 slice: runtime ephemeris in core: chunk index, injected loader, lazy chunks, body tree composition (Moon relative to Earth) (VN-EPH-005, VN-EPH-009, VN-EPH-010)"
+next_task_id: T-025
+next_task: "P0 @phase2 slice: view store (Zustand): simulation time in TDB seconds, selection, camera target, layers; frame clock advances time (VN-TIM-004)"
 next_skill: vastness-execute
 read_next:
   - agent/STATE.md
   - agent/PLAN.md
-  - .claude/skills/vastness-ephemeris/SKILL.md
-  - docs/EPHEMERIS_FORMAT.md
-  - src/core/ephem/format.ts
-  - src/core/ephem/chebyshev.ts
-  - src/core/ephem/kepler-approx.ts
-  - tools/ephem/check.ts
+  - docs/adr/0001-stack.md
+  - src/core/ephem/ephemeris.ts
+  - src/core/time/scales.ts
+  - src/app/App.tsx
+  - src/app/prefs.ts
+  - package.json
 do_not_read:
   - docs/REQUIREMENTS.md (grep VN-* IDs instead)
   - docs/ROADMAP.md (only the current milestone section)
   - docs/architecture/VASTNESS_ARCHITECTURE.md
   - node_modules/, dist/, nightly/, public/ephem/ (read manifest.json keys only), .cache/, testdata/, THIRD_PARTY_NOTICES.txt
-tests: pass (vitest 137/137: + horizons 10, client 10, fit 9, main 7, check 6; ephem:check 9/9 objects pass; build and check-size ok)
-commit: 1492275
-push: ok
+tests: pass (vitest 173/173; ephem:check 9/9; ephem:check-ids 10/10; offline ephem regeneration byte-identical; bench Earth 67 ns, Moon composed 143 ns)
+commit: ad912b7
+push: pending
 notes:
-  - Batch session (user asked for 4-6 tasks in one area): the M1 Horizons pipeline T-015..T-020, one commit each.
-  - Live Horizons use this session (pipeline only, serial, cached in .cache/horizons): F1 6, smoke 13, F2 27 + 1 TLIST probe, full run 171 requests.
-  - ephem:check finding before anything was committed: Jupiter 46 km off at off-grid epochs while held-out midpoints said 9.6 km (Galilean-moon wobble of the planet centre aliased by daily fitting). Fix: Jupiter step 3 h, Saturn/Uranus/Neptune 6 h, fit subdivides to half the tolerance (FIT_TARGET_FRACTION); misses still judged at the full tolerance.
-  - public/ephem: 180 chunks (<id>/<decade>.bin), 13 MB, about 630 KB per decade; worst F2 error 4.853 km (Saturn); 0 misses, 0 barycentre fallbacks; offline rerun byte-identical.
-  - A 100-epoch TLIST URL drew HTTP 502; F2 is recorded in TLIST requests of 40. The client retries only 503 and network errors, by design.
-  - src/core relative imports now carry .ts so tools/ runs under node --experimental-strip-types; keep that for new core files the pipeline imports.
-  - tests/setup-no-network.ts makes the global fetch throw in every vitest project (VN-DAT-007).
-  - D-001 (low, env) unchanged. Nightly 837adba-nightly ok; LAN http://192.168.1.166:8770/ (200).
+  - Batch session (user asked for 4-6 tasks in one area): the ephemeris core and pipeline. M1 closed (T-021, T-023, T-024); exit criteria hold, so STATE moves to M2 and the M2 tasks are in Next.
+  - Out of phase order, by the batch request: T-039 and T-037 are M3 tasks, but core and pipeline only (nothing drawn), so the M1-first rule is kept.
+  - V8 finding (T-023): a float64 passed to a call V8 does not inline is boxed (allocates). The ephemeris hot path carries the time in a Float64Array and keeps chunk search, segment search and Clenshaw in one function; elements.ts does the same for Kepler. Keep this for any new per-frame evaluator, and run npm run bench plus the perf tests after changes.
+  - Runtime API (T-021): createEphemeris(manifest, loader); load(t, ids?) for the decade first; state/relativeState return "ok" | "loading" | "outside" | "error" and request a missing chunk lazily.
+  - Format version 2 (T-039): element files only (80-byte header, kind, mu, mean_motion); position files stay version 1, so public/ephem is unchanged. Element segments measured 0.94 km where same-size position segments miss by 582 km (e = 0.6 synthetic).
+  - Live Horizons this session (pipeline only, serial, cached): 6 lookup probes, then 12 lookup fixtures (1 cached). Lookup cache keys include the endpoint; horizons.api keys unchanged.
+  - D-001 (low, env) unchanged.
 open_defects_blocking: []
 optimizations_applied: []

@@ -1,10 +1,10 @@
-# Context (session 7, T-021)
+# Context (session 8, T-025)
 
 - agent/STATE.md
 - agent/PLAN.md
-- .claude/skills/vastness-ephemeris/SKILL.md
-- docs/EPHEMERIS_FORMAT.md
-- src/core/ephem/format.ts
-- src/core/ephem/chebyshev.ts
-- src/core/ephem/kepler-approx.ts
-- tools/ephem/check.ts
+- docs/adr/0001-stack.md
+- src/core/ephem/ephemeris.ts
+- src/core/time/scales.ts
+- src/app/App.tsx
+- src/app/prefs.ts
+- package.json

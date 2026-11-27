@@ -7,17 +7,10 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 
 ## Now
 
+- [ ] NOW T-025 P0 @phase2 slice: view store (Zustand): simulation time in TDB seconds, selection, camera target, layers; frame clock advances time  req: VN-TIM-004  files: src/app/store/view.ts  test: src/app/store/view.test.ts
 
 ## Next
 
-
-## Later
-
-### M1 ephemeris and time
-
-### M2 scene and camera
-
-- [ ] T-025 P0 @phase2 slice: view store (Zustand): simulation time in TDB seconds, selection, camera target, layers; frame clock advances time  req: VN-TIM-004  files: src/app/store/view.ts  test: src/app/store/view.test.ts
 - [ ] T-026 P0 @phase2 slice: floating origin: float64 world positions, camera-relative float32 each frame, logarithmic depth buffer, adaptive near and far  req: VN-SCN-004, VN-CAM-004  files: src/scene/origin.ts, src/scene/Scene.tsx  test: src/scene/origin.test.ts
 - [ ] T-027 P0 @phase2 slice: Sun, planets and Moon as plain spheres with true radii at ephemeris positions  req: VN-SCN-001  files: src/scene/bodies/Bodies.tsx  test: src/scene/bodies/bodies.test.ts
 - [ ] T-028 P0 @phase2 slice: orbit paths sampled from the ephemeris over one period, faded with distance from the current position, resampled as time moves  req: VN-SCN-002  files: src/core/orbits/sample.ts, src/scene/orbits/  test: src/core/orbits/sample.test.ts
@@ -27,6 +20,14 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 - [ ] T-032 P0 @phase2 slice: picking by screen-space distance to markers; selection in the store  req: VN-CAT-005  files: src/scene/pick.ts  test: src/scene/pick.test.ts
 - [ ] T-033 P0 @phase2 slice: info panel for bodies: distances from Sun and Earth (km, AU, light-time), speeds, 4 Hz updates, unit preference  req: VN-INF-001, VN-INF-002, VN-INF-004  files: src/core/readouts.ts, src/app/info/InfoPanel.tsx  test: src/core/readouts.test.ts
 - [ ] T-034 P0 @phase2 slice: reference views (F5): URL test params fix time and camera; e2e screenshots at Earth-Moon, inner, outer and 150 AU; jitter check (two frames identical)  req: VN-SCN-004, VN-CAM-004  files: src/app/testparams.ts, e2e/scale.spec.ts  test: e2e/scale.spec.ts
+
+## Later
+
+### M1 ephemeris and time
+
+### M2 scene and camera
+
+(moved to Next, session 7)
 
 ### M3 spacecraft
 
