@@ -3,14 +3,14 @@ project: vastness
 milestone: M3
 phase: 3
 status: ready
-active_task_id: T-089
-active_task: "P1 @phase3 slice: orbiters in the pipeline: Juno at Jupiter, LRO and CAPSTONE at the Moon; fit position and element segments, keep the smaller within tolerance (2 km lunar), report size and worst error for the whole mission, full mission within 5 MB per object else ±30 days; generate and commit  req: VN-EPH-003, VN-EPH-009, VN-EPH-011"
+active_task_id: T-093
+active_task: "P1 @phase3 slice: tools/gp fetch and data/satellites: ISS, Hubble, Tiangong, a few operational Starlink, GOES-East, GOES-West and other geostationary satellites (the agent picks; user can change via WORKINGLIST); provenance with epoch; ISS checked against Horizons (-125544) for one day  req: VN-DAT-009, VN-CAT-007  files: tools/gp/, data/satellites.json, data/catalog.json  test: tools/gp/gp.test.ts"
 next_skill: vastness-execute
-session: 11
-updated: 2026-11-26T22:34:15-05:00
+session: 12
+updated: 2026-11-27T00:11:30-05:00
 branch: main
-last_commit: d988ce3
-push: ok
+last_commit: 06203ac
+push: pending
 git_owner: YankeesSam
 git_repo: vastness
 toolchain: "node 22 + npm 10 (floor node 20); Playwright Chromium (SwiftShader WebGL) for e2e"

@@ -1,8 +1,9 @@
-# Context (session 12, T-089)
+# Context (session 13, T-093)
 
 - agent/STATE.md
 - agent/PLAN.md
-- tools/ephem/spacecraft.ts
-- tools/ephem/main.ts
-- tools/ephem/fit.ts
-- src/core/ephem/ephemeris.ts
+- docs/adr/0007-earth-satellites.md
+- src/core/sgp4/sgp4.ts
+- src/core/sgp4/teme.ts
+- tools/ephem/client.ts
+- src/core/catalog/schema.ts
