@@ -7,7 +7,8 @@ import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { HorizonsClient } from "./client.ts";
-import { vectorParams, type VectorQuery } from "./horizons.ts";
+import { lookupParams } from "./check-ids.ts";
+import { HORIZONS_LOOKUP_API, vectorParams, type VectorQuery } from "./horizons.ts";
 
 /** Fixture name -> query. Short spans keep each file to a few dozen lines. */
 export const FIXTURES: Record<string, VectorQuery> = {
@@ -25,13 +26,33 @@ export const FIXTURES: Record<string, VectorQuery> = {
   "error-ambiguous": { command: "Mars", center: "500@10", start: "2000-01-01", stop: "2000-01-02", step: "1 d" },
 };
 
+/**
+ * Lookup API fixtures (VN-DAT-008), lookup-<sstr>.json: every ID in data/bodies.json, two spacecraft, and an ID
+ * Horizons does not know.
+ */
+export const LOOKUP_FIXTURES = [
+  "10",
+  "199",
+  "299",
+  "301",
+  "399",
+  "499",
+  "599",
+  "699",
+  "799",
+  "899",
+  "-31",
+  "-170",
+  "9999999",
+];
+
 async function main(): Promise<void> {
   const force = process.argv.includes("--force");
   const dir = fileURLToPath(new URL("../../testdata/horizons/", import.meta.url));
   mkdirSync(dir, { recursive: true });
   const client = new HorizonsClient({
     cacheDir: fileURLToPath(new URL("../../.cache/horizons/", import.meta.url)),
-    budget: 20,
+    budget: 30,
   });
   for (const [name, q] of Object.entries(FIXTURES)) {
     const file = join(dir, `${name}.json`);
@@ -39,6 +60,13 @@ async function main(): Promise<void> {
     const r = await client.get(vectorParams(q));
     writeFileSync(file, r.body);
     console.log(`${name}: ${r.fromCache ? "cache" : "fetched"}, ${r.body.length} bytes`);
+  }
+  for (const sstr of LOOKUP_FIXTURES) {
+    const file = join(dir, `lookup-${sstr}.json`);
+    if (existsSync(file) && !force) continue;
+    const r = await client.get(lookupParams(sstr), HORIZONS_LOOKUP_API);
+    writeFileSync(file, r.body);
+    console.log(`lookup ${sstr}: ${r.fromCache ? "cache" : "fetched"}, ${r.body.length} bytes`);
   }
 }
 

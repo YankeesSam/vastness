@@ -1,0 +1,1 @@
+{"count":2,"signature":{"source":"NASA/JPL Horizons Lookup API","version":"1.1"},"result":[{"type":"planet","spkid":"899","name":"Neptune","pdes":null,"alias":[]},{"alias":["1953 TL2","2000899","J18P00H"],"name":"899 Jokaste","pdes":"A918 PH","spkid":"20000899","type":"asteroid (integrated barycenter)"}]}

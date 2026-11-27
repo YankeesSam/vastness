@@ -4,6 +4,8 @@
 import { SECONDS_PER_DAY, J2000_JD } from "../../src/core/time/scales.ts";
 
 export const HORIZONS_API = "https://ssd.jpl.nasa.gov/api/horizons.api";
+/** Name and ID lookup (VN-DAT-008): `sstr`, optional `group`, `format=json`. */
+export const HORIZONS_LOOKUP_API = "https://ssd.jpl.nasa.gov/api/horizons_lookup.api";
 
 /** A state-vector query: geometric, ecliptic J2000 (ICRF), km and km/s, TDB (ADR-0003). */
 export interface VectorQuery {
@@ -64,8 +66,8 @@ export function canonicalQuery(params: Record<string, string>): string {
     .join("&");
 }
 
-export function queryUrl(params: Record<string, string>): string {
-  return `${HORIZONS_API}?${canonicalQuery(params)}`;
+export function queryUrl(params: Record<string, string>, endpoint: string = HORIZONS_API): string {
+  return `${endpoint}?${canonicalQuery(params)}`;
 }
 
 /** A Horizons error: the API's `error` field or an error text in the report, with the query that caused it. */

@@ -5,7 +5,7 @@
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { canonicalQuery, queryUrl } from "./horizons.ts";
+import { HORIZONS_API, canonicalQuery, queryUrl } from "./horizons.ts";
 
 /** Names the project only: no personal data in headers (VN-DAT-002). */
 export const USER_AGENT = "vastness-ephemeris-pipeline (+https://github.com/YankeesSam/vastness)";
@@ -46,9 +46,21 @@ export class ClientError extends Error {
   }
 }
 
-/** SHA-256 (hex) of the canonical query: the cache key. */
-export function cacheKey(params: Record<string, string>): string {
-  return createHash("sha256").update(canonicalQuery(params)).digest("hex");
+/**
+ * SHA-256 (hex) of the canonical query: the cache key. Queries to another endpoint than horizons.api (the lookup
+ * API) hash the endpoint too; horizons.api keys stay as they were, so the existing cache remains valid.
+ */
+export function cacheKey(params: Record<string, string>, endpoint: string = HORIZONS_API): string {
+  const q = canonicalQuery(params);
+  return createHash("sha256")
+    .update(endpoint === HORIZONS_API ? q : `${endpoint}?${q}`)
+    .digest("hex");
+}
+
+/** The query as quoted in errors and provenance: bare for horizons.api, with the endpoint otherwise. */
+function describe(params: Record<string, string>, endpoint: string): string {
+  const q = canonicalQuery(params);
+  return endpoint === HORIZONS_API ? q : `${endpoint}?${q}`;
 }
 
 function utcDate(ms: number): string {
@@ -84,27 +96,27 @@ export class HorizonsClient {
   }
 
   /** Cached body, or one polite fetch. Calls are serialised in arrival order. */
-  get(params: Record<string, string>): Promise<CachedResponse> {
-    const run = this.queue.then(() => this.load(params));
+  get(params: Record<string, string>, endpoint: string = HORIZONS_API): Promise<CachedResponse> {
+    const run = this.queue.then(() => this.load(params, endpoint));
     this.queue = run.catch(() => undefined);
     return run;
   }
 
-  private paths(params: Record<string, string>): { body: string; meta: string } {
-    const key = cacheKey(params);
+  private paths(params: Record<string, string>, endpoint: string): { body: string; meta: string } {
+    const key = cacheKey(params, endpoint);
     return { body: join(this.o.cacheDir, `${key}.json`), meta: join(this.o.cacheDir, `${key}.meta.json`) };
   }
 
-  private async load(params: Record<string, string>): Promise<CachedResponse> {
-    const query = canonicalQuery(params);
-    const p = this.paths(params);
+  private async load(params: Record<string, string>, endpoint: string): Promise<CachedResponse> {
+    const query = describe(params, endpoint);
+    const p = this.paths(params, endpoint);
     if (existsSync(p.body) && existsSync(p.meta)) {
       this.cacheHits++;
       const meta = JSON.parse(readFileSync(p.meta, "utf8")) as Meta;
       return { body: readFileSync(p.body, "utf8"), retrieved: meta.retrieved, fromCache: true, query };
     }
     if (this.o.offline) throw new ClientError(`offline and not cached (query: ${query})`);
-    const { body, retrieved } = await this.fetchPolitely(params, query);
+    const { body, retrieved } = await this.fetchPolitely(queryUrl(params, endpoint), query);
     mkdirSync(this.o.cacheDir, { recursive: true });
     // Body first, meta last: a crash in between leaves a miss, never a body without its date.
     writeFileSync(`${p.body}.tmp`, body);
@@ -115,11 +127,7 @@ export class HorizonsClient {
     return { body, retrieved, fromCache: false, query };
   }
 
-  private async fetchPolitely(
-    params: Record<string, string>,
-    query: string,
-  ): Promise<Omit<Meta, "query"> & { body: string }> {
-    const url = queryUrl(params);
+  private async fetchPolitely(url: string, query: string): Promise<Omit<Meta, "query"> & { body: string }> {
     for (let attempt = 0; ; attempt++) {
       if (this.requests >= this.o.budget) {
         throw new ClientError(`request budget of ${this.o.budget} spent (query: ${query})`);

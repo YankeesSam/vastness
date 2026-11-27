@@ -1,0 +1,1 @@
+{"result":[{"alias":[],"pdes":null,"name":"Jupiter","spkid":"599","type":"planet"},{"spkid":"20000599","type":"asteroid (integrated barycenter)","alias":["2000599","J06H00F"],"name":"599 Luisa","pdes":"A906 HF"}],"signature":{"source":"NASA/JPL Horizons Lookup API","version":"1.1"},"count":2}

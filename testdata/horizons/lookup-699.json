@@ -1,0 +1,1 @@
+{"result":[{"name":"Saturn","pdes":null,"alias":[],"type":"planet","spkid":"699"},{"type":"asteroid (integrated barycenter)","spkid":"20000699","name":"699 Hela","pdes":"A910 LC","alias":["1957 WX1","1948 KD","A923 TB","A902 WE","2000699","J10L00C"]}],"signature":{"source":"NASA/JPL Horizons Lookup API","version":"1.1"},"count":2}

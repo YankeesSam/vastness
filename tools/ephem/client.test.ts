@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { ClientError, HorizonsClient, USER_AGENT, cacheKey, type ClientOptions } from "./client.ts";
-import { canonicalQuery, parseVectors, vectorParams } from "./horizons.ts";
+import { HORIZONS_LOOKUP_API, canonicalQuery, parseVectors, vectorParams } from "./horizons.ts";
 import { FIXTURES } from "./record.ts";
 
 const EARTH = vectorParams(FIXTURES["earth-2000-01"]!);
@@ -124,6 +124,19 @@ describe("polite Horizons client (T-016)", () => {
     expect(existsSync(join(h.cacheDir, `${key}.json.tmp`))).toBe(false);
     expect(first.retrieved).toBe("2026-11-26"); // the response's own Date header, UTC date only
     expect(parseVectors(first.body, first.query).records).toHaveLength(4);
+  });
+
+  it("VN-DAT-003, VN-DAT-008: lookup API queries go to their endpoint and cache under a key that includes it", async () => {
+    const h = harness([200, 200]);
+    const params = { format: "json", sstr: "-31" };
+    const r = await h.client.get(params, HORIZONS_LOOKUP_API);
+    expect(h.calls[0]!.url).toBe(`${HORIZONS_LOOKUP_API}?${canonicalQuery(params)}`);
+    expect(r.query).toBe(`${HORIZONS_LOOKUP_API}?${canonicalQuery(params)}`);
+    expect(cacheKey(params, HORIZONS_LOOKUP_API)).not.toBe(cacheKey(params));
+    const key = createHash("sha256").update(r.query).digest("hex");
+    expect(existsSync(join(h.cacheDir, `${key}.json`))).toBe(true);
+    await h.client.get(params, HORIZONS_LOOKUP_API);
+    expect(h.calls).toHaveLength(1);
   });
 
   it("VN-DAT-003: a rerun with a warm cache makes no request", async () => {

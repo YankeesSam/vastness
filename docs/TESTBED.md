@@ -4,7 +4,7 @@
 
 | ID | What | Where | Made by |
 |---|---|---|---|
-| F1 | Recorded Horizons responses (planets, the Moon, a few spacecraft, error cases), trimmed | testdata/horizons/ | T-015 (tools/ephem/record.ts) |
+| F1 | Recorded Horizons responses (planets, the Moon, a few spacecraft, error cases), trimmed; lookup API responses for every body ID, Voyager 1, JWST and an unknown ID (T-037) | testdata/horizons/ | T-015 (tools/ephem/record.ts) |
 | F2 | Held-out Horizons state vectors at epochs not used in fitting, per object | testdata/reference/ | T-019 |
 | F3 | Generated ephemerides and manifest | public/ephem/ | `npm run ephem` (T-018, T-020, T-038) |
 | F4 | Headless Chromium with SwiftShader WebGL | Playwright | T-005 |

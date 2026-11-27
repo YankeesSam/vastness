@@ -36,7 +36,8 @@ export interface BodiesFile {
 }
 
 export interface Fetcher {
-  get(params: Record<string, string>): Promise<CachedResponse>;
+  /** `endpoint` defaults to horizons.api; check-ids passes the lookup API. */
+  get(params: Record<string, string>, endpoint?: string): Promise<CachedResponse>;
 }
 
 export interface GenerateOptions {
