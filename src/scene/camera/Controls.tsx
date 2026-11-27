@@ -1,7 +1,9 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo } from "react";
 import { PerspectiveCamera } from "three";
+import { setCameraSource } from "../../app/store/url-sync";
 import { viewStore } from "../../app/store/view";
+import type { FragmentCamera } from "../../core/share/fragment";
 import {
   eyeOffset,
   keyAction,
@@ -41,6 +43,15 @@ interface Flying {
 export function release(rig: Rig, flying: { current: Flying | null }): void {
   rig.follow = null;
   flying.current = null;
+}
+
+/** VN-UI-002: jumps to a shared camera (no fly-to) and follows its target. */
+export function placeCamera(rig: Rig, flying: { current: Flying | null }, cam: FragmentCamera): void {
+  flying.current = null;
+  rig.follow = cam.target;
+  rig.orbit.distance = cam.distanceKm;
+  rig.orbit.azimuth = cam.azimuth;
+  rig.orbit.elevation = cam.elevation;
 }
 
 function isTyping(target: EventTarget | null): boolean {
@@ -133,8 +144,18 @@ export function Controls({ frame }: { frame: BodyFrame }) {
       else zoom(rig.orbit, a.steps, minDistance(rig));
     };
     const menu = (e: Event) => e.preventDefault();
+    // VN-UI-002: a shared camera is placed at once; the URL fragment reads the camera back.
+    const request = viewStore.getState().cameraRequest;
+    if (request) placeCamera(rig, flying, request);
+    setCameraSource(() => ({
+      target: rig.follow ?? flying.current?.to ?? viewStore.getState().target,
+      distanceKm: rig.orbit.distance,
+      azimuth: rig.orbit.azimuth,
+      elevation: rig.orbit.elevation,
+    }));
     // A camera target request starts a fly-to from the current focus (VN-CAM-002).
     const unsubscribe = viewStore.subscribe((s, prev) => {
+      if (s.cameraSeq !== prev.cameraSeq && s.cameraRequest) placeCamera(rig, flying, s.cameraRequest);
       if (s.targetSeq === prev.targetSeq) return;
       const i = objectIndex(s.target);
       if (i < 0) return;
@@ -156,6 +177,7 @@ export function Controls({ frame }: { frame: BodyFrame }) {
     el.addEventListener("contextmenu", menu);
     window.addEventListener("keydown", key);
     return () => {
+      setCameraSource(null);
       unsubscribe();
       el.removeEventListener("pointerdown", down);
       el.removeEventListener("pointermove", move);

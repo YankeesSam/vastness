@@ -59,7 +59,10 @@ export function applyTestParams(p: TestParams, store: StoreApi<ViewState>): void
   const patch: Partial<ViewState> = {};
   if (p.t !== undefined) patch.t = p.t;
   if (p.still) patch.paused = true;
-  if (p.cam) patch.target = p.cam.target;
+  if (p.cam) {
+    patch.target = p.cam.target;
+    patch.cameraRequest = null; // the scene starts at this camera (SceneView), not a fragment's
+  }
   if (p.layers) patch.layers = p.layers;
   store.setState(patch);
 }

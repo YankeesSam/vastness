@@ -2,10 +2,13 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./app/App";
 import { preloadEphemeris } from "./app/assets/loader";
+import { startUrlSync } from "./app/store/url-sync";
 import { viewStore } from "./app/store/view";
 import { applyTestParams, testParams } from "./app/testparams";
 
-// F5: a reference view fixes the time (and camera, layers) before anything loads.
+// VN-UI-002, VN-WEB-002: a shared link's fragment sets the view, which the fragment then mirrors.
+startUrlSync(viewStore, window);
+// F5: a reference view fixes the time (and camera, layers) before anything loads; it wins over a fragment.
 applyTestParams(testParams, viewStore);
 
 // VN-PRF-004: the first ephemeris chunks download while the app starts.

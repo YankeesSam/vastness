@@ -2,6 +2,7 @@ import { useStore } from "zustand";
 import { createStore, type StoreApi } from "zustand/vanilla";
 import { advanceTime, clampToRange, MAX_FRAME_DT_S, PLANET_COVERAGE, reverse, stepRate } from "../../core/time/clock";
 import { tdbFromUtc } from "../../core/time/scales";
+import type { FragmentCamera } from "../../core/share/fragment";
 import { TRAIL_DEFAULT_DAYS } from "../../core/trails/sample";
 
 // VN-TIM-004: the view store. Simulation time is one float64 TDB seconds value since J2000 (ADR-0003), advanced by
@@ -26,6 +27,9 @@ export interface ViewState {
   /** Bumped by every setTarget, so choosing the current target again flies back to it. */
   targetSeq: number;
   layers: Record<Layer, boolean>;
+  /** VN-UI-002: a camera to jump to (a shared link), applied by the scene when cameraSeq changes. */
+  cameraRequest: FragmentCamera | null;
+  cameraSeq: number;
   /** VN-CAT-004: spacecraft trail range, days back and ahead (Infinity: the whole coverage). */
   trailDays: number;
   tick(dtRealS: number): void;
@@ -42,6 +46,8 @@ export interface ViewState {
   select(id: number | null): void;
   setTarget(id: number): void;
   setLayer(layer: Layer, on: boolean): void;
+  /** Places the camera at once (no fly-to) and makes its target the camera target. */
+  setCamera(cam: FragmentCamera): void;
   setTrailDays(days: number): void;
 }
 
@@ -82,6 +88,9 @@ export function createViewStore(init: ViewInit = {}): StoreApi<ViewState> {
     now: (ms) => set({ t: tdbNow(ms), rate: 1, paused: false }),
     select: (selection) => set({ selection }),
     setTarget: (target) => set((s) => ({ target, targetSeq: s.targetSeq + 1 })),
+    cameraRequest: null,
+    cameraSeq: 0,
+    setCamera: (cam) => set((s) => ({ cameraRequest: cam, cameraSeq: s.cameraSeq + 1, target: cam.target })),
     setLayer: (layer, on) => set((s) => ({ layers: { ...s.layers, [layer]: on } })),
     setTrailDays: (trailDays) => set({ trailDays: trailDays > 0 ? trailDays : TRAIL_DEFAULT_DAYS }),
   }));
