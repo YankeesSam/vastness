@@ -16,6 +16,8 @@ import type { Fetcher } from "./main.ts";
 export interface SpacecraftSpec {
   id: number;
   name: string;
+  /** Centre the states are relative to (default 10, the Sun); orbiters use their parent (VN-EPH-009). */
+  center?: number;
 }
 
 /** Sample steps in minutes, coarse to fine; each divides the one before. The last is the step limit. */
@@ -71,10 +73,10 @@ export interface Coverage {
   end: number;
 }
 
-async function probe(client: Fetcher, id: number, day: string): Promise<CoverageEdge | null> {
+async function probe(client: Fetcher, id: number, day: string, center: number): Promise<CoverageEdge | null> {
   const next = new Date(Date.parse(`${day}T00:00:00Z`) + DAY * 1000).toISOString().slice(0, 10);
   const res = await client.get(
-    vectorParams({ command: String(id), center: "500@10", start: day, stop: next, step: "1 d" }),
+    vectorParams({ command: String(id), center: `500@${center}`, start: day, stop: next, step: "1 d" }),
   );
   let body: { error?: unknown; result?: unknown };
   try {
@@ -95,11 +97,12 @@ export async function discoverCoverage(
   id: number,
   fromYear: number,
   toYear: number,
+  center = 10,
 ): Promise<Coverage> {
   const lo = yearStart(fromYear);
   const hi = yearStart(toYear);
-  const before = await probe(client, id, `${fromYear - 50}-01-01`);
-  const after = await probe(client, id, `${toYear + 99}-01-01`);
+  const before = await probe(client, id, `${fromYear - 50}-01-01`, center);
+  const after = await probe(client, id, `${toYear + 99}-01-01`, center);
   if (before && before.side !== "prior") throw new RangeError(`object ${id}: early probe reports "${before.side}"`);
   if (after && after.side !== "after") throw new RangeError(`object ${id}: late probe reports "${after.side}"`);
   const g = GRID_MIN * MIN;
@@ -159,7 +162,7 @@ export function tile(t0: number, t1: number): Window[] {
   return out;
 }
 
-interface Fetched {
+export interface Fetched {
   samples: Sample[];
   seams: Seam[];
   retrieved: string[];
@@ -168,7 +171,7 @@ interface Fetched {
 }
 
 /** Samples [t0, t1] at `stepMin`, in requests of at most MAX_INTERVALS intervals stitched at shared epochs. */
-async function fetchSamples(
+export async function fetchSamples(
   client: Fetcher,
   sc: SpacecraftSpec,
   t0: number,
@@ -187,7 +190,7 @@ async function fetchSamples(
     const res = await client.get(
       vectorParams({
         command: String(sc.id),
-        center: "500@10",
+        center: `500@${sc.center ?? 10}`,
         start: tdbText(a),
         stop: tdbText(b),
         step: `${stepMin} m`,
@@ -197,7 +200,7 @@ async function fetchSamples(
     const v = parseVectors(res.body, res.query);
     const tid = /\((-?\d+)\)\s*$/.exec(v.header.target)?.[1];
     const cid = /\((-?\d+)\)\s*$/.exec(v.header.center)?.[1];
-    if (Number(tid) !== sc.id || Number(cid) !== 10 || v.header.frame !== "Ecliptic of J2000.0") {
+    if (Number(tid) !== sc.id || Number(cid) !== (sc.center ?? 10) || v.header.frame !== "Ecliptic of J2000.0") {
       throw new HorizonsError("format", `header target "${v.header.target}", centre "${v.header.center}"`, res.query);
     }
     const want = Math.round((b - a) / step) + 1;
@@ -457,11 +460,17 @@ async function fitAcrossJumps(
 }
 
 /** Samples (a, b) at GAP_INTERVALS equal intervals (Horizons STEP_SIZE as a count). */
-async function fetchGap(client: Fetcher, sc: SpacecraftSpec, a: number, b: number, acc: Fetched): Promise<Sample[]> {
+export async function fetchGap(
+  client: Fetcher,
+  sc: SpacecraftSpec,
+  a: number,
+  b: number,
+  acc: Fetched,
+): Promise<Sample[]> {
   const res = await client.get(
     vectorParams({
       command: String(sc.id),
-      center: "500@10",
+      center: `500@${sc.center ?? 10}`,
       start: tdbText(a),
       stop: tdbText(b),
       step: String(GAP_INTERVALS),

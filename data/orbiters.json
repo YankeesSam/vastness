@@ -1,0 +1,10 @@
+{
+  "build_date": "2026-11-26",
+  "window_days": 30,
+  "budget_bytes": 5000000,
+  "orbiters": [
+    { "id": -61, "name": "Juno", "center": 599, "tolerance": "cruise" },
+    { "id": -85, "name": "LRO", "center": 301, "tolerance": "lunarOrbit" },
+    { "id": -1176, "name": "CAPSTONE", "center": 301, "tolerance": "lunarOrbit" }
+  ]
+}

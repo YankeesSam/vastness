@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { evaluateSegment } from "../../src/core/ephem/chebyshev.ts";
 import { findSegment, readEphemeris, writeEphemeris } from "../../src/core/ephem/format.ts";
-import { DEGREES, TOLERANCE_KM, fitAdaptive, type FitResult, type Sample } from "./fit.ts";
+import { evaluateFile } from "../../src/core/ephem/ephemeris.ts";
+import { DEGREES, TOLERANCE_KM, fitAdaptive, fitSize, type FitResult, type Sample } from "./fit.ts";
 
 // References are closed-form functions, so the truth at any time is known exactly (not our own code's output).
 const AU = 149_597_870.7;
@@ -177,5 +178,83 @@ describe("fitAdaptive short tail", () => {
     const r = fitAdaptive(s, { toleranceKm: 1, degrees: [13], joinShortTail: true });
     expect(r.segments.at(-1)!.t1).toBe(66 * 3600);
     expect(r.misses).toEqual([]);
+  });
+});
+
+describe("fitAdaptive element segments (T-089)", () => {
+  // A lunar orbit (e = 0.6, period about 13 h) whose node and periapsis drift slowly: closed form with its own Kepler
+  // solver. The state's velocity is the two-body velocity of the drifting elements, so they are its osculating ones.
+  const MU = 4902.800118;
+  const A = 6000;
+  const E = 0.6;
+  const I = 1.2;
+  const N = Math.sqrt(MU / A ** 3);
+  const lunar: Fn = (t) => {
+    const M = N * t;
+    let ea = M;
+    for (let k = 0; k < 50; k++) ea -= (ea - E * Math.sin(ea) - M) / (1 - E * Math.cos(ea));
+    const node = 0.3 + 2e-8 * t;
+    const w = 1.1 - 1.5e-8 * t;
+    const q = Math.sqrt(1 - E * E);
+    const dE = N / (1 - E * Math.cos(ea));
+    const P = [
+      Math.cos(w) * Math.cos(node) - Math.sin(w) * Math.sin(node) * Math.cos(I),
+      Math.cos(w) * Math.sin(node) + Math.sin(w) * Math.cos(node) * Math.cos(I),
+      Math.sin(w) * Math.sin(I),
+    ];
+    const Q = [
+      -Math.sin(w) * Math.cos(node) - Math.cos(w) * Math.sin(node) * Math.cos(I),
+      -Math.sin(w) * Math.sin(node) + Math.cos(w) * Math.cos(node) * Math.cos(I),
+      Math.cos(w) * Math.sin(I),
+    ];
+    const [u, v] = [A * (Math.cos(ea) - E), A * q * Math.sin(ea)];
+    const [du, dv] = [-A * Math.sin(ea) * dE, A * q * Math.cos(ea) * dE];
+    const c = (k: number): number => P[k]! * u + Q[k]! * v;
+    const d = (k: number): number => P[k]! * du + Q[k]! * dv;
+    return [c(0), c(1), c(2), d(0), d(1), d(2)];
+  };
+
+  it("VN-EPH-011: elements of an orbiter fit in far fewer coefficients than positions at 2 km", () => {
+    const s = sample(lunar, 0, 600, 1 + 2 * 1024); // ~14 days at 10 min
+    const tol = TOLERANCE_KM.lunarOrbit;
+    const pos = fitAdaptive(s, { toleranceKm: tol, targetKm: tol / 2, joinShortTail: true });
+    const el = fitAdaptive(s, {
+      toleranceKm: tol,
+      targetKm: tol / 2,
+      joinShortTail: true,
+      initialIntervals: 512,
+      elements: { mu: MU, meanMotion: N },
+    });
+    expect(el.kind).toBe(1);
+    expect(pos.kind).toBe(0);
+    expect(el.misses).toEqual([]);
+    expect(el.maxErrorKm).toBeLessThan(tol);
+    expect(fitSize(el) * 10).toBeLessThan(fitSize(pos));
+    // Dense check against the closed form through the written file (position from Kepler's equation).
+    const f = readEphemeris(
+      writeEphemeris({
+        objectId: -85,
+        centerId: 301,
+        degree: el.degree,
+        segments: el.segments,
+        kind: 1,
+        mu: MU,
+        meanMotion: N,
+      }).buffer,
+    );
+    const out = new Float64Array(6);
+    let max = 0;
+    for (let k = 0; k <= 5000; k++) {
+      const t = (s.at(-1)!.t * k) / 5000;
+      expect(evaluateFile(f, t, out)).toBe(true);
+      const [x, y, z] = lunar(t);
+      max = Math.max(max, Math.hypot(out[0]! - x, out[1]! - y, out[2]! - z));
+    }
+    expect(max).toBeLessThan(tol);
+  });
+
+  it("VN-EPH-011: a hyperbolic (transfer) state cannot be fitted as elements", () => {
+    const s = sample((t) => [1e5 + 3 * t, 2e4, 0, 3, 0, 0], 0, 600, 65);
+    expect(() => fitAdaptive(s, { toleranceKm: 2, elements: { mu: MU, meanMotion: N } })).toThrow(/elliptic/);
   });
 });

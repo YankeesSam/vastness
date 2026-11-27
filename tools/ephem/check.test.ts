@@ -131,9 +131,11 @@ describe("ephem:check (T-019)", () => {
     const files = readdirSync(dir)
       .filter((f) => f.endsWith(".json"))
       .sort();
-    // VN-EPH-008: and every heliocentric spacecraft in the manifest, at its own epochs (T-038).
+    // VN-EPH-008: and every spacecraft in the manifest, at its own epochs (T-038; orbiters T-089).
     const manifest = JSON.parse(readFileSync(new URL("../../public/ephem/manifest.json", import.meta.url), "utf8"));
-    const craft = (manifest.objects as Array<{ id: number; kind?: string }>).filter((o) => o.kind === "spacecraft");
+    const craft = (manifest.objects as Array<{ id: number; kind?: string; center?: number }>).filter(
+      (o) => o.kind === "spacecraft",
+    );
     const expected = [
       ...bodies.bodies.filter((b) => !b.origin).map((b) => `${b.id}.json`),
       ...craft.map((o) => `${o.id}.json`),
@@ -141,7 +143,7 @@ describe("ephem:check (T-019)", () => {
     expect(files).toEqual(expected);
     for (const o of craft) {
       const ref = JSON.parse(readFileSync(new URL(`${o.id}.json`, dir), "utf8")) as ReferenceFile;
-      expect(ref.center).toBe(10);
+      expect(ref.center).toBe(o.center ?? 10); // orbiters relative to their parent (VN-EPH-009, T-089)
       const jds = spacecraftEpochs(
         o as Parameters<typeof spacecraftEpochs>[0],
         SPACECRAFT_EPOCHS,
