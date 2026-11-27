@@ -4,6 +4,7 @@ import { expect, test } from "@playwright/test";
 
 test.describe("share", () => {
   test("VN-WEB-002: the copied link reopens time, rate, selection, camera and layers", async ({ context, page }) => {
+    test.slow(); // two full pages in SwiftShader; 24 s alone, over 30 s when every worker is busy
     await context.grantPermissions(["clipboard-read", "clipboard-write"]);
     const requests: string[] = [];
     context.on("request", (r) => requests.push(r.url()));

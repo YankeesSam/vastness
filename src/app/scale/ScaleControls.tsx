@@ -48,6 +48,7 @@ const LAYERS: readonly [Layer, string][] = [
   ["orbits", "Orbits"],
   ["trails", "Trails"],
   ["callouts", "Distances to the Sun and Earth"],
+  ["stars", "Stars"],
 ];
 
 /** VN-SCL-001, VN-SCN-003: each layer can be turned off. */

@@ -48,6 +48,7 @@ test.describe("reference views", () => {
   test("VN-SCN-004: jitter check: still frames repeat, and a 1 m camera move changes at most a few pixels", async ({
     page,
   }) => {
+    test.slow(); // three page loads in SwiftShader; nears 30 s when every worker is busy
     const a = await view(page, "399,20000,30,25");
     const b = await view(page, "399,20000,30,25");
     const c = await view(page, "399,20000.001,30,25");

@@ -35,13 +35,9 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 
 ### M6 visual polish
 
-- [ ] T-061 P0 @phase6 slice: emissive Sun with configurable glow; the Sun as the only light  req: VN-SCN-005  files: src/scene/sun/  test: e2e/visual.spec.ts
 - [ ] T-062 P0 @phase6 slice: textures (NASA public domain or CC BY with credit, OI-8) with tiers and plain fallback, and switchable topographic maps (shaded relief or colour-coded elevation: MOLA Mars, LOLA Moon, MESSENGER Mercury, ETOPO Earth, Magellan Venus) draped on the bodies; every texture listed with licence and a size budget  req: VN-SCN-006, VN-DOC-002  files: public/textures/, src/scene/bodies/materials.ts, docs/DATA_SOURCES.md  test: tests/assets.test.ts
 - [ ] T-096 P1 @phase6 slice: real spacecraft models from NASA 3D Resources (glTF/GLB; ESA for JUICE) in place of the generic model within 10,000 km: per-model terms checked and listed (no NASA insignia implying endorsement), decimated and quantized at build time (tools/models, no runtime decoder, so no wasm under the CSP), at most 1 MB per model, lazy-loaded only when in range with the generic model until loaded and as fallback where no model exists (CAPSTONE likely), true size and a conventional attitude per model (panels to the Sun, high-gain antenna to Earth; real attitude needs SPICE CK, out of scope)  req: VN-CAT-006, VN-PRF-004, VN-DOC-002  files: tools/models/, public/models/, data/models.json, src/scene/spacecraft/Model.tsx, docs/DATA_SOURCES.md  test: tools/models/models.test.ts, e2e/spacecraft.spec.ts
-- [ ] T-063 P1 @phase6 slice: Saturn's rings  req: VN-SCN-006  files: src/scene/bodies/Rings.tsx  test: e2e/visual.spec.ts
-- [ ] T-064 P0 @phase6 slice: star background: bright-star catalog to magnitude 6.5 converted at build time to a binary point set in the ecliptic frame  req: VN-SCN-007  files: tools/stars/build.ts, public/stars.bin, src/scene/stars/  test: tools/stars/build.test.ts
-- [ ] T-065 P2 @phase6 slice: optional dimmable Milky Way image  req: VN-SCN-007  files: src/scene/stars/MilkyWay.tsx  test: e2e/visual.spec.ts
-- [ ] T-066 P1 @phase6 slice: visual regression baselines for the preset views (SwiftShader, fixed time) for the user's review  req: VN-SCN-005, VN-SCN-006  files: e2e/visual.spec.ts  test: e2e/visual.spec.ts
+- [ ] T-065 P2 @phase6 slice: optional dimmable Milky Way image; needs-user: NASA SVS answers 403 to automated downloads (session 16): save https://svs.gsfc.nasa.gov/vis/a000000/a004800/a004851/milkyway_2020_4k.exr (Deep Star Maps 2020, celestial plate carree, 34 MB) from a browser into .cache/milkyway/, then a tool converts it to a 2k image  req: VN-SCN-007  files: src/scene/stars/MilkyWay.tsx  test: e2e/visual.spec.ts
 
 ### M7 accessibility, mobile and performance
 
@@ -76,6 +72,10 @@ Stack (ADR-0001): TypeScript strict, React 19, three.js + @react-three/fiber, Zu
 
 ## Done
 
+- [x] T-061 Sun as an emissive disc (near white, not tone-mapped) with a configurable glow (src/core/sky/glow.ts, src/scene/sun/SunGlow.tsx: 8 solar radii or at least 14 px, brightness and size in a Sky section); ambient light removed, the Sun's point light is the only light; session 16
+- [x] T-063 Saturn's rings from the NSSDCA fact sheet (C, B, Cassini division, A: radii, optical depth, albedo) in the IAU WGCCRE 2015 equator plane (src/core/rings.ts, src/scene/bodies/Rings.tsx); Sun in the ring plane at the 2009-08-11 equinox (0.0005 deg) and 26.73 deg at the 2017 solstice; session 16
+- [x] T-064 bright stars: tools/stars/build.ts (`npm run stars`) from HEASARC bsc5p, 8,404 stars to V 6.5 in ecliptic J2000, public/stars.bin 168 KB; src/core/sky/stars.ts (format, size, opacity, B-V colour); src/scene/stars/Stars.tsx loaded after the first frame; layer `stars` (link letter s), dimmable; session 16
+- [x] T-066 e2e/visual.spec.ts baselines: five presets with the stars, the Sun up close, Saturn at the 2017 solstice; session 16; vitest 447, e2e 43
 - [x] T-048 clock: rate ladder 1 s/s..1 year/s, faster/slower/reverse, planets' coverage clamp (src/core/time/clock.ts); session 14; 21a284e
 - [x] T-049 time bar: UTC or local label and picker, play/pause, reverse, rate, Now (src/app/time/); session 14; 84fa3c1
 - [x] T-050 timeline scrubber: coverage band, launch and catalog events (schema `events`, 13 spacecraft); session 14; 580723b

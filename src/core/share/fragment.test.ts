@@ -13,13 +13,13 @@ const view: ViewFragment = {
   paused: true,
   selection: -31,
   cam: { target: 399, distanceKm: 1.2e6, azimuth: 30 * DEG, elevation: -25 * DEG },
-  layers: { bodies: true, labels: false, markers: true, orbits: true, trails: false, callouts: false },
+  layers: { bodies: true, labels: false, markers: true, orbits: true, trails: false, callouts: false, stars: true },
 };
 
 describe("view fragment", () => {
   it("VN-UI-002: encodes the view compactly and readably, version first", () => {
     const s = encodeFragment(view);
-    expect(s).toBe("v=1&t=2026-01-01T12:34:56.789Z&r=86400&p=1&s=-31&c=399,1200000,30,-25&l=bmo");
+    expect(s).toBe("v=1&t=2026-01-01T12:34:56.789Z&r=86400&p=1&s=-31&c=399,1200000,30,-25&l=bmos");
     expect(s.length).toBeLessThan(120);
     expect(FRAGMENT_VERSION).toBe(1);
   });
@@ -52,7 +52,15 @@ describe("view fragment", () => {
   it("VN-UI-002: every field is validated on its own; bad ones are dropped, good ones kept", () => {
     const d = decodeFragment("v=1&t=2026-02-30T00:00:00Z&r=1e99&p=yes&s=12345&c=399,-5,0,0&l=bxz&extra=1", known);
     expect(d).toEqual({
-      layers: { bodies: true, labels: false, markers: false, orbits: false, trails: false, callouts: false },
+      layers: {
+        bodies: true,
+        labels: false,
+        markers: false,
+        orbits: false,
+        trails: false,
+        callouts: false,
+        stars: false,
+      },
     });
     expect(decodeFragment("v=1&s=499&c=999,1e6,0,0", known)).toEqual({ selection: 499 });
     expect(decodeFragment(`v=1&c=399,${MAX_DISTANCE_KM * 10},0,0`, known)).toEqual({});
@@ -65,6 +73,7 @@ describe("view fragment", () => {
       orbits: false,
       trails: false,
       callouts: false,
+      stars: false,
     });
   });
 

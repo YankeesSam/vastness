@@ -16,7 +16,9 @@ Every data set and asset Vastness ships or uses, with its terms (ADR-0006, VN-DO
 | Vastness (this project), with mission facts from NASA, ESA and JPL mission pages | data/catalog.json: names, types, parents, launch dates, mission status with as-of date, agencies, summaries and goals written in our own words, source links (Earth satellites: NORAD numbers, ADR-0007), colours and priorities (VN-CAT-001) | Apache-2.0 (this repository); facts are not copyrightable, no text copied; each entry links its sources | src/core/catalog/schema.ts; IDs verified by `npm run ephem:check-ids` | 2026-11-26 |
 | Textures | planet and Moon surfaces, Saturn's rings | NASA public domain or CC BY with credit (OI-8) | public/textures | (T-062) |
 | NASA 3D Resources (https://science.nasa.gov/3d-resources/), ESA for JUICE | spacecraft 3D models | check and record per model in T-096; credit as each asks | public/models via tools/models | (T-096) |
-| Bright-star catalog | background stars | per T-064 | public/stars.bin | (T-064) |
+| Yale Bright Star Catalogue, 5th revised edition (Hoffleit and Warren 1991), as served by NASA HEASARC (table heasarc_bsc5p, https://heasarc.gsfc.nasa.gov/FTP/heasarc/dbase/dump/heasarc_bsc5p.tdat.gz) | background stars: J2000 positions, V magnitudes and B-V colours of the 8,404 stars to V 6.5 (VN-SCN-007) | NASA HEASARC public table (table_security public); the catalogue is credited to Hoffleit and Warren (Yale University Observatory) | public/stars.bin via `npm run stars` (tools/stars/build.ts; the raw dump is cached in .cache/stars); an excerpt of six rows in testdata/stars/bsc5p-sample.tdat (tools/stars/build.test.ts) | 2026-11-27 |
+| Ballesteros 2012 (EPL 97, 34008), B-V to temperature; Mitchell Charity, "What color is a blackbody?" (http://www.vendian.org/mncharity/dir3/blackbody/), blackbody sRGB colours | star colours | published formula and table, cited per value | src/core/sky/stars.ts | 2026-11-27 |
+| NASA NSSDCA Saturnian Rings Fact Sheet (D. R. Williams, https://nssdc.gsfc.nasa.gov/planetary/factsheet/satringfact.html); IAU WGCCRE 2015 Saturn pole (Archinal et al. 2018) | Saturn's ring radii, optical depths and albedos; the ring plane (VN-SCN-006) | US Government work; cited per value | src/core/rings.ts (rings drawn from these values, no image) | 2026-11-27 |
 
 ## Credits
 
@@ -25,5 +27,6 @@ Shown in the app's About panel and in release notes, and carried in public/ephem
 - State vectors from the JPL Horizons system (NASA/JPL Solar System Dynamics Group)
 - Leap seconds from IERS Bulletin C (International Earth Rotation and Reference Systems Service)
 - Orbital elements from CelesTrak (celestrak.org)
+- Stars from the Yale Bright Star Catalogue, 5th revised edition (Hoffleit and Warren), via NASA HEASARC
 
 Horizons output is produced by NASA/JPL and is not subject to copyright in the United States; JPL asks that it be credited to the Horizons system. Neither NASA nor JPL endorses Vastness, and nothing in the app uses their logos.

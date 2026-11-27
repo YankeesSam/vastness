@@ -28,7 +28,8 @@
     "ephem:check": "node --experimental-strip-types --no-warnings tools/ephem/check.ts",
     "bench": "vitest bench --run",
     "ephem:check-ids": "node --experimental-strip-types --no-warnings tools/ephem/check-ids.ts",
-    "gp": "node --experimental-strip-types --no-warnings tools/gp/gp.ts"
+    "gp": "node --experimental-strip-types --no-warnings tools/gp/gp.ts",
+    "stars": "node --experimental-strip-types --no-warnings tools/stars/build.ts"
   },
   "dependencies": {
     "@react-three/fiber": "^9.8.2",

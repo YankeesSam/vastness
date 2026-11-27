@@ -1,0 +1,69 @@
+import { expect, test, type Page } from "@playwright/test";
+import { presetCamera, PRESETS } from "../src/core/camera/presets";
+
+// T-066 (VN-SCN-005, VN-SCN-006, VN-SCN-007): visual regression baselines at a fixed time, in SwiftShader, for the
+// user's review: every preset view with the stars on, the Sun and its glow up close, and Saturn with its rings.
+// Panels, bars and the scale bar are masked, as in the F5 views (e2e/scale.spec.ts).
+
+const T = "2026-01-01T00:00:00Z";
+const STAR_COUNT = "8404";
+
+async function shot(page: Page, cam: string, layers: string, t = T): Promise<Buffer> {
+  await page.goto(`./?t=${t}&cam=${cam}&still=1&layers=${layers}`);
+  const canvas = page.locator("canvas");
+  await expect(canvas).toHaveAttribute("data-scene-ready", "1", { timeout: 20_000 });
+  if (layers.includes("stars")) await expect(canvas).toHaveAttribute("data-stars", STAR_COUNT, { timeout: 10_000 });
+  if (layers.includes("orbits")) await expect(canvas).toHaveAttribute("data-orbits", "9", { timeout: 10_000 });
+  await page.evaluate(
+    () =>
+      new Promise<void>((r) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => r()))),
+      ),
+  );
+  return page.screenshot({
+    mask: [
+      page.locator("header"),
+      page.locator("aside"),
+      page.locator("footer"),
+      page.getByRole("figure", { name: "Scale" }),
+    ],
+  });
+}
+
+const deg = (rad: number) => (rad * 180) / Math.PI;
+
+test.describe("visual baselines", () => {
+  for (const p of PRESETS) {
+    test(`VN-SCN-007: preset ${p.id} with the stars`, async ({ page }) => {
+      const c = presetCamera(p.id);
+      const cam = `${c.target},${c.distanceKm},${deg(c.azimuth)},${deg(c.elevation)}`;
+      expect(await shot(page, cam, "bodies,orbits,markers,stars")).toMatchSnapshot(`preset-${p.id}.png`, {
+        maxDiffPixelRatio: 0.002,
+      });
+    });
+  }
+
+  test("VN-SCN-005: the Sun up close, an emissive disc in its glow", async ({ page }) => {
+    expect(await shot(page, "10,1.2e7,0,15", "bodies,stars")).toMatchSnapshot("sun.png", { maxDiffPixelRatio: 0.002 });
+  });
+
+  // At Saturn's northern summer solstice the rings are open to the Sun (26.7 degrees); in 2026 they are near edge-on.
+  test("VN-SCN-006, VN-SCN-005: Saturn and its rings at the 2017 solstice, lit only by the Sun", async ({ page }) => {
+    expect(await shot(page, "699,7e5,200,40", "bodies,stars", "2017-05-24T00:00:00Z")).toMatchSnapshot("saturn.png", {
+      maxDiffPixelRatio: 0.002,
+    });
+  });
+
+  test("VN-SCN-007: the stars layer can be turned off from the side panel", async ({ page }) => {
+    await page.goto(`./?t=${T}&cam=10,1.2e7,0,15&still=1&layers=bodies,stars`);
+    const canvas = page.locator("canvas");
+    await expect(canvas).toHaveAttribute("data-stars", STAR_COUNT, { timeout: 20_000 });
+    const box = page.getByRole("region", { name: "Layers" }).getByRole("checkbox", { name: "Stars" });
+    await expect(box).toBeChecked();
+    await box.uncheck();
+    await expect(box).not.toBeChecked();
+    await expect(
+      page.getByRole("region", { name: "Sky" }).getByRole("slider", { name: "Star brightness" }),
+    ).toBeVisible();
+  });
+});

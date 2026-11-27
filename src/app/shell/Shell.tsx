@@ -12,6 +12,7 @@ import { PulseControl } from "../scale/PulseControl";
 import { ScaleBar } from "../scale/ScaleBar";
 import { LayerSwitches, ScaleNote, ScaleSelect } from "../scale/ScaleControls";
 import { Share } from "../share/Share";
+import { SkyControls } from "../sky/SkyControls";
 import { loadPrefs, resetPrefs, savePrefs, type Prefs } from "../prefs";
 import { useView, viewStore } from "../store/view";
 import styles from "./Shell.module.css";
@@ -169,6 +170,10 @@ export function Shell() {
         <section aria-label="Layers">
           <h2>Layers</h2>
           <LayerSwitches className={styles.objects} />
+        </section>
+        <section aria-label="Sky">
+          <h2>Sky</h2>
+          <SkyControls className={styles.objects} />
         </section>
         <section aria-label="Light pulse">
           <h2>Light pulse</h2>

@@ -25,6 +25,9 @@ import { Markers } from "./labels/Markers";
 import { createScreenFrame } from "./labels/screen";
 import { Orbits } from "./orbits/Orbits";
 import { SpacecraftModels } from "./spacecraft/Model";
+import { SaturnRings } from "./bodies/Rings";
+import { Stars } from "./stars/Stars";
+import { SunGlow } from "./sun/SunGlow";
 import { Trails } from "./trails/Trails";
 import { Picker } from "./Picker";
 import { createRig, RigContext, useRig } from "./rig";
@@ -164,7 +167,10 @@ export function SceneView() {
           <BodyStates eph={eph} frame={frame} />
           <Controls frame={frame} />
           <OriginCamera />
+          <Stars />
           <Bodies frame={frame} />
+          <SaturnRings frame={frame} />
+          <SunGlow frame={frame} />
           <Orbits eph={eph} frame={frame} />
           <Trails eph={eph} frame={frame} />
           <SpacecraftModels frame={frame} />

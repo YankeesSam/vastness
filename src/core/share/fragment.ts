@@ -11,7 +11,7 @@ import { formatUtc, parseUtc } from "../time/scales";
 //   t  simulation time, UTC to the millisecond         r  rate, simulation seconds per real second
 //   p  1 paused, 0 playing                                s  selected object (Horizons ID), empty for none
 //   c  camera: target ID, distance km, azimuth and elevation in degrees
-//   l  layers that are on: b bodies, l labels, m markers, o orbits, t trails, d distance callouts
+//   l  layers that are on: b bodies, l labels, m markers, o orbits, t trails, d distance callouts, s stars
 //   x  scale: e exaggerated, t true; left out for true scale (links made before it still open, VN-SCL-002)
 //
 // Decoding checks each field on its own and drops what does not pass, so a damaged link still opens what it can.
@@ -22,7 +22,7 @@ export const FRAGMENT_VERSION = 1;
 /** Longest fragment decoded; anything longer is not ours. */
 const MAX_LENGTH = 512;
 
-export type FragmentLayer = "bodies" | "labels" | "markers" | "orbits" | "trails" | "callouts";
+export type FragmentLayer = "bodies" | "labels" | "markers" | "orbits" | "trails" | "callouts" | "stars";
 
 const LAYER_LETTERS: readonly [FragmentLayer, string][] = [
   ["bodies", "b"],
@@ -31,6 +31,7 @@ const LAYER_LETTERS: readonly [FragmentLayer, string][] = [
   ["orbits", "o"],
   ["trails", "t"],
   ["callouts", "d"],
+  ["stars", "s"],
 ];
 
 export interface FragmentCamera {

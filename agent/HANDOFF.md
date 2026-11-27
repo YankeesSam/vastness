@@ -1,7 +1,7 @@
 schema: 1
-from_session: 15
-to_session: 16
-completed: [T-054, T-055, T-056, T-057, T-058]
+from_session: 16
+to_session: 17
+completed: [T-061, T-063, T-064, T-066]
 failed: []
 next_task_id: T-097
 next_task: "T-097 LRO whole mission under 5 MB (non-singular elements, format v3); WIP in git stash"
@@ -16,18 +16,19 @@ read_next:
 do_not_read:
   - docs/REQUIREMENTS.md (grep VN-* IDs instead)
   - docs/architecture/VASTNESS_ARCHITECTURE.md
-  - public/ephem, testdata, .cache, dist
-tests: pass (vitest 430; e2e 35/35; typecheck, prettier, check-deps, check-size clean)
-commit: 94a04ac
-push: ok
+  - public/ephem, public/stars.bin, testdata, .cache, dist
+tests: pass (vitest 447; e2e 43/43; typecheck, prettier, check-deps, check-size clean)
+commit: pending
+push: pending
 notes:
-  - Session 15 batch at the user's request: M5 scale tasks T-054..T-058; T-059 (tour engine) and T-060 (needs-user text review) remain in M5. T-097 still stashed (`git stash list`: "T-097 WIP"); session 13 notes hold.
-  - Scale: BodyFrame now has truth (true), world (drawn) and radius (drawn); everything drawn/framed uses world/radius, distances use truth. True scale is the default (F5 views unchanged); `?scale=exaggerated` and link field `x=e`.
-  - Exaggerated factors (src/core/scale/mapping.ts): Sun 40, rocky planets and Moon 1000, giants 300; Moon ×34 about Earth (clearance 1.5 at perigee 356 000 km). Tightest pair over 400 sampled times: Mercury near the Sun, > 1.2 clear.
-  - F5 baselines (all 5) re-taken with --update-snapshots: the new scale bar sits over the view and is masked like the panels; diff checked by eye (only the mask area).
-  - New layer `callouts` (fragment letter d): links made before this session open with callouts off.
-  - D-002 low: trails stay at true positions in exaggerated scale while markers are pushed out.
-  - nightly 94a04ac-nightly ok; LAN http://192.168.1.166:8770/ (200)
-  - Flaky under parallel load, pass alone: ephemeris.perf.test.ts allocation test, tests/nightly-build.test.ts.
+  - Session 16 batch at the user's request: M6 sky and Sun (T-061, T-063, T-064, T-066). T-097 still stashed (`git stash list`: "T-097 WIP").
+  - T-065 (Milky Way) is needs-user: svs.gsfc.nasa.gov answers 403 to curl, even with a browser User-Agent and Referer. Save milkyway_2020_4k.exr from a browser into .cache/milkyway/ (URL in PLAN).
+  - Stars: Yale BSC5 from NASA HEASARC (CDS VizieR DNS failed), 8,404 to V 6.5; raw dump cached in .cache/stars; `npm run stars --fetch` re-downloads. Proper motion not applied (< 0.3 deg over 1900-2100 for the fastest).
+  - New layer `stars` (link letter s): links made before this session open with the stars off. Sky settings (stars, glow, glowSize) live in the store only, not in links or prefs (T-077 can persist them).
+  - VN-SCN-005 "lights bodies by distance" read as: lit from the Sun's position with no ambient light, no 1/r^2 fall-off (Neptune would be 1/900 of Earth). Say if you want a fall-off.
+  - Saturn's rings come from published radii and optical depths, not an image; no shadows (D-003).
+  - F5 baselines (scale.spec) unchanged and still pass: the glow adds under 0.2% of pixels there.
+  - e2e: stars cost about 15% of a SwiftShader frame (23 to 20 fps); the three multi-page specs (presets, jitter, share) are now test.slow() after timing out under 16 workers.
+  - New visual baselines for your review: e2e/visual.spec.ts-snapshots/ (presets, sun, saturn).
 open_defects_blocking: []
 optimizations_applied: []

@@ -28,7 +28,7 @@ export interface TestParams {
   scale?: "exaggerated";
 }
 
-const LAYERS: readonly Layer[] = ["bodies", "labels", "markers", "orbits", "trails", "callouts"];
+const LAYERS: readonly Layer[] = ["bodies", "labels", "markers", "orbits", "trails", "callouts", "stars"];
 const DEG = Math.PI / 180;
 
 export function parseTestParams(search: string): TestParams {
@@ -50,7 +50,15 @@ export function parseTestParams(search: string): TestParams {
   if (q.get("still") === "1") out.still = true;
   const layers = q.get("layers")?.split(",");
   if (layers && layers.some((l) => (LAYERS as readonly string[]).includes(l))) {
-    out.layers = { bodies: false, labels: false, markers: false, orbits: false, trails: false, callouts: false };
+    out.layers = {
+      bodies: false,
+      labels: false,
+      markers: false,
+      orbits: false,
+      trails: false,
+      callouts: false,
+      stars: false,
+    };
     for (const l of layers) if ((LAYERS as readonly string[]).includes(l)) out.layers[l as Layer] = true;
   }
   if (q.get("scale") === "exaggerated") out.scale = "exaggerated";

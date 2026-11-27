@@ -21,6 +21,7 @@ describe("test params (F5)", () => {
       labels: false,
       trails: false,
       callouts: false,
+      stars: false,
     });
   });
 
@@ -47,6 +48,7 @@ describe("test params (F5)", () => {
       labels: false,
       trails: false,
       callouts: false,
+      stars: false,
     });
     s.tick(1);
     expect(store.getState().t).toBe(parseUtc("2026-01-01T00:00:00Z"));

@@ -1,4 +1,4 @@
-# Context (session 16, T-097)
+# Context (session 17, T-097)
 
 - agent/STATE.md
 - agent/PLAN.md

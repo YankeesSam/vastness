@@ -43,7 +43,7 @@ describe("url sync", () => {
         paused: false,
         selection: -31,
         cam,
-        layers: { bodies: true, labels: false, markers: true, orbits: true, trails: true, callouts: true },
+        layers: { bodies: true, labels: false, markers: true, orbits: true, trails: true, callouts: true, stars: true },
       }),
     );
   });
@@ -63,6 +63,7 @@ describe("url sync", () => {
       orbits: true,
       trails: false,
       callouts: false,
+      stars: false,
     });
     expect(s.cameraSeq).toBe(1);
     expect(s.cameraRequest!.target).toBe(899);

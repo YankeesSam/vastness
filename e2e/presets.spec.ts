@@ -4,6 +4,7 @@ import { expect, test } from "@playwright/test";
 
 test.describe("preset views", () => {
   test("VN-CAM-005: whole system top-down, heliopause and Earth-Moon", async ({ page }) => {
+    test.slow(); // three fly-tos in SwiftShader; with the stars (T-064) it nears 30 s when every worker is busy
     await page.goto("./?t=2026-01-01T00:00:00Z&still=1");
     const canvas = page.locator("canvas");
     await expect(canvas).toHaveAttribute("data-scene-ready", "1", { timeout: 20_000 });

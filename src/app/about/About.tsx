@@ -53,6 +53,10 @@ export function About({ onClose }: { onClose: () => void }) {
           Positions come from the JPL Horizons System (NASA/JPL Horizons, Jet Propulsion Laboratory, California
           Institute of Technology). Vastness is not affiliated with or endorsed by NASA or JPL.
         </p>
+        <p>
+          Stars from the Yale Bright Star Catalogue, 5th revised edition (Hoffleit and Warren), via NASA HEASARC.
+          Saturn&apos;s rings from the NASA NSSDCA Saturnian Rings Fact Sheet.
+        </p>
         <button ref={closeRef} type="button" className={styles.close} onClick={onClose}>
           Close
         </button>

@@ -14,8 +14,20 @@ import { TRAIL_DEFAULT_DAYS } from "../../core/trails/sample";
 
 export { advanceTime, MAX_FRAME_DT_S };
 
-/** callouts: VN-SCL-005 distance lines from the selection to the Sun and Earth. */
-export type Layer = "bodies" | "labels" | "markers" | "orbits" | "trails" | "callouts";
+/** callouts: VN-SCL-005 distance lines from the selection to the Sun and Earth. stars: VN-SCN-007 background stars. */
+export type Layer = "bodies" | "labels" | "markers" | "orbits" | "trails" | "callouts" | "stars";
+
+/** VN-SCN-005, VN-SCN-007: the sky and Sun settings, each 0 (off) to 1 (full) or a size factor. */
+export interface SkySettings {
+  /** Star brightness, 0..1 (dimmable). */
+  stars: number;
+  /** Sun glow brightness, 0..2. */
+  glow: number;
+  /** Sun glow size factor, 0.25..4. */
+  glowSize: number;
+}
+
+export const DEFAULT_SKY: SkySettings = { stars: 0.8, glow: 1, glowSize: 1 };
 
 export interface ViewState {
   /** TDB seconds since J2000. */
@@ -39,6 +51,7 @@ export interface ViewState {
   pulse: Pulse | null;
   /** VN-CAT-004: spacecraft trail range, days back and ahead (Infinity: the whole coverage). */
   trailDays: number;
+  sky: SkySettings;
   tick(dtRealS: number): void;
   setTime(t: number): void;
   setRate(rate: number): void;
@@ -59,6 +72,8 @@ export interface ViewState {
   setScale(scale: ScaleMode): void;
   /** VN-SCL-007: sends a pulse from the origin now (simulation time); null turns it off. */
   setPulse(origin: PulseOrigin | null): void;
+  /** Values are clamped to their ranges. */
+  setSky(patch: Partial<SkySettings>): void;
 }
 
 /** TDB seconds for the current wall-clock instant (UTC to TDB at the edge, ADR-0003). */
@@ -81,7 +96,8 @@ export function createViewStore(init: ViewInit = {}): StoreApi<ViewState> {
     selection: null,
     target: init.target ?? 399,
     targetSeq: 0,
-    layers: { bodies: true, labels: true, markers: true, orbits: true, trails: true, callouts: true },
+    layers: { bodies: true, labels: true, markers: true, orbits: true, trails: true, callouts: true, stars: true },
+    sky: { ...DEFAULT_SKY },
     trailDays: TRAIL_DEFAULT_DAYS,
     scale: "true",
     pulse: null,
@@ -106,9 +122,19 @@ export function createViewStore(init: ViewInit = {}): StoreApi<ViewState> {
     setLayer: (layer, on) => set((s) => ({ layers: { ...s.layers, [layer]: on } })),
     setScale: (scale) => set({ scale }),
     setPulse: (origin) => set((s) => ({ pulse: origin === null ? null : { origin, t0: s.t } })),
+    setSky: (patch) =>
+      set((s) => ({
+        sky: {
+          stars: clamp(patch.stars ?? s.sky.stars, 0, 1),
+          glow: clamp(patch.glow ?? s.sky.glow, 0, 2),
+          glowSize: clamp(patch.glowSize ?? s.sky.glowSize, 0.25, 4),
+        },
+      })),
     setTrailDays: (trailDays) => set({ trailDays: trailDays > 0 ? trailDays : TRAIL_DEFAULT_DAYS }),
   }));
 }
+
+const clamp = (v: number, lo: number, hi: number) => (Number.isFinite(v) ? Math.min(hi, Math.max(lo, v)) : lo);
 
 /** The app's one view store. */
 export const viewStore = createViewStore();

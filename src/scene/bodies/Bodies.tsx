@@ -8,7 +8,8 @@ import { PRIORITY } from "../Scene";
 import { colourOf } from "../colours";
 import { DRAWN_BODIES, SCENE_OBJECTS } from "./positions";
 
-// VN-SCN-001: plain spheres with true mean radii (scaled by the scale mapping, VN-SCL-002) at their drawn positions, placed camera-relative each frame
+// VN-SCN-005: the Sun is the only light (a point light at its drawn position, no ambient light), so each body is lit
+// from the Sun's direction and its night side is dark. VN-SCN-001: plain spheres with true mean radii (scaled by the scale mapping, VN-SCL-002) at their drawn positions, placed camera-relative each frame
 // (the world positions come from the shared frame buffer the rig fills).
 
 export interface BodyFrame {
@@ -41,6 +42,9 @@ export function createBodyFrame(): BodyFrame {
   };
 }
 
+/** VN-SCN-005: the Sun's emissive disc, near white (the catalog colour stays for its marker and label). */
+const SUN_DISC = "#fff3d6";
+
 export function Bodies({ frame }: { frame: BodyFrame }) {
   const rig = useRig();
   const meshes = useRef<(Mesh | null)[]>([]);
@@ -64,7 +68,6 @@ export function Bodies({ frame }: { frame: BodyFrame }) {
 
   return (
     <>
-      <ambientLight intensity={0.04} />
       <pointLight ref={light} intensity={3} decay={0} />
       {DRAWN_BODIES.map((b, i) => (
         <mesh
@@ -77,7 +80,7 @@ export function Bodies({ frame }: { frame: BodyFrame }) {
         >
           <sphereGeometry args={[b.radiusKm, 64, 32]} />
           {b.horizonsId === 10 ? (
-            <meshBasicMaterial color={colourOf(10)} />
+            <meshBasicMaterial color={SUN_DISC} toneMapped={false} />
           ) : (
             <meshLambertMaterial color={colourOf(b.horizonsId)} />
           )}

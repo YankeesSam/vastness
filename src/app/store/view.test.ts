@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { parseUtc } from "../../core/time/scales";
 import { PLANET_COVERAGE } from "../../core/time/clock";
-import { advanceTime, createViewStore, MAX_FRAME_DT_S, tdbNow } from "./view";
+import { advanceTime, createViewStore, DEFAULT_SKY, MAX_FRAME_DT_S, tdbNow } from "./view";
 
 describe("view store", () => {
   it("VN-TIM-004: simulation time is TDB seconds, set from UTC at the edge", () => {
@@ -63,6 +63,7 @@ describe("view store", () => {
       orbits: true,
       trails: true,
       callouts: true,
+      stars: true,
     });
     s.setLayer("orbits", false);
     expect(store.getState().layers.orbits).toBe(false);
@@ -126,5 +127,18 @@ describe("view store", () => {
     expect(store.getState().paused).toBe(true);
     store.getState().setTime(PLANET_COVERAGE.start - 1e6);
     expect(store.getState().t).toBe(PLANET_COVERAGE.start);
+  });
+});
+
+describe("sky settings (VN-SCN-005, VN-SCN-007)", () => {
+  it("VN-SCN-007: star brightness and the Sun's glow are set and clamped to their ranges", () => {
+    const store = createViewStore();
+    expect(store.getState().sky).toEqual(DEFAULT_SKY);
+    store.getState().setSky({ stars: 0.3 });
+    expect(store.getState().sky).toEqual({ ...DEFAULT_SKY, stars: 0.3 });
+    store.getState().setSky({ stars: 2, glow: -1, glowSize: 10 });
+    expect(store.getState().sky).toEqual({ stars: 1, glow: 0, glowSize: 4 });
+    store.getState().setSky({ glowSize: NaN });
+    expect(store.getState().sky.glowSize).toBe(0.25);
   });
 });
