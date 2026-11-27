@@ -16,7 +16,7 @@ import { TRAIL_DEFAULT_DAYS } from "../../core/trails/sample";
 export { advanceTime, MAX_FRAME_DT_S };
 
 /** callouts: VN-SCL-005 distance lines from the selection to the Sun and Earth. stars: VN-SCN-007 background stars. */
-export type Layer = "bodies" | "labels" | "markers" | "orbits" | "trails" | "callouts" | "stars";
+export type Layer = "bodies" | "textures" | "labels" | "markers" | "orbits" | "trails" | "callouts" | "stars";
 
 /** VN-SCN-005, VN-SCN-007: the sky and Sun settings, each 0 (off) to 1 (full) or a size factor. */
 export interface SkySettings {
@@ -104,7 +104,7 @@ export function createViewStore(init: ViewInit = {}): StoreApi<ViewState> {
     target: init.target ?? 399,
     targetSeq: 0,
     following: null,
-    layers: { bodies: true, labels: true, markers: true, orbits: true, trails: true, callouts: true, stars: true },
+    layers: { bodies: true, textures: true, labels: true, markers: true, orbits: true, trails: true, callouts: true, stars: true },
     sky: { ...DEFAULT_SKY },
     quality: "high",
     trailDays: TRAIL_DEFAULT_DAYS,

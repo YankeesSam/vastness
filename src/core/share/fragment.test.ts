@@ -13,7 +13,7 @@ const view: ViewFragment = {
   paused: true,
   selection: -31,
   cam: { target: 399, distanceKm: 1.2e6, azimuth: 30 * DEG, elevation: -25 * DEG },
-  layers: { bodies: true, labels: false, markers: true, orbits: true, trails: false, callouts: false, stars: true },
+  layers: { bodies: true, textures: false, labels: false, markers: true, orbits: true, trails: false, callouts: false, stars: true },
 };
 
 describe("view fragment", () => {
@@ -54,6 +54,7 @@ describe("view fragment", () => {
     expect(d).toEqual({
       layers: {
         bodies: true,
+        textures: false,
         labels: false,
         markers: false,
         orbits: false,
@@ -68,6 +69,7 @@ describe("view fragment", () => {
     expect(decodeFragment("v=1&t=1850-01-01T00:00:00Z", known)).toEqual({}); // outside the planets' coverage
     expect(decodeFragment("v=1&l=", known).layers).toEqual({
       bodies: false,
+      textures: false,
       labels: false,
       markers: false,
       orbits: false,

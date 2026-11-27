@@ -1,11 +1,13 @@
-import { useFrame } from "@react-three/fiber";
-import { useMemo, useRef } from "react";
-import { Matrix4, type Mesh, type PointLight } from "three";
-import { viewStore } from "../../app/store/view";
+import { useFrame, useThree } from "@react-three/fiber";
+import { useEffect, useMemo, useRef } from "react";
+import { Color, Matrix4, MeshLambertMaterial, PerspectiveCamera, type Mesh, type PointLight } from "three";
+import { useView, viewStore } from "../../app/store/view";
+import { QUALITY } from "../../core/quality";
 import { toCamera } from "../origin";
 import { useRig } from "../rig";
 import { PRIORITY } from "../Scene";
 import { colourOf } from "../colours";
+import { BodyTextures, radiusPx, wantTexture } from "./materials";
 import { bodyMeshMatrix } from "./orient";
 import { DRAWN_BODIES, SCENE_OBJECTS } from "./positions";
 
@@ -47,6 +49,9 @@ export function createBodyFrame(): BodyFrame {
 /** VN-SCN-005: the Sun's emissive disc, near white (the catalog colour stays for its marker and label). */
 const SUN_DISC = "#fff3d6";
 
+/** Each body's plain colour (VN-SCN-001), shown until its map is in. */
+const plain = DRAWN_BODIES.map((b) => new Color(colourOf(b.horizonsId)));
+
 export function Bodies({ frame }: { frame: BodyFrame }) {
   const rig = useRig();
   const meshes = useRef<(Mesh | null)[]>([]);
@@ -54,6 +59,14 @@ export function Bodies({ frame }: { frame: BodyFrame }) {
   const rel = useMemo(() => new Float64Array(3), []);
   const show = useRef(viewStore.getState().layers.bodies);
   const turn = useMemo(() => new Matrix4(), []);
+  const camera = useThree((s) => s.camera);
+  const canvas = useThree((s) => s.gl.domElement);
+  const invalidate = useThree((s) => s.invalidate);
+  // VN-SCN-006: surface maps on demand, edge capped by the quality tier (VN-PRF-003)
+  const edge = useView((s) => QUALITY[s.quality].textureSize);
+  const maps = useMemo(() => new BodyTextures(edge, () => invalidate()), [edge, invalidate]);
+  useEffect(() => () => maps.dispose(), [maps]);
+  const white = useMemo(() => new Color("#ffffff"), []);
 
   useFrame(() => {
     const st = viewStore.getState();
@@ -68,8 +81,25 @@ export function Bodies({ frame }: { frame: BodyFrame }) {
       m.scale.setScalar(frame.radius[i]! / DRAWN_BODIES[i]!.radiusKm); // VN-SCL-002
       // VN-SCN-009: turned by the IAU rotation model at the simulation time
       if (bodyMeshMatrix(DRAWN_BODIES[i]!.horizonsId, st.t, turn)) m.quaternion.setFromRotationMatrix(turn);
+      // VN-SCN-006: the map while the body is big enough on screen and the layer is on; else its plain colour
+      const id = DRAWN_BODIES[i]!.horizonsId;
+      const fov = camera instanceof PerspectiveCamera ? camera.fov : 50;
+      const px = radiusPx(frame.radius[i]!, Math.hypot(rel[0]!, rel[1]!, rel[2]!), fov, canvas.clientHeight || 800);
+      maps.want(id, m.visible && st.layers.textures && wantTexture(px, maps.get(id) !== null));
+      const mat = m.material;
+      if (mat instanceof MeshLambertMaterial) {
+        const map = st.layers.textures ? maps.get(id) : null;
+        if (mat.map !== map) {
+          mat.map = map;
+          mat.color.copy(map ? white : plain[i]!);
+          mat.needsUpdate = true;
+        }
+      }
       if (i === 0 && light.current) light.current.position.copy(m.position);
     }
+    // For e2e specs: which bodies have their map in.
+    const held = maps.held().join(",");
+    if (canvas.dataset.surfaces !== held) canvas.dataset.surfaces = held;
   }, PRIORITY.objects);
 
   return (

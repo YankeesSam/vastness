@@ -58,6 +58,7 @@ describe("view store", () => {
     expect(store.getState().selection).toBeNull();
     expect(store.getState().layers).toEqual({
       bodies: true,
+      textures: true,
       labels: true,
       markers: true,
       orbits: true,

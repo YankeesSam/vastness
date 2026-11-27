@@ -16,6 +16,7 @@ describe("test params (F5)", () => {
     expect(p.still).toBe(true);
     expect(p.layers).toEqual({
       bodies: true,
+      textures: false,
       orbits: true,
       markers: false,
       labels: false,
@@ -43,6 +44,7 @@ describe("test params (F5)", () => {
     expect(s.targetSeq).toBe(seq); // no fly-to: the camera starts there
     expect(s.layers).toEqual({
       bodies: true,
+      textures: false,
       orbits: false,
       markers: false,
       labels: false,

@@ -59,6 +59,11 @@ export function About({ onClose }: { onClose: () => void }) {
           Stars from the Yale Bright Star Catalogue, 5th revised edition (Hoffleit and Warren), via NASA HEASARC.
           Saturn&apos;s rings from the NASA NSSDCA Saturnian Rings Fact Sheet.
         </p>
+        <p>
+          Planet textures by <a href="https://www.solarsystemscope.com/textures/">Solar System Scope</a>{" "}
+          (solarsystemscope.com), <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, based on NASA
+          data. Body orientation from the IAU WGCCRE 2015 rotation models (Archinal et al. 2018).
+        </p>
         <button ref={closeRef} type="button" className={styles.close} onClick={onClose}>
           Close
         </button>

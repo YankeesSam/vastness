@@ -43,7 +43,7 @@ describe("url sync", () => {
         paused: false,
         selection: -31,
         cam,
-        layers: { bodies: true, labels: false, markers: true, orbits: true, trails: true, callouts: true, stars: true },
+        layers: { bodies: true, textures: true, labels: false, markers: true, orbits: true, trails: true, callouts: true, stars: true },
       }),
     );
   });
@@ -58,6 +58,7 @@ describe("url sync", () => {
     expect(s.selection).toBe(-32);
     expect(s.layers).toEqual({
       bodies: true,
+      textures: false,
       labels: false,
       markers: false,
       orbits: true,

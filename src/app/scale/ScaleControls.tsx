@@ -43,6 +43,7 @@ export function ScaleNote({ className }: { className?: string | undefined }) {
 
 const LAYERS: readonly [Layer, string][] = [
   ["bodies", "Bodies"],
+  ["textures", "Surface textures"],
   ["markers", "Markers"],
   ["labels", "Labels"],
   ["orbits", "Orbits"],
