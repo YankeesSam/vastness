@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import satellites from "../../../data/satellites.json";
 import { BODIES } from "../../core/constants";
 import type { Ephemeris } from "../../core/ephem/ephemeris";
 import { illustrativePeriod, type IllustrativeEdge } from "../../core/ephem/illustrative";
@@ -12,6 +13,7 @@ import {
   type DistanceUnit,
   type Readout,
 } from "../../core/readouts";
+import { elementsAge } from "../../scene/satellites/satellites";
 import { coverageState, reasonText } from "../../scene/spacecraft/coverage";
 import { parseUtc } from "../../core/time/scales";
 import { loadEphemeris } from "../assets/loader";
@@ -26,7 +28,13 @@ import styles from "./InfoPanel.module.css";
 
 const EARTH = 399;
 
+/** VN-CAT-007: each satellite's element epoch, for the panel's age line. */
+const ELEMENT_EPOCHS = new Map(
+  satellites.satellites.map((s) => [s.id, { epochIso: s.epoch, epoch: parseUtc(s.epoch.replace(/Z$/, "")) }]),
+);
+
 export function bodyType(id: number): string {
+  if (CATALOG_BY_ID.get(id)?.type === "satellite") return "Earth satellite";
   if (id < 0) return "Spacecraft";
   if (id === 10) return "Star";
   if (id > 100 && id % 100 === 99) return "Planet";
@@ -64,6 +72,23 @@ function illustrativeText(edge: IllustrativeEdge): string {
   return (
     `It is drawn on an illustrative orbit (period ${period}) from its nearest stored orbital elements, ` +
     "not at its true position."
+  );
+}
+
+/** VN-CAT-007: a satellite's element epoch and its age at the time shown (the element age tells how exact it is). */
+function elements(id: number, age: string | null) {
+  if (!ELEMENT_EPOCHS.has(id) || age === null) return null;
+  return (
+    <dl className={styles.readouts} aria-label="Orbital elements">
+      <dt>Orbital elements</dt>
+      <dd data-elements-age>
+        {age}
+        <small className={styles.note}>
+          Propagated with SGP4 from CelesTrak elements; exact to a few kilometres for low orbits near the epoch, and
+          drawn on an illustrative orbit beyond 14 days.
+        </small>
+      </dd>
+    </dl>
   );
 }
 
@@ -149,6 +174,7 @@ export interface InfoPanelProps {
 export function InfoPanel({ selection, units, onUnits, ephemeris }: InfoPanelProps) {
   const [eph, setEph] = useState<Ephemeris | null>(null);
   const [shown, setShown] = useState<Shown>({ status: "loading" });
+  const [age, setAge] = useState<string | null>(null);
 
   useEffect(() => {
     let live = true;
@@ -168,7 +194,12 @@ export function InfoPanel({ selection, units, onUnits, ephemeris }: InfoPanelPro
     if (!eph || selection === null) return;
     const body = new Float64Array(6);
     const earth = new Float64Array(6);
-    const update = () => setShown(compute(eph, selection, viewStore.getState().t, body, earth));
+    const elements = ELEMENT_EPOCHS.get(selection);
+    const update = () => {
+      const t = viewStore.getState().t;
+      setShown(compute(eph, selection, t, body, earth));
+      setAge(elements ? elementsAge(elements, t) : null);
+    };
     update();
     const timer = setInterval(update, READOUT_INTERVAL_MS);
     return () => clearInterval(timer);
@@ -214,7 +245,8 @@ export function InfoPanel({ selection, units, onUnits, ephemeris }: InfoPanelPro
               : "No position at this time."}
         </p>
       )}
-      {entry?.type === "spacecraft" && <Mission o={entry} />}
+      {elements(selection, age)}
+      {(entry?.type === "spacecraft" || entry?.type === "satellite") && <Mission o={entry} />}
       <label className={styles.units}>
         Units{" "}
         <select aria-label="Distance units" value={units} onChange={(e) => onUnits(e.target.value as DistanceUnit)}>

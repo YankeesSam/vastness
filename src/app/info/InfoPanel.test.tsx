@@ -1,6 +1,9 @@
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Ephemeris } from "../../core/ephem/ephemeris";
+import { parseUtc } from "../../core/time/scales";
+import { satelliteTracks, withSatellites, type SatellitesData } from "../../scene/satellites/satellites";
+import satellites from "../../../data/satellites.json";
 import { viewStore } from "../store/view";
 import { InfoPanel } from "./InfoPanel";
 
@@ -132,6 +135,43 @@ describe("info panel", () => {
     render(<InfoPanel selection={499} units="km" onUnits={() => {}} ephemeris={Promise.resolve(fakeEphemeris())} />);
     await screen.findByLabelText("Read-outs");
     expect(screen.queryByRole("region", { name: "Mission" })).toBeNull();
+  });
+
+  it("VN-CAT-007: a satellite shows its type, read-outs, the element epoch with its age, and its facts", async () => {
+    const eph = withSatellites(
+      { ...fakeEphemeris(), ids: [10, 399], illustrativeEdge: () => undefined } as unknown as Ephemeris,
+      satelliteTracks(satellites as SatellitesData),
+    );
+    viewStore.getState().setTime(parseUtc("2026-11-28T22:39:00"));
+    render(<InfoPanel selection={-125544} units="km" onUnits={() => {}} ephemeris={Promise.resolve(eph)} />);
+    expect(await screen.findByRole("heading", { name: "International Space Station" })).toBeTruthy();
+    expect(screen.getByText("Earth satellite")).toBeTruthy();
+    const dl = await screen.findByLabelText("Read-outs");
+    // About 420 km up: 6,700..6,900 km from Earth's centre.
+    const km = Number(/Distance from Earth(\d[\d,.]*) km/.exec(dl.textContent!)![1]!.replace(/,/g, ""));
+    expect(km).toBeGreaterThan(6700);
+    expect(km).toBeLessThan(6900);
+    expect(screen.getByLabelText("Orbital elements").textContent).toContain(
+      "2026-11-26 22:39 UTC, 2.0 days before the time shown",
+    );
+    expect(screen.getByText(/1998-11-20/)).toBeTruthy();
+  });
+
+  it("VN-CAT-007, VN-EPH-011: a satellite more than 14 days from its elements says so, with no read-outs", async () => {
+    const eph = withSatellites(
+      { ...fakeEphemeris(), ids: [10, 399], illustrativeEdge: () => undefined } as unknown as Ephemeris,
+      satelliteTracks(satellites as SatellitesData, () => parseUtc("1998-11-20")),
+    );
+    viewStore.getState().setTime(parseUtc("2027-01-15T00:00:00"));
+    render(<InfoPanel selection={-125544} units="km" onUnits={() => {}} ephemeris={Promise.resolve(eph)} />);
+    expect(
+      await screen.findByText(
+        /more than 14 days from International Space Station's orbital elements \(epoch 2026-11-26\)/,
+      ),
+    ).toBeTruthy();
+    expect(screen.getByText(/illustrative orbit \(period 1 h 3\d min\)/)).toBeTruthy();
+    expect(screen.queryByLabelText("Read-outs")).toBeNull();
+    expect(screen.getByLabelText("Orbital elements").textContent).toContain("49.1 days before");
   });
 
   it("VN-INF-001: nothing selected asks for a selection", () => {

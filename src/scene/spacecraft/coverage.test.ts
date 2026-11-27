@@ -36,6 +36,30 @@ describe("spacecraft coverage", () => {
     expect(reasonText("no-data-yet", "JWST", cov)).toMatch(/before 2021-12-25/);
   });
 
+  it("VN-CAT-007: a satellite outside its 14 days says its elements are too old, after launch", () => {
+    const cov = { start: 10 * 86400, end: 38 * 86400 };
+    const sat = { type: "satellite" as const, status: { state: "operating" as const, as_of: "2026-11-27" } };
+    expect(coverageState(40 * 86400, cov, sat, 0)).toEqual({ drawn: false, reason: "elements-stale" });
+    expect(coverageState(5 * 86400, cov, sat, 0)).toEqual({ drawn: false, reason: "elements-stale" });
+    expect(coverageState(-5, cov, sat, 0)).toEqual({ drawn: false, reason: "before-launch" });
+    expect(reasonText("elements-stale", "ISS", cov)).toMatch(
+      /more than 14 days from ISS's orbital elements \(epoch 2000-01-25\)/,
+    );
+  });
+
+  it("VN-CAT-007: the catalog's satellites follow the spacecraft as scene objects", () => {
+    const sats = SCENE_OBJECTS.filter((o) => o.kind === "satellite");
+    expect(sats.map((o) => o.id).sort()).toEqual(
+      CATALOG.objects
+        .filter((o) => o.type === "satellite")
+        .map((o) => o.id)
+        .sort(),
+    );
+    expect(SCENE_OBJECTS.findIndex((o) => o.kind === "satellite")).toBeGreaterThan(
+      SCENE_OBJECTS.map((o) => o.kind).lastIndexOf("spacecraft"),
+    );
+  });
+
   it("VN-CAT-006: every catalog spacecraft is a scene object after the bodies, as a marker-sized point", () => {
     expect(SCENE_OBJECTS.slice(0, DRAWN_BODIES.length).map((o) => o.id)).toEqual(DRAWN_BODIES.map((b) => b.horizonsId));
     const craft = SCENE_OBJECTS.filter((o) => o.kind === "spacecraft");

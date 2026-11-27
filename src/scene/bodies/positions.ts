@@ -4,7 +4,8 @@ import type { Ephemeris } from "../../core/ephem/ephemeris";
 import { sceneFromEcliptic } from "../../core/frames";
 
 // VN-SCN-001, VN-CAT-006: the objects in the scene and their float64 world positions (scene frame, km) for a time.
-// Bodies come first (drawn as spheres, in DRAWN_BODIES order), then the catalog's spacecraft (markers only).
+// Bodies come first (drawn as spheres, in DRAWN_BODIES order), then the catalog's spacecraft (markers only), then its
+// Earth satellites (markers near Earth, VN-CAT-007).
 
 /** Sun, planets in order from the Sun, the Moon after Earth. */
 export const DRAWN_BODIES: readonly Body[] = [10, 199, 299, 399, 301, 499, 599, 699, 799, 899].map(
@@ -18,7 +19,7 @@ export interface SceneObject {
   id: number;
   name: string;
   radiusKm: number;
-  kind: "body" | "spacecraft";
+  kind: "body" | "spacecraft" | "satellite";
 }
 
 export const SCENE_OBJECTS: readonly SceneObject[] = [
@@ -26,6 +27,9 @@ export const SCENE_OBJECTS: readonly SceneObject[] = [
   ...CATALOG.objects
     .filter((o) => o.type === "spacecraft")
     .map((o) => ({ id: o.id, name: o.name, radiusKm: SPACECRAFT_RADIUS_KM, kind: "spacecraft" as const })),
+  ...CATALOG.objects
+    .filter((o) => o.type === "satellite")
+    .map((o) => ({ id: o.id, name: o.name, radiusKm: SPACECRAFT_RADIUS_KM, kind: "satellite" as const })),
 ];
 
 export function objectIndex(id: number | null): number {

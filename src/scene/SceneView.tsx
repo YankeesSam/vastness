@@ -5,7 +5,13 @@ import { viewStore } from "../app/store/view";
 import { testParams } from "../app/testparams";
 import type { Ephemeris } from "../core/ephem/ephemeris";
 import { Bodies, createBodyFrame, type BodyFrame } from "./bodies/Bodies";
-import { DRAWN_BODIES, worldPositions } from "./bodies/positions";
+import { DRAWN_BODIES, SCENE_OBJECTS, worldPositions } from "./bodies/positions";
+
+/** Satellites come last in SCENE_OBJECTS. */
+const FIRST_SATELLITE = (() => {
+  const i = SCENE_OBJECTS.findIndex((o) => o.kind === "satellite");
+  return i < 0 ? SCENE_OBJECTS.length : i;
+})();
 import { FAR_KM, MIN_NEAR_KM } from "./origin";
 import { Controls } from "./camera/Controls";
 import { Labels } from "./labels/Labels";
@@ -34,8 +40,8 @@ function BodyStates({ eph, frame }: { eph: Ephemeris | null; frame: BodyFrame })
 
 /**
  * Sets data-scene-ready="1" on the canvas once a frame has rendered with every object placed or known to be outside
- * its coverage (or the ephemeris failed to load), data-bodies to the count placed and data-spacecraft to the
- * spacecraft placed. e2e specs wait for the first.
+ * its coverage (or the ephemeris failed to load), data-bodies to the count placed, data-spacecraft to the
+ * spacecraft placed and data-satellites to the Earth satellites placed (VN-CAT-007). e2e specs wait for the first.
  * VN-UI-005, VN-PRF-004: data-first-frame="1" once a frame has rendered with the Sun, planets and Moon settled;
  * onFirstFrame then starts the spacecraft downloads, which stream in without holding the view back.
  */
@@ -58,10 +64,14 @@ function ReadyMarker({ frame, failed, onFirstFrame }: { frame: BodyFrame; failed
     }
     let b = 0;
     for (let i = 0; i < DRAWN_BODIES.length; i++) b += frame.ok[i]!;
+    let sats = 0;
+    for (let i = FIRST_SATELLITE; i < frame.ok.length; i++) sats += frame.ok[i]!;
     const bodies = String(b);
-    const craft = String(n - b);
+    const craft = String(n - b - sats);
+    const satellites = String(sats);
     if (canvas.dataset.bodies !== bodies) canvas.dataset.bodies = bodies;
     if (canvas.dataset.spacecraft !== craft) canvas.dataset.spacecraft = craft;
+    if (canvas.dataset.satellites !== satellites) canvas.dataset.satellites = satellites;
     if (canvas.dataset.sceneReady !== "1" && (settled === frame.ok.length || failed)) canvas.dataset.sceneReady = "1";
   });
   return null;

@@ -1,4 +1,7 @@
+import satellites from "../../../data/satellites.json";
 import { createEphemeris, type Ephemeris, type EphemerisManifest } from "../../core/ephem/ephemeris";
+import { launchFrom, satelliteTracks, withSatellites, type SatellitesData } from "../../scene/satellites/satellites";
+import { CATALOG_BY_ID } from "../catalog";
 
 // VN-GEN-002, ADR-0005: the one place the app fetches, and only its own files (relative to the page's base).
 
@@ -39,11 +42,18 @@ export async function loadAsset(path: string): Promise<ArrayBuffer> {
 
 let ephemeris: Promise<Ephemeris> | null = null;
 
-/** The app's ephemeris over public/ephem (manifest once, chunks lazily). */
+/**
+ * The app's ephemeris over public/ephem (manifest once, chunks lazily), with the Earth satellites propagated from the
+ * bundled GP elements (VN-CAT-007).
+ */
 export function loadEphemeris(): Promise<Ephemeris> {
   ephemeris ??= loadAsset("ephem/manifest.json").then((buf) => {
     const manifest = JSON.parse(new TextDecoder().decode(buf)) as EphemerisManifest;
-    return createEphemeris(manifest, (file) => loadAsset(`ephem/${file}`));
+    const tracks = satelliteTracks(satellites as SatellitesData, launchFrom(CATALOG_BY_ID));
+    return withSatellites(
+      createEphemeris(manifest, (file) => loadAsset(`ephem/${file}`)),
+      tracks,
+    );
   });
   return ephemeris;
 }

@@ -21,7 +21,8 @@ import {
 } from "../../core/labels/declutter";
 import type { BodyFrame } from "../bodies/Bodies";
 import { CATALOG_BY_ID } from "../../app/catalog";
-import { SCENE_OBJECTS } from "../bodies/positions";
+import { SCENE_OBJECTS, objectIndex } from "../bodies/positions";
+import { satelliteShown } from "../satellites/satellites";
 import { drawnRadiusKm } from "../spacecraft/model";
 import { colourOf } from "../colours";
 import { toCamera } from "../origin";
@@ -94,6 +95,7 @@ export function Markers({ frame, screen }: { frame: BodyFrame; screen: ScreenFra
       pt: { x: 0, y: 0, ok: false },
       colours: SCENE_OBJECTS.map((b) => new Color(CATALOG_BY_ID.get(b.id)?.colour ?? colourOf(b.id))),
       lastShown: new Uint8Array(n),
+      earth: objectIndex(399),
       labels: "",
     }),
     [n],
@@ -112,6 +114,15 @@ export function Markers({ frame, screen }: { frame: BodyFrame; screen: ScreenFra
     const col = points.geometry.getAttribute("color") as BufferAttribute;
     const rel = scratch.rel;
     let k = 0;
+    // VN-CAT-007: Earth satellites only while the camera is near Earth (or the satellite is selected).
+    const e = scratch.earth;
+    const toEarth = frame.ok[e]
+      ? Math.hypot(
+          frame.world[3 * e]! - rig.cam[0]!,
+          frame.world[3 * e + 1]! - rig.cam[1]!,
+          frame.world[3 * e + 2]! - rig.cam[2]!,
+        )
+      : Infinity;
     for (let i = 0; i < n; i++) {
       screen.marker[i] = 0;
       s.ok[i] = 0;
@@ -122,6 +133,8 @@ export function Markers({ frame, screen }: { frame: BodyFrame; screen: ScreenFra
         s.h[i] = span.offsetHeight;
       }
       if (!frame.ok[i]) continue;
+      const b = SCENE_OBJECTS[i]!;
+      if (b.kind === "satellite" && !satelliteShown(toEarth, st.selection === b.id)) continue;
       toCamera(frame.world, rig.cam, rel, 3 * i, 3 * i);
       const x = rel[3 * i]!;
       const y = rel[3 * i + 1]!;
@@ -131,7 +144,6 @@ export function Markers({ frame, screen }: { frame: BodyFrame; screen: ScreenFra
       s.x[i] = p.x;
       s.y[i] = p.y;
       s.ok[i] = 1;
-      const b = SCENE_OBJECTS[i]!;
       s.priority[i] =
         b.kind === "body"
           ? bodyPriority(b.id, st.selection === b.id)
@@ -158,7 +170,7 @@ export function Markers({ frame, screen }: { frame: BodyFrame; screen: ScreenFra
       const on = st.layers.labels && s.shown[i] === 1;
       const span = screen.spans[i];
       // VN-EPH-011: the "(illustrative orbit)" tag follows the frame; the label is measured again when it changes.
-      const tag = SCENE_OBJECTS[i]!.kind === "spacecraft" ? (span?.lastElementChild as HTMLElement | null) : null;
+      const tag = SCENE_OBJECTS[i]!.kind !== "body" ? (span?.lastElementChild as HTMLElement | null) : null;
       if (tag && tag.hidden !== (frame.illustrative[i] === 0)) {
         tag.hidden = frame.illustrative[i] === 0;
         s.w[i] = 0;

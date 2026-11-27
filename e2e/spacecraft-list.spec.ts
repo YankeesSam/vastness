@@ -16,7 +16,11 @@ test.describe("spacecraft", () => {
     // Voyager 1 and 2, New Horizons, Parker, Europa Clipper, JUICE, Lucy, Psyche, OSIRIS-APEX, JWST; and the
     // orbiters (T-089): Juno and CAPSTONE exact, LRO on its illustrative orbit before its stored window (T-090).
     await expect(canvas).toHaveAttribute("data-spacecraft", "13");
-    await expect(canvas).toHaveAttribute("data-illustrative", "LRO", { timeout: 10_000 });
+    // VN-CAT-007: every satellite has been launched by 2026; their elements are from November 2026, more than 14 days
+    // away, so all 13 are on illustrative orbits.
+    await expect(canvas).toHaveAttribute("data-satellites", "13");
+    const illustrative = /^LRO(,[^,]+){13}$/;
+    await expect(canvas).toHaveAttribute("data-illustrative", illustrative, { timeout: 10_000 });
     await expect(canvas).toHaveAttribute("data-trails", "12", { timeout: 15_000 }); // no trail on an illustrative orbit
     expect(errors).toEqual([]);
   });
@@ -40,6 +44,8 @@ test.describe("spacecraft", () => {
     const canvas = page.locator("canvas");
     await expect(canvas).toHaveAttribute("data-scene-ready", "1", { timeout: 20_000 });
     await expect(canvas).toHaveAttribute("data-spacecraft", "2"); // the Voyagers
+    // VN-CAT-007: of the satellites, only the ISS and Hubble were in orbit, both on illustrative orbits.
+    await expect(canvas).toHaveAttribute("data-satellites", "2");
     await page.getByRole("button", { name: "James Webb Space Telescope" }).click();
     await expect(page.getByTestId("no-position")).toHaveText(
       "James Webb Space Telescope has not launched yet at this time (launch 2021-12-25).",
