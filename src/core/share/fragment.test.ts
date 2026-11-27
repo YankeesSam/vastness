@@ -13,7 +13,16 @@ const view: ViewFragment = {
   paused: true,
   selection: -31,
   cam: { target: 399, distanceKm: 1.2e6, azimuth: 30 * DEG, elevation: -25 * DEG },
-  layers: { bodies: true, textures: false, labels: false, markers: true, orbits: true, trails: false, callouts: false, stars: true },
+  layers: {
+    bodies: true,
+    textures: false,
+    labels: false,
+    markers: true,
+    orbits: true,
+    trails: false,
+    callouts: false,
+    stars: true,
+  },
 };
 
 describe("view fragment", () => {

@@ -43,7 +43,16 @@ describe("url sync", () => {
         paused: false,
         selection: -31,
         cam,
-        layers: { bodies: true, textures: true, labels: false, markers: true, orbits: true, trails: true, callouts: true, stars: true },
+        layers: {
+          bodies: true,
+          textures: true,
+          labels: false,
+          markers: true,
+          orbits: true,
+          trails: true,
+          callouts: true,
+          stars: true,
+        },
       }),
     );
   });

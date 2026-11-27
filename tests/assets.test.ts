@@ -14,14 +14,17 @@ const MAX_TOTAL = 5_000_000;
 
 describe("body textures", () => {
   it("VN-SCN-006: the planets (not the Sun) and the Moon each have a 2k equirectangular map", () => {
-    expect(entries.map(([id]) => Number(id)).sort((a, b) => a - b)).toEqual([199, 299, 301, 399, 499, 599, 699, 799, 899]);
+    expect(entries.map(([id]) => Number(id)).sort((a, b) => a - b)).toEqual([
+      199, 299, 301, 399, 499, 599, 699, 799, 899,
+    ]);
     for (const [, e] of entries) expect([e.width, e.height]).toEqual([2048, 1024]);
   });
 
   it("VN-DOC-002: every file in public/textures is in the manifest and matches it", () => {
     const files = readdirSync(new URL("public/textures/", root)).sort();
     expect(files).toEqual(entries.map(([, e]) => e.file).sort());
-    for (const [, e] of entries) expect(verify(e, readFileSync(new URL(`public/textures/${e.file}`, root)))).toEqual([]);
+    for (const [, e] of entries)
+      expect(verify(e, readFileSync(new URL(`public/textures/${e.file}`, root)))).toEqual([]);
   });
 
   it("VN-PRF-004: each texture is under 1.1 MB and all under 5 MB", () => {

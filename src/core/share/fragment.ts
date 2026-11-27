@@ -22,15 +22,7 @@ export const FRAGMENT_VERSION = 1;
 /** Longest fragment decoded; anything longer is not ours. */
 const MAX_LENGTH = 512;
 
-export type FragmentLayer =
-  | "bodies"
-  | "textures"
-  | "labels"
-  | "markers"
-  | "orbits"
-  | "trails"
-  | "callouts"
-  | "stars";
+export type FragmentLayer = "bodies" | "textures" | "labels" | "markers" | "orbits" | "trails" | "callouts" | "stars";
 
 const LAYER_LETTERS: readonly [FragmentLayer, string][] = [
   ["bodies", "b"],
