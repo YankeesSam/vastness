@@ -22,7 +22,7 @@ export function OriginCamera() {
     toCamera(rig.focus, rig.cam, scratch.rel);
     scratch.look.set(scratch.rel[0]!, scratch.rel[1]!, scratch.rel[2]!);
     camera.lookAt(scratch.look);
-    const p = clipPlanes(rig.distance, scratch.planes);
+    const p = clipPlanes(rig.orbit.distance, scratch.planes);
     if (camera.near !== p.near || camera.far !== p.far) {
       camera.near = p.near;
       camera.far = p.far;

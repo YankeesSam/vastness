@@ -4,9 +4,10 @@ import { loadEphemeris } from "../app/assets/loader";
 import { viewStore } from "../app/store/view";
 import type { Ephemeris } from "../core/ephem/ephemeris";
 import { Bodies, createBodyFrame, type BodyFrame } from "./bodies/Bodies";
-import { DRAWN_BODIES, worldPositions } from "./bodies/positions";
+import { worldPositions } from "./bodies/positions";
 import { FAR_KM, MIN_NEAR_KM } from "./origin";
-import { createRig, RigContext, useRig } from "./rig";
+import { Controls } from "./camera/Controls";
+import { createRig, RigContext } from "./rig";
 import { OriginCamera, PRIORITY } from "./Scene";
 
 /** VN-TIM-004: the frame clock advances simulation time by the frame's real seconds. */
@@ -20,25 +21,6 @@ function BodyStates({ eph, frame }: { eph: Ephemeris | null; frame: BodyFrame })
   useFrame(() => {
     if (eph) worldPositions(eph, viewStore.getState().t, frame.world, frame.ok);
   }, PRIORITY.states);
-  return null;
-}
-
-const ELEVATION = (20 * Math.PI) / 180;
-
-/** Until the camera controller (T-030): the focus is the target body and the camera sits above and behind it. */
-function TargetRig({ frame }: { frame: BodyFrame }) {
-  const rig = useRig();
-  useFrame(() => {
-    const i = DRAWN_BODIES.findIndex((b) => b.horizonsId === viewStore.getState().target);
-    if (i >= 0 && frame.ok[i]) {
-      rig.focus[0] = frame.world[3 * i]!;
-      rig.focus[1] = frame.world[3 * i + 1]!;
-      rig.focus[2] = frame.world[3 * i + 2]!;
-    }
-    rig.cam[0] = rig.focus[0]!;
-    rig.cam[1] = rig.focus[1]! + rig.distance * Math.sin(ELEVATION);
-    rig.cam[2] = rig.focus[2]! + rig.distance * Math.cos(ELEVATION);
-  }, PRIORITY.rig);
   return null;
 }
 
@@ -90,7 +72,7 @@ export function SceneView() {
       <RigContext.Provider value={rig}>
         <FrameClock />
         <BodyStates eph={eph} frame={frame} />
-        <TargetRig frame={frame} />
+        <Controls frame={frame} />
         <OriginCamera />
         <Bodies frame={frame} />
         <ReadyMarker frame={frame} failed={failed} />
