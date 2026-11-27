@@ -118,13 +118,15 @@ export async function checkIds(claims: readonly IdClaim[], client: Fetcher): Pro
   return out;
 }
 
-/** The claims in data/bodies.json (origin included) and, when present, data/catalog.json's `objects`. */
+/** The claims in data/bodies.json (origin included) and, when present, data/catalog.json's `objects` (not satellites). */
 export function claimsFrom(
   bodies: BodiesFile,
-  catalog?: { objects?: Array<{ id: number; name: string; horizons_name?: string }> },
+  catalog?: { objects?: Array<{ id: number; name: string; horizons_name?: string; type?: string }> },
 ): IdClaim[] {
   const out: IdClaim[] = bodies.bodies.map((b) => ({ id: b.id, name: b.name, source: "data/bodies.json" }));
   for (const o of catalog?.objects ?? []) {
+    // Earth satellites are identified by NORAD number and checked against CelesTrak by tools/gp (ADR-0007).
+    if (o.type === "satellite") continue;
     out.push({
       id: o.id,
       name: o.name,

@@ -89,7 +89,12 @@ describe("check-ids (VN-DAT-008)", () => {
   });
 
   it("VN-DAT-008: claims come from data/bodies.json and the catalog's objects with an optional Horizons name", () => {
-    const c = claimsFrom(bodies, { objects: [{ id: -170, name: "Webb", horizons_name: "JWST" }] });
+    const c = claimsFrom(bodies, {
+      objects: [
+        { id: -170, name: "Webb", horizons_name: "JWST" },
+        { id: -125544, name: "ISS", type: "satellite" }, // VN-CAT-007: by NORAD number, checked by tools/gp
+      ],
+    });
     expect(c.at(-1)).toEqual({ id: -170, name: "Webb", horizonsName: "JWST", source: "data/catalog.json" });
     expect(c.filter((x) => x.source === "data/bodies.json").length).toBe(bodies.bodies.length);
   });

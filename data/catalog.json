@@ -515,7 +515,6 @@
     {
       "id": -85,
       "name": "LRO",
-
       "aliases": ["Lunar Reconnaissance Orbiter"],
       "type": "spacecraft",
       "parent": 301,
@@ -605,6 +604,389 @@
       ],
       "colour": "#ffc94d",
       "priority": 60
+    },
+    {
+      "id": -125544,
+      "norad": 25544,
+      "name": "International Space Station",
+      "aliases": ["ISS", "ISS (ZARYA)", "Zarya"],
+      "type": "satellite",
+      "parent": 399,
+      "launch": "1998-11-20",
+      "status": {
+        "state": "operating",
+        "as_of": "2026-11-27"
+      },
+      "agency": "NASA, Roscosmos, ESA, JAXA and CSA",
+      "summary": "The largest structure people have built in space, crewed without a break since November 2000. It circles Earth about every 92 minutes some 420 km up, on an orbit tilted 51.6 degrees to the equator, so it passes over most of the inhabited world. Its position here is propagated from public orbital elements; it is checked against JPL Horizons' ISS trajectory.",
+      "goals": [
+        "Research in microgravity: biology, materials, human physiology",
+        "Preparing for long-duration crewed flights beyond Earth orbit"
+      ],
+      "sources": [
+        {
+          "title": "NASA: International Space Station",
+          "url": "https://www.nasa.gov/international-space-station/"
+        },
+        {
+          "title": "CelesTrak satellite catalogue",
+          "url": "https://celestrak.org/satcat/search.php"
+        }
+      ],
+      "colour": "#e8f0ff",
+      "priority": 58
+    },
+    {
+      "id": -120580,
+      "norad": 20580,
+      "name": "Hubble Space Telescope",
+      "aliases": ["Hubble", "HST"],
+      "type": "satellite",
+      "parent": 399,
+      "launch": "1990-04-24",
+      "status": {
+        "state": "operating",
+        "as_of": "2026-11-27",
+        "note": "Flying with one gyroscope since 2024 to extend its life; science continues."
+      },
+      "agency": "NASA and ESA",
+      "summary": "A 2.4 m telescope in low Earth orbit about 530 km up, observing in ultraviolet, visible and near-infrared light above the blur of the atmosphere. Astronauts repaired and upgraded it on five servicing missions; its images and spectra have measured the expansion rate of the universe and the atmospheres of planets around other stars.",
+      "goals": [
+        "Deep imaging of galaxies and the early universe",
+        "Spectroscopy of stars, nebulae and exoplanet atmospheres"
+      ],
+      "sources": [
+        {
+          "title": "NASA Science: Hubble",
+          "url": "https://science.nasa.gov/mission/hubble/"
+        },
+        {
+          "title": "CelesTrak satellite catalogue",
+          "url": "https://celestrak.org/satcat/search.php"
+        }
+      ],
+      "colour": "#ffe6a8",
+      "priority": 56
+    },
+    {
+      "id": -148274,
+      "norad": 48274,
+      "name": "Tiangong",
+      "aliases": ["Tiangong space station", "Chinese Space Station", "CSS (TIANHE)", "Tianhe"],
+      "type": "satellite",
+      "parent": 399,
+      "launch": "2021-04-29",
+      "status": {
+        "state": "operating",
+        "as_of": "2026-11-27"
+      },
+      "agency": "China Manned Space Agency",
+      "summary": "China's modular space station, built around the Tianhe core module launched in 2021 and completed with the Wentian and Mengtian laboratory modules in 2022. It orbits about 390 km up on a 41.5 degree orbit and is crewed by rotating teams of three taikonauts. Its position follows the elements of the Tianhe core.",
+      "goals": [
+        "Long-duration crewed flight and station operations",
+        "Experiments in life sciences, materials and fluid physics"
+      ],
+      "sources": [
+        {
+          "title": "China Manned Space",
+          "url": "https://en.cmse.gov.cn/"
+        },
+        {
+          "title": "CelesTrak satellite catalogue",
+          "url": "https://celestrak.org/satcat/search.php"
+        }
+      ],
+      "colour": "#ffb3b3",
+      "priority": 56
+    },
+    {
+      "id": -149155,
+      "norad": 49155,
+      "name": "Starlink-3060",
+      "aliases": ["STARLINK-3060"],
+      "type": "satellite",
+      "parent": 399,
+      "launch": "2021-09-14",
+      "status": {
+        "state": "operating",
+        "as_of": "2026-11-27",
+        "note": "Status inferred from current orbital elements at operational altitude; SpaceX does not publish per-satellite status."
+      },
+      "agency": "SpaceX",
+      "summary": "One of SpaceX's Starlink broadband satellites, from a 2021 launch to the shell about 545 km up on a 70 degree orbit, which covers high latitudes. Starlink is a constellation of thousands of flat-packed satellites that relay internet traffic between user terminals and ground stations, some through laser links between satellites.",
+      "goals": ["Broadband internet from low Earth orbit"],
+      "sources": [
+        {
+          "title": "Starlink",
+          "url": "https://www.starlink.com/"
+        },
+        {
+          "title": "CelesTrak satellite catalogue",
+          "url": "https://celestrak.org/satcat/search.php"
+        }
+      ],
+      "colour": "#9fb4c8",
+      "priority": 30
+    },
+    {
+      "id": -156287,
+      "norad": 56287,
+      "name": "Starlink-30107",
+      "aliases": ["STARLINK-30107"],
+      "type": "satellite",
+      "parent": 399,
+      "launch": "2023-04-19",
+      "status": {
+        "state": "operating",
+        "as_of": "2026-11-27",
+        "note": "Status inferred from current orbital elements at operational altitude; SpaceX does not publish per-satellite status."
+      },
+      "agency": "SpaceX",
+      "summary": "A second-generation Starlink V2 Mini satellite from an April 2023 launch, flying about 480 km up on a 43 degree orbit. The V2 Mini is larger than the first Starlink design, with bigger solar arrays and laser links to other satellites, so traffic can cross the constellation without a ground station below.",
+      "goals": ["Broadband internet from low Earth orbit"],
+      "sources": [
+        {
+          "title": "Starlink",
+          "url": "https://www.starlink.com/"
+        },
+        {
+          "title": "CelesTrak satellite catalogue",
+          "url": "https://celestrak.org/satcat/search.php"
+        }
+      ],
+      "colour": "#9fb4c8",
+      "priority": 30
+    },
+    {
+      "id": -164157,
+      "norad": 64157,
+      "name": "Starlink-34343",
+      "aliases": ["STARLINK-34343"],
+      "type": "satellite",
+      "parent": 399,
+      "launch": "2025-05-27",
+      "status": {
+        "state": "operating",
+        "as_of": "2026-11-27",
+        "note": "Status inferred from current orbital elements at operational altitude; SpaceX does not publish per-satellite status."
+      },
+      "agency": "SpaceX",
+      "summary": "A Starlink satellite from a May 2025 launch into a near-polar, Sun-synchronous orbit about 530 km up, tilted 97.6 degrees. Polar shells give coverage at the highest latitudes, where satellites on lower-inclination orbits never pass overhead.",
+      "goals": ["Broadband internet from low Earth orbit"],
+      "sources": [
+        {
+          "title": "Starlink",
+          "url": "https://www.starlink.com/"
+        },
+        {
+          "title": "CelesTrak satellite catalogue",
+          "url": "https://celestrak.org/satcat/search.php"
+        }
+      ],
+      "colour": "#9fb4c8",
+      "priority": 30
+    },
+    {
+      "id": -160133,
+      "norad": 60133,
+      "name": "GOES-19",
+      "aliases": ["GOES-East", "GOES 19", "GOES-U"],
+      "type": "satellite",
+      "parent": 399,
+      "launch": "2024-06-25",
+      "status": {
+        "state": "operating",
+        "as_of": "2026-11-27"
+      },
+      "agency": "NOAA and NASA",
+      "summary": "The fourth and last of NOAA's GOES-R series weather satellites, in geostationary orbit about 35,786 km above the equator at 75.2 degrees west as GOES-East since April 2025. It watches the Americas and the Atlantic every few minutes, tracking storms and hurricanes, mapping lightning and carrying a coronagraph that sees eruptions leave the Sun.",
+      "goals": [
+        "Continuous weather imaging of the Western Hemisphere",
+        "Lightning mapping and space weather monitoring"
+      ],
+      "sources": [
+        {
+          "title": "NOAA GOES-R",
+          "url": "https://www.goes-r.gov/"
+        },
+        {
+          "title": "CelesTrak satellite catalogue",
+          "url": "https://celestrak.org/satcat/search.php"
+        }
+      ],
+      "colour": "#8fd6ff",
+      "priority": 40
+    },
+    {
+      "id": -151850,
+      "norad": 51850,
+      "name": "GOES-18",
+      "aliases": ["GOES-West", "GOES 18", "GOES-T"],
+      "type": "satellite",
+      "parent": 399,
+      "launch": "2022-03-01",
+      "status": {
+        "state": "operating",
+        "as_of": "2026-11-27"
+      },
+      "agency": "NOAA and NASA",
+      "summary": "A GOES-R series weather satellite in geostationary orbit at 137.0 degrees west, serving as GOES-West since January 2023. It watches the eastern Pacific, the western United States, Alaska and Hawaii, following wildfires, atmospheric rivers and Pacific storms as they form.",
+      "goals": [
+        "Continuous weather imaging of the eastern Pacific and western Americas",
+        "Lightning mapping and fire detection"
+      ],
+      "sources": [
+        {
+          "title": "NOAA GOES-R",
+          "url": "https://www.goes-r.gov/"
+        },
+        {
+          "title": "CelesTrak satellite catalogue",
+          "url": "https://celestrak.org/satcat/search.php"
+        }
+      ],
+      "colour": "#8fd6ff",
+      "priority": 40
+    },
+    {
+      "id": -141836,
+      "norad": 41836,
+      "name": "Himawari-9",
+      "aliases": ["HIMAWARI-9", "Himawari 9"],
+      "type": "satellite",
+      "parent": 399,
+      "launch": "2016-11-02",
+      "status": {
+        "state": "operating",
+        "as_of": "2026-11-27"
+      },
+      "agency": "Japan Meteorological Agency",
+      "summary": "Japan's geostationary weather satellite at about 140.7 degrees east, the operational Himawari since December 2022. It images the western Pacific, East Asia and Australia every ten minutes, and Japan every two and a half minutes, for typhoon tracking and forecasting.",
+      "goals": ["Weather imaging of East Asia and the western Pacific"],
+      "sources": [
+        {
+          "title": "Japan Meteorological Agency",
+          "url": "https://www.jma.go.jp/jma/indexe.html"
+        },
+        {
+          "title": "CelesTrak satellite catalogue",
+          "url": "https://celestrak.org/satcat/search.php"
+        }
+      ],
+      "colour": "#8fd6ff",
+      "priority": 38
+    },
+    {
+      "id": -154743,
+      "norad": 54743,
+      "name": "Meteosat-12",
+      "aliases": ["METEOSAT-12 (MTG-I1)", "MTG-I1", "Meteosat-12 (MTG-I1)"],
+      "type": "satellite",
+      "parent": 399,
+      "launch": "2022-12-13",
+      "status": {
+        "state": "operating",
+        "as_of": "2026-11-27"
+      },
+      "agency": "EUMETSAT",
+      "summary": "The first Meteosat Third Generation imaging satellite, in geostationary orbit over 0 degrees longitude, where it watches Europe and Africa. It carries a flexible imager that scans the full disc every ten minutes and Europe every two and a half, and the first lightning imager over Europe and Africa.",
+      "goals": ["Weather imaging of Europe and Africa", "Lightning detection from geostationary orbit"],
+      "sources": [
+        {
+          "title": "EUMETSAT: Meteosat Third Generation",
+          "url": "https://www.eumetsat.int/meteosat-third-generation"
+        },
+        {
+          "title": "CelesTrak satellite catalogue",
+          "url": "https://celestrak.org/satcat/search.php"
+        }
+      ],
+      "colour": "#8fd6ff",
+      "priority": 38
+    },
+    {
+      "id": -142915,
+      "norad": 42915,
+      "name": "TDRS-13",
+      "aliases": ["TDRS 13", "TDRS-M"],
+      "type": "satellite",
+      "parent": 399,
+      "launch": "2017-08-18",
+      "status": {
+        "state": "operating",
+        "as_of": "2026-11-27"
+      },
+      "agency": "NASA",
+      "summary": "A Tracking and Data Relay Satellite in geostationary orbit, one of the fleet that relays voice, commands and data between the ground and spacecraft in low Earth orbit, including the International Space Station and Hubble. Relays this high can see a low satellite for most of its orbit, where a ground station sees it only for minutes.",
+      "goals": ["Relay communications for spacecraft in low Earth orbit"],
+      "sources": [
+        {
+          "title": "NASA: Space Communications and Navigation",
+          "url": "https://www.nasa.gov/communicating-with-missions/"
+        },
+        {
+          "title": "CelesTrak satellite catalogue",
+          "url": "https://celestrak.org/satcat/search.php"
+        }
+      ],
+      "colour": "#c8c8ff",
+      "priority": 34
+    },
+    {
+      "id": -149260,
+      "norad": 49260,
+      "name": "Landsat 9",
+      "aliases": ["LANDSAT 9"],
+      "type": "satellite",
+      "parent": 399,
+      "launch": "2021-09-27",
+      "status": {
+        "state": "operating",
+        "as_of": "2026-11-27"
+      },
+      "agency": "NASA and USGS",
+      "summary": "The latest satellite of the Landsat programme, which has imaged Earth's land surface continuously since 1972. It flies a Sun-synchronous orbit about 705 km up, crossing the equator at the same local time each morning, and with Landsat 8 revisits every place on Earth every eight days.",
+      "goals": ["Long-term record of land cover, crops, forests, ice and cities"],
+      "sources": [
+        {
+          "title": "NASA Landsat Science: Landsat 9",
+          "url": "https://landsat.gsfc.nasa.gov/satellites/landsat-9/"
+        },
+        {
+          "title": "CelesTrak satellite catalogue",
+          "url": "https://celestrak.org/satcat/search.php"
+        }
+      ],
+      "colour": "#a8e6a8",
+      "priority": 34
+    },
+    {
+      "id": -143013,
+      "norad": 43013,
+      "name": "NOAA-20",
+      "aliases": ["NOAA 20 (JPSS-1)", "NOAA 20", "JPSS-1"],
+      "type": "satellite",
+      "parent": 399,
+      "launch": "2017-11-18",
+      "status": {
+        "state": "operating",
+        "as_of": "2026-11-27"
+      },
+      "agency": "NOAA and NASA",
+      "summary": "The first satellite of the Joint Polar Satellite System, flying a Sun-synchronous polar orbit about 825 km up and seeing the whole Earth twice a day. Its sounders measure temperature and moisture through the atmosphere, the main input of global weather forecast models.",
+      "goals": ["Global atmospheric soundings for weather forecasts", "Imaging of clouds, ice, fires and ocean colour"],
+      "sources": [
+        {
+          "title": "NOAA NESDIS: JPSS",
+          "url": "https://www.nesdis.noaa.gov/our-satellites/currently-flying/joint-polar-satellite-system"
+        },
+        {
+          "title": "CelesTrak satellite catalogue",
+          "url": "https://celestrak.org/satcat/search.php"
+        }
+      ],
+      "colour": "#a8e6a8",
+      "priority": 34
     }
   ]
 }

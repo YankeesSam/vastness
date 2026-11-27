@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { byId, isSafeUrl, validateCatalog, type CatalogObject } from "./schema";
+import { byId, isSafeUrl, satelliteId, validateCatalog, type CatalogObject } from "./schema";
 
 const root = fileURLToPath(new URL("../../../", import.meta.url));
 const catalogJson = JSON.parse(readFileSync(`${root}data/catalog.json`, "utf8"));
@@ -108,7 +108,29 @@ describe("catalog schema", () => {
 
   it("rejects a launch date on a planet", () => {
     const planet = { ...sun, id: 399, name: "Earth", type: "planet", parent: 10, launch: "2000-01-01" };
-    expect(check(planet)).toThrow(/only spacecraft have a launch date/);
+    expect(check(planet)).toThrow(/only spacecraft and satellites have a launch date/);
+  });
+
+  it("VN-CAT-007: a satellite carries its NORAD number, id -(100000 + NORAD) and Earth as parent", () => {
+    const earth = { ...sun, id: 399, name: "Earth", type: "planet", parent: 10 };
+    const sat = (over: Record<string, unknown> = {}) => ({
+      ...craft({ id: -125544, name: "ISS", type: "satellite", parent: 399, goals: [] }),
+      norad: 25544,
+      ...over,
+    });
+    expect(satelliteId(25544)).toBe(-125544); // Horizons' ID for the ISS
+    expect(check(earth, sat())).not.toThrow();
+    expect(check(earth, sat({ id: -25544 }))).toThrow(/id must be -125544/);
+    expect(check(earth, sat({ norad: undefined }))).toThrow(/norad must be/);
+    expect(check(earth, sat({ parent: 10 }))).toThrow(/parent is Earth/);
+    expect(check(craft({ norad: 1 } as Partial<CatalogObject>))).toThrow(/only satellites have a NORAD number/);
+  });
+
+  it("VN-CAT-007: the catalog names the ISS, Hubble, Tiangong, Starlink and geostationary satellites", () => {
+    const c = validateCatalog(catalogJson);
+    const sats = c.objects.filter((o) => o.type === "satellite");
+    for (const n of [25544, 20580, 48274, 60133, 51850]) expect(sats.map((o) => o.norad)).toContain(n);
+    expect(sats.filter((o) => o.name.startsWith("Starlink")).length).toBeGreaterThanOrEqual(3);
   });
 
   it("isSafeUrl accepts only https with a host and no credentials", () => {

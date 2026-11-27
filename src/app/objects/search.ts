@@ -2,10 +2,11 @@ import type { CatalogObject } from "../../core/catalog/schema";
 
 // VN-CAT-003: the object list's groups and its type-ahead. Pure.
 
-export type Group = "Sun and planets" | "Moons" | "Spacecraft";
-export const GROUPS: readonly Group[] = ["Sun and planets", "Moons", "Spacecraft"];
+export type Group = "Sun and planets" | "Moons" | "Spacecraft" | "Earth satellites";
+export const GROUPS: readonly Group[] = ["Sun and planets", "Moons", "Spacecraft", "Earth satellites"];
 
 export function groupOf(o: Pick<CatalogObject, "type">): Group {
+  if (o.type === "satellite") return "Earth satellites";
   return o.type === "spacecraft" ? "Spacecraft" : o.type === "moon" ? "Moons" : "Sun and planets";
 }
 

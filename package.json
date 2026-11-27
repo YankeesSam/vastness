@@ -27,7 +27,8 @@
     "check-size": "node scripts/check-size.mjs",
     "ephem:check": "node --experimental-strip-types --no-warnings tools/ephem/check.ts",
     "bench": "vitest bench --run",
-    "ephem:check-ids": "node --experimental-strip-types --no-warnings tools/ephem/check-ids.ts"
+    "ephem:check-ids": "node --experimental-strip-types --no-warnings tools/ephem/check-ids.ts",
+    "gp": "node --experimental-strip-types --no-warnings tools/gp/gp.ts"
   },
   "dependencies": {
     "@react-three/fiber": "^9.8.2",

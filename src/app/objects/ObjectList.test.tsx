@@ -40,7 +40,7 @@ describe("object search", () => {
 
   it("VN-CAT-003: groups in order, bodies from the Sun outwards, spacecraft by name", () => {
     const g = searchObjects(CATALOG.objects, "", ORDER);
-    expect(g.map((x) => x.group)).toEqual(["Sun and planets", "Moons", "Spacecraft"]);
+    expect(g.map((x) => x.group)).toEqual(["Sun and planets", "Moons", "Spacecraft", "Earth satellites"]);
     expect(g[0]!.objects.map((o) => o.id)).toEqual([10, 199, 299, 399, 499, 599, 699, 799, 899]);
     const craft = g[2]!.objects.map((o) => o.name);
     expect(craft).toEqual([...craft].sort((a, b) => a.localeCompare(b)));

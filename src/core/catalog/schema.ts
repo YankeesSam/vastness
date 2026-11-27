@@ -3,7 +3,7 @@
 // science goals, source links, colour and marker priority. `validateCatalog` collects every problem it finds and
 // throws them together, so a bad edit shows all its faults at once. Pure: no I/O.
 
-export const OBJECT_TYPES = ["star", "planet", "moon", "spacecraft"] as const;
+export const OBJECT_TYPES = ["star", "planet", "moon", "spacecraft", "satellite"] as const;
 export type ObjectType = (typeof OBJECT_TYPES)[number];
 
 /** Mission state. "unclear" when public sources disagree; the note says why. */
@@ -23,8 +23,20 @@ export interface Source {
   url: string;
 }
 
+/**
+ * VN-CAT-007, ADR-0007: an Earth satellite's catalog ID from its NORAD catalogue number, -(100000 + NORAD), the
+ * convention Horizons uses for the few satellites it has (the ISS, NORAD 25544, is -125544). Satellites are
+ * propagated from GP elements, not taken from Horizons, so the ID only has to be unique and stable; this form cannot
+ * collide with a Horizons spacecraft ID (-1..-99999) or a body.
+ */
+export function satelliteId(norad: number): number {
+  return -(100000 + norad);
+}
+
 export interface CatalogObject {
   id: number;
+  /** Satellites only: NORAD catalogue number; `id` is satelliteId(norad). */
+  norad?: number;
   name: string;
   /** Horizons' name where it differs from ours (check-ids, VN-DAT-008). */
   horizons_name?: string;
@@ -33,7 +45,7 @@ export interface CatalogObject {
   type: ObjectType;
   /** Horizons ID of the body it moves around; absent only for the Sun. */
   parent?: number;
-  /** Spacecraft only: UTC launch date. */
+  /** Spacecraft and satellites: UTC launch date. */
   launch?: string;
   /** Spacecraft only. */
   status?: MissionStatus;
@@ -75,6 +87,7 @@ export function isSafeUrl(s: unknown): boolean {
 
 const KEYS = new Set([
   "id",
+  "norad",
   "name",
   "horizons_name",
   "aliases",
@@ -122,7 +135,14 @@ export function validateCatalog(json: unknown): Catalog {
     if (o.type === "star") {
       if (o.parent !== undefined) bad("the star has no parent");
     } else if (!Number.isInteger(o.parent)) bad("parent missing");
-    const craft = o.type === "spacecraft";
+    const craft = o.type === "spacecraft" || o.type === "satellite";
+    if (o.type === "satellite") {
+      if (!Number.isInteger(o.norad) || (o.norad as number) <= 0 || (o.norad as number) > 99999) {
+        bad("norad must be a NORAD catalogue number (1..99999)");
+      } else if (o.id !== satelliteId(o.norad as number))
+        bad(`a satellite's id must be ${satelliteId(o.norad as number)}`);
+      if (o.parent !== 399) bad("a satellite's parent is Earth (399)");
+    } else if (o.norad !== undefined) bad("only satellites have a NORAD number");
     if (craft) {
       if (!isDate(o.launch)) bad("launch must be a YYYY-MM-DD date");
       const s = o.status as Record<string, unknown> | undefined;
@@ -136,14 +156,14 @@ export function validateCatalog(json: unknown): Catalog {
       }
       if (!isStr(o.agency)) bad("agency missing");
     } else {
-      if (o.launch !== undefined) bad("only spacecraft have a launch date");
-      if (o.status !== undefined) bad("only spacecraft have a mission status");
+      if (o.launch !== undefined) bad("only spacecraft and satellites have a launch date");
+      if (o.status !== undefined) bad("only spacecraft and satellites have a mission status");
     }
     if (!isStr(o.summary)) bad("summary missing");
     else if (o.summary.length < 80 || o.summary.length > 900) bad("summary should be one paragraph (80..900 chars)");
     else if (o.summary.includes("\n")) bad("summary must be one paragraph");
     if (!Array.isArray(o.goals) || !o.goals.every(isStr)) bad("goals must be a list of text");
-    else if (craft && o.goals.length === 0) bad("a spacecraft needs at least one goal");
+    else if (o.type === "spacecraft" && o.goals.length === 0) bad("a spacecraft needs at least one goal");
     if (!Array.isArray(o.sources) || o.sources.length === 0) bad("at least one source");
     else
       o.sources.forEach((s: Record<string, unknown>, j: number) => {
