@@ -122,4 +122,17 @@ describe("app shell", () => {
     expect(viewStore.getState().targetSeq).toBe(seq + 1);
     expect(mars.getAttribute("aria-current")).toBe("true");
   });
+  it("VN-CAM-005: the preset views place the camera", () => {
+    render(<App />);
+    const views = screen.getByRole("region", { name: "Views" });
+    const seq = viewStore.getState().cameraSeq;
+    fireEvent.click(within(views).getByRole("button", { name: "Whole system" }));
+    expect(viewStore.getState().cameraSeq).toBe(seq + 1);
+    expect(viewStore.getState().cameraRequest!.target).toBe(10);
+    fireEvent.click(within(views).getByRole("button", { name: "Earth and Moon" }));
+    expect(viewStore.getState().cameraRequest!.target).toBe(399);
+    for (const name of ["Inner planets", "Outer planets", "Heliopause (Voyagers)"]) {
+      expect(within(views).getByRole("button", { name })).toBeTruthy();
+    }
+  });
 });

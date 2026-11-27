@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { preloadEphemeris, streamSpacecraft } from "../app/assets/loader";
 import { viewStore } from "../app/store/view";
 import { testParams } from "../app/testparams";
+import { VERTICAL_FOV_DEG } from "../core/camera/presets";
 import type { Ephemeris } from "../core/ephem/ephemeris";
 import { Bodies, createBodyFrame, type BodyFrame } from "./bodies/Bodies";
 import { DRAWN_BODIES, SCENE_OBJECTS, worldPositions } from "./bodies/positions";
@@ -111,7 +112,7 @@ export function SceneView() {
   return (
     <div style={{ position: "absolute", inset: 0 }}>
       <Canvas
-        camera={{ position: [0, 0, 0], fov: 50, near: MIN_NEAR_KM, far: FAR_KM }}
+        camera={{ position: [0, 0, 0], fov: VERTICAL_FOV_DEG, near: MIN_NEAR_KM, far: FAR_KM }}
         gl={{ antialias: true, logarithmicDepthBuffer: true }}
       >
         <RigContext.Provider value={rig}>

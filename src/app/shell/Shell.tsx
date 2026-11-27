@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { PRESETS, presetCamera } from "../../core/camera/presets";
 import { TRAIL_RANGES_DAYS, TRAIL_WHOLE } from "../../core/trails/sample";
 import { DRAWN_BODIES } from "../../scene/bodies/positions";
 import { CATALOG } from "../catalog";
@@ -145,6 +146,19 @@ export function Shell() {
       </header>
 
       <aside id="side-panel" className={styles.side} aria-label="Side panel" hidden={!panelOpen}>
+        <section aria-label="Views">
+          <h2>Views</h2>
+          <ul className={styles.objects}>
+            {PRESETS.map((p) => (
+              <li key={p.id}>
+                {/* VN-CAM-005: a preset places the camera at once and follows its centre */}
+                <button type="button" onClick={() => viewStore.getState().setCamera(presetCamera(p.id))}>
+                  {p.name}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
         <section aria-label="Objects">
           <h2>Objects</h2>
           <ObjectList
