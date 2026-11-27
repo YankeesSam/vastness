@@ -1,0 +1,22 @@
+.bar {
+  flex-wrap: wrap;
+}
+
+.label {
+  min-width: 15rem;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.controls button {
+  min-width: 2rem;
+}
+
+.state {
+  min-width: 6.5rem;
+  color: var(--muted);
+}

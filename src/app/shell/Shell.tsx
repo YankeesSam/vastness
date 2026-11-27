@@ -10,7 +10,7 @@ import { InfoPanel } from "../info/InfoPanel";
 import { loadPrefs, resetPrefs, savePrefs, type Prefs } from "../prefs";
 import { useView, viewStore } from "../store/view";
 import styles from "./Shell.module.css";
-import { TimeBar } from "./TimeBar";
+import { TimeBar } from "../time/TimeBar";
 
 // VN-UI-001: full-window 3D view under a top bar (search, time, scale mode, menu), a collapsible side panel
 // (object list, info panel) and a bottom time bar. Choosing an object selects it and flies the camera to it
