@@ -19,8 +19,8 @@ do_not_read:
   - docs/ROADMAP.md (only the current milestone section)
   - docs/architecture/VASTNESS_ARCHITECTURE.md
   - node_modules/, dist/, nightly/, public/ephem/ (read manifest.json keys only), .cache/, testdata/, test-results/, e2e/*-snapshots/, THIRD_PARTY_NOTICES.txt
-tests: pass (vitest 252/252; e2e 15/15; typecheck, prettier, check-deps, check-size 338 kB clean)
-commit: 1bf0d45
+tests: pass (vitest 250/250; e2e 15/15; typecheck, prettier, check-size 337 kB clean)
+commit: 901ebcd
 push: ok
 notes:
   - Batch session (user asked for 4-6 tasks in one area): the rest of M2 (scene). T-029 labels, T-028 orbits (+ follow-up), T-032 picking, T-033 info panel, T-034 reference views; one commit each. M2 exit criteria all met; milestone now M3.
