@@ -2,6 +2,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useState } from "react";
 import { preloadEphemeris } from "../app/assets/loader";
 import { viewStore } from "../app/store/view";
+import { testParams } from "../app/testparams";
 import type { Ephemeris } from "../core/ephem/ephemeris";
 import { Bodies, createBodyFrame, type BodyFrame } from "./bodies/Bodies";
 import { worldPositions } from "./bodies/positions";
@@ -48,7 +49,14 @@ function ReadyMarker({ frame, failed }: { frame: BodyFrame; failed: boolean }) {
 // VN-UI-001, VN-SCN-004: the full-window 3D view. Render units are km; the camera sits at the origin (floating
 // origin) and the depth buffer is logarithmic (ADR-0004).
 export function SceneView() {
-  const rig = useMemo(() => createRig(), []);
+  const rig = useMemo(() => {
+    const cam = testParams.cam;
+    if (!cam) return createRig();
+    const r = createRig(cam.distanceKm, cam.target); // F5: a reference view starts at its camera
+    r.orbit.azimuth = cam.azimuth;
+    r.orbit.elevation = cam.elevation;
+    return r;
+  }, []);
   const frame = useMemo(() => createBodyFrame(), []);
   const screen = useMemo(() => createScreenFrame(), []);
   const [eph, setEph] = useState<Ephemeris | null>(null);

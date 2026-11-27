@@ -8,7 +8,7 @@
 | F2 | Held-out Horizons state vectors at epochs not used in fitting, per object | testdata/reference/ | T-019 |
 | F3 | Generated ephemerides and manifest | public/ephem/ | `npm run ephem` (T-018, T-020, T-038) |
 | F4 | Headless Chromium with SwiftShader WebGL | Playwright | T-005 |
-| F5 | Reference views: URL test params fixing time, camera, layers; `data-scene-ready` | src/app/testparams.ts | T-034 |
+| F5 | Reference views: URL test params `t`, `cam=id,km,azDeg,elDeg`, `still=1`, `layers=`; `data-scene-ready`, `data-orbits`; baselines in e2e/scale.spec.ts-snapshots (Earth-Moon, inner, outer, 150 AU, jitter) | src/app/testparams.ts | T-034 |
 
 No unit test touches the network (VN-DAT-007). Only `tools/ephem/record.ts`, `npm run ephem` and `npm run ephem:refresh` call Horizons.
 
