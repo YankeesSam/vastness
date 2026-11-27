@@ -138,3 +138,40 @@ describe("data sources (T-024)", () => {
     }
   });
 });
+
+describe("Earth satellites ADR (T-091)", () => {
+  const adr = read("docs/adr/0007-earth-satellites.md");
+  const sources = read("docs/DATA_SOURCES.md");
+
+  it("VN-DAT-009: ADR-0007 is accepted and fixes the source, the query by NORAD number and the politeness rules", () => {
+    expect(adr).toMatch(/^# ADR-0007 Earth satellites\n\nStatus: accepted/);
+    expect(adr).toContain("https://celestrak.org/NORAD/elements/gp.php?CATNR=<n>&FORMAT=JSON");
+    // CelesTrak's usage policy: updates every 2 hours, 403 on a repeat download, stop at the first non-200.
+    expect(adr).toMatch(/once every 2 hours/);
+    expect(adr).toMatch(/403/);
+    expect(adr).toMatch(/first non-200/);
+    expect(adr).toMatch(/same polite client and cache as Horizons/);
+  });
+
+  it("VN-CAT-007: ADR-0007 picks the propagator, the frames and the 14-day validity", () => {
+    expect(adr).toMatch(/SGP4\/SDP4 in `src\/core\/sgp4\/`/);
+    expect(adr).toMatch(/AIAA 2006-6753/);
+    expect(adr).toMatch(/WGS-72/);
+    expect(adr).toMatch(/TEME[\s\S]{0,200}J2000 ecliptic/);
+    expect(adr).toMatch(/14 days/);
+    expect(adr).toMatch(/illustrative orbit/);
+    // ADR-0001: no new runtime dependency.
+    expect(adr).toMatch(/Not `satellite\.js`/);
+    const pkg = JSON.parse(read("package.json")) as { dependencies?: Record<string, string> };
+    expect(Object.keys(pkg.dependencies ?? {})).not.toContain("satellite.js");
+  });
+
+  it("VN-DOC-002: DATA_SOURCES records CelesTrak's terms (read, not to be checked later) and the credit", () => {
+    const row = sources.split("\n").find((l) => l.startsWith("| CelesTrak GP data"))!;
+    expect(row).toBeDefined();
+    expect(row).not.toMatch(/check and record/);
+    expect(row).toMatch(/freely available/);
+    expect(row).toMatch(/ADR-0007/);
+    expect(sources).toContain("Orbital elements from CelesTrak (celestrak.org)");
+  });
+});
