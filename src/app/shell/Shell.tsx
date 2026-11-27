@@ -7,6 +7,7 @@ import { SceneView } from "../../scene/SceneView";
 import { About } from "../about/About";
 import { LoadingIndicator } from "../assets/LoadingIndicator";
 import { InfoPanel } from "../info/InfoPanel";
+import { Share } from "../share/Share";
 import { loadPrefs, resetPrefs, savePrefs, type Prefs } from "../prefs";
 import { useView, viewStore } from "../store/view";
 import styles from "./Shell.module.css";
@@ -106,6 +107,7 @@ export function Shell() {
             <option value="true">True scale</option>
           </select>
         </label>
+        <Share />
         <div className={styles.menuWrap}>
           <button
             type="button"

@@ -1,0 +1,23 @@
+.share {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.status {
+  color: var(--muted);
+  font-size: 0.9em;
+}
+
+.status:empty {
+  display: none;
+}
+
+.field {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  width: min(32rem, 80vw);
+  z-index: 5;
+}
