@@ -58,6 +58,32 @@ export function vectorParamsAt(command: string, center: string, jds: readonly st
   return out;
 }
 
+/**
+ * T-098 (VN-SCN-009): an observer table for checking body orientation: astrometric RA and Dec (quantity 1), the
+ * observer's sub-point longitude and latitude on the body (14) and the range (20), angles in degrees, times in TT.
+ */
+export function observerParams(q: VectorQuery): Record<string, string> {
+  const p: Record<string, string> = {
+    ANG_FORMAT: "DEG",
+    CENTER: q.center,
+    COMMAND: q.command,
+    CSV_FORMAT: "YES",
+    EPHEM_TYPE: "OBSERVER",
+    EXTRA_PREC: "YES",
+    MAKE_EPHEM: "YES",
+    OBJ_DATA: "NO",
+    QUANTITIES: "1,14,20",
+    START_TIME: q.start,
+    STEP_SIZE: q.step,
+    STOP_TIME: q.stop,
+    TIME_TYPE: "TT",
+    format: "json",
+  };
+  const out: Record<string, string> = {};
+  for (const k of Object.keys(p).sort()) out[k] = k === "format" ? p[k]! : `'${p[k]!}'`;
+  return out;
+}
+
 /** Canonical query string (sorted keys, URL-encoded values): the cache key source and the text quoted in errors. */
 export function canonicalQuery(params: Record<string, string>): string {
   return Object.keys(params)

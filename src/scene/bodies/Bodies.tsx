@@ -1,13 +1,15 @@
 import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
-import type { Mesh, PointLight } from "three";
+import { Matrix4, type Mesh, type PointLight } from "three";
 import { viewStore } from "../../app/store/view";
 import { toCamera } from "../origin";
 import { useRig } from "../rig";
 import { PRIORITY } from "../Scene";
 import { colourOf } from "../colours";
+import { bodyMeshMatrix } from "./orient";
 import { DRAWN_BODIES, SCENE_OBJECTS } from "./positions";
 
+// VN-SCN-009: each body is oriented and spins by its IAU rotation model (orient.ts).
 // VN-SCN-005: the Sun is the only light (a point light at its drawn position, no ambient light), so each body is lit
 // from the Sun's direction and its night side is dark. VN-SCN-001: plain spheres with true mean radii (scaled by the scale mapping, VN-SCL-002) at their drawn positions, placed camera-relative each frame
 // (the world positions come from the shared frame buffer the rig fills).
@@ -51,9 +53,11 @@ export function Bodies({ frame }: { frame: BodyFrame }) {
   const light = useRef<PointLight>(null);
   const rel = useMemo(() => new Float64Array(3), []);
   const show = useRef(viewStore.getState().layers.bodies);
+  const turn = useMemo(() => new Matrix4(), []);
 
   useFrame(() => {
-    show.current = viewStore.getState().layers.bodies;
+    const st = viewStore.getState();
+    show.current = st.layers.bodies;
     for (let i = 0; i < DRAWN_BODIES.length; i++) {
       const m = meshes.current[i];
       if (!m) continue;
@@ -62,6 +66,8 @@ export function Bodies({ frame }: { frame: BodyFrame }) {
       toCamera(frame.world, rig.cam, rel, 3 * i);
       m.position.set(rel[0]!, rel[1]!, rel[2]!);
       m.scale.setScalar(frame.radius[i]! / DRAWN_BODIES[i]!.radiusKm); // VN-SCL-002
+      // VN-SCN-009: turned by the IAU rotation model at the simulation time
+      if (bodyMeshMatrix(DRAWN_BODIES[i]!.horizonsId, st.t, turn)) m.quaternion.setFromRotationMatrix(turn);
       if (i === 0 && light.current) light.current.position.copy(m.position);
     }
   }, PRIORITY.objects);
