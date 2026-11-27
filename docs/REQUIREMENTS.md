@@ -8,6 +8,7 @@ Requirement IDs are stable. A retired requirement is struck through and kept; it
 | A | 2026-11-26 | Initial baseline, from the Vastness Project Design Document v1.0 (2026-11-26) and the seeding chat; hosted on GitHub (user's choice in the seeding chat) |
 | B | 2026-11-26 | Lunar orbiters stored as orbital elements, measured before choosing full mission or window (seeding chat): VN-EPH-003 adds a 2 km tolerance, VN-EPH-009 reworded, new VN-EPH-011, OI-6 reworded |
 | C | 2026-11-26 | Open items answered through WORKINGLIST (W-001..W-009): OI-1 Apache-2.0 (VN-GEN-007), OI-3 GitHub Pages, OI-4 list is a minimum plus JWST (VN-CAT-002) and Earth satellites (new VN-CAT-007, VN-DAT-009), OI-5 default kept, OI-7 build time plus a manual refresh run (VN-DAT-006), OI-8 NASA public domain and CC BY with credit, OI-9 reference machine recorded (VN-PRF-001), OI-10 order confirmed |
+| E | 2026-11-27 | User (session 18, W-011..W-013): VN-SCN-009 body orientation and spin (IAU rotation models), VN-SCN-010 eclipse shadows; textures with topographic maps and spacecraft models pulled forward |
 | D | 2026-11-26 | User (session 9): positions and orbits come only from Horizons data, never approximated. VN-EPH-006 reworded (no Standish fallback: outside coverage a planet is not drawn and the UI says why), VN-SCN-002 adds that every orbit sample is ephemeris data, loaded after the first render. VN-SCN-006 adds public topographic maps; VN-SCN-008 widens to the major moons of every planet |
 
 ## 1. Purpose
@@ -92,6 +93,8 @@ Out of scope (non-goals)
 - **VN-SCN-005** (T, M6) The Sun is an emissive sphere with a glow whose brightness and size are configurable; the Sun is the only light source and lights bodies by distance.
 - **VN-SCN-006** (T, M6) Planet and Moon textures (2k by default, 4k on the high quality tier) and Saturn's rings, plus topographic maps (shaded relief or colour-coded elevation from public NASA, USGS or NOAA data, for example MOLA for Mars, LOLA for the Moon, ETOPO for Earth) that can be switched on over the bodies, with sources and licences in docs/DATA_SOURCES.md; plain coloured spheres when textures are off or not yet loaded.
 - **VN-SCN-007** (T, M6) A background sky of real stars (a bright-star catalog to magnitude 6.5, positions in the same frame) and an optional Milky Way image, both dimmable.
+- **VN-SCN-009** (T, M6) Each textured body is oriented and spins by the IAU WGCCRE rotation model (pole right ascension and declination, prime meridian W0 and rate, with their secular and periodic terms), evaluated at the simulation time, so the texture's prime meridian and the terminator match reality; the Moon by the IAU model (or its mean-Earth frame) until a libration source is chosen.
+- **VN-SCN-010** (T, M6) Eclipse shadows from the Sun's true direction: a planet's shadow on its rings and on its moons (Saturn on its rings, Earth on the Moon in a lunar eclipse), the rings' shadow on Saturn, and a moon's shadow on its planet (the Moon on Earth in a solar eclipse), with umbra and penumbra from the Sun's angular size.
 - **VN-SCN-008** (T, M9) Dwarf planets (Ceres, Pluto, Eris, Haumea, Makemake) and the major moons of every planet (Mars, Jupiter, Saturn, Uranus, Neptune, Pluto), positioned from Horizons data like the planets, as optional layers.
 
 ### 4.5 Camera (CAM)

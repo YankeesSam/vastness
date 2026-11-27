@@ -56,7 +56,7 @@ Procedure (T-075; a demonstration, D, done by the user on this machine): open th
 
 | Date | Chrome | 1920x1080 | 3440x1440 |
 |---|---|---|---|
-| (to record) | | | |
+| 2026-11-27 (W-010) | not recorded | (not measured separately) | 100 fps, mean 10.0 ms, p95 10.2 ms at a 3440x1277 buffer (browser window on the panel), high tier, 28 draws, 28,290 triangles: pass, likely capped by the display refresh |
 
 ## Secrets
 
