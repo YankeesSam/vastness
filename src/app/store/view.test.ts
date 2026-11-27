@@ -51,6 +51,8 @@ describe("view store", () => {
     expect(store.getState().selection).toBe(499);
     s.setTarget(499);
     expect(store.getState().target).toBe(499);
+    s.setTarget(499); // the same target again still counts as a request (VN-CAM-002 fly back)
+    expect(store.getState().targetSeq).toBe(2);
     s.select(null);
     expect(store.getState().selection).toBeNull();
     expect(store.getState().layers).toEqual({ bodies: true, labels: true, markers: true, orbits: true });

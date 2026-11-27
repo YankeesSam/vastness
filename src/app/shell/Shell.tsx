@@ -1,18 +1,22 @@
 import { useEffect, useState } from "react";
+import { DRAWN_BODIES } from "../../scene/bodies/positions";
 import { SceneView } from "../../scene/SceneView";
 import { About } from "../about/About";
 import { loadPrefs, resetPrefs, savePrefs, type Prefs } from "../prefs";
+import { useView, viewStore } from "../store/view";
 import styles from "./Shell.module.css";
 import { TimeBar } from "./TimeBar";
 
 // VN-UI-001: full-window 3D view under a top bar (search, time, scale mode, menu), a collapsible side panel
-// (object list, info panel) and a bottom time bar. The search, scale and panel contents are placeholders until
+// (object list, info panel) and a bottom time bar. Choosing an object selects it and flies the camera to it
+// (VN-CAM-002). The search, scale and panel contents are placeholders until
 // their tasks (T-042, T-033, M5).
 export function Shell() {
   const [prefs, setPrefs] = useState<Prefs>(loadPrefs);
   const [panelOpen, setPanelOpen] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const selection = useView((s) => s.selection);
 
   useEffect(() => {
     document.documentElement.dataset.theme = prefs.theme;
@@ -90,7 +94,22 @@ export function Shell() {
       <aside id="side-panel" className={styles.side} aria-label="Side panel" hidden={!panelOpen}>
         <section aria-label="Objects">
           <h2>Objects</h2>
-          <p className={styles.muted}>Sun</p>
+          <ul className={styles.objects}>
+            {DRAWN_BODIES.map((b) => (
+              <li key={b.horizonsId}>
+                <button
+                  type="button"
+                  aria-current={selection === b.horizonsId}
+                  onClick={() => {
+                    viewStore.getState().select(b.horizonsId);
+                    viewStore.getState().setTarget(b.horizonsId);
+                  }}
+                >
+                  {b.name}
+                </button>
+              </li>
+            ))}
+          </ul>
         </section>
         <section aria-label="Info">
           <h2>Info</h2>

@@ -41,4 +41,21 @@ test.describe("camera", () => {
     await page.keyboard.up("Shift");
     await expect(canvas).toHaveAttribute("data-follow", "");
   });
+
+  test("VN-CAM-002, VN-CAM-003: choosing Mars flies there in under 4 s, follows it, Escape releases", async ({
+    page,
+  }) => {
+    const canvas = page.locator("canvas");
+    const start = Date.now();
+    await page.getByRole("button", { name: "Mars" }).click();
+    await expect(canvas).toHaveAttribute("data-flying", "499");
+    await expect(canvas).toHaveAttribute("data-follow", "499", { timeout: 6000 });
+    const elapsed = Date.now() - start;
+    test.info().annotations.push({ type: "fly-to-ms", description: String(elapsed) });
+    expect(elapsed).toBeLessThan(4500); // VN-CAM-002: 3.6 s cap plus input and frame latency
+    await expect(canvas).toHaveAttribute("data-flying", "");
+    await expect(canvas).toHaveAttribute("data-camera-distance", (3389.5 * 4).toPrecision(4)); // four radii
+    await page.keyboard.press("Escape");
+    await expect(canvas).toHaveAttribute("data-follow", "");
+  });
 });

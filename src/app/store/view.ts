@@ -21,6 +21,8 @@ export interface ViewState {
   selection: number | null;
   /** Horizons ID the camera is aimed at (and follows). */
   target: number;
+  /** Bumped by every setTarget, so choosing the current target again flies back to it. */
+  targetSeq: number;
   layers: Record<Layer, boolean>;
   tick(dtRealS: number): void;
   setTime(t: number): void;
@@ -56,13 +58,14 @@ export function createViewStore(init: ViewInit = {}): StoreApi<ViewState> {
     paused: false,
     selection: null,
     target: init.target ?? 399,
+    targetSeq: 0,
     layers: { bodies: true, labels: true, markers: true, orbits: true },
     tick: (dt) => set((s) => ({ t: advanceTime(s.t, s.rate, dt, s.paused) })),
     setTime: (t) => set({ t }),
     setRate: (rate) => set({ rate }),
     setPaused: (paused) => set({ paused }),
     select: (selection) => set({ selection }),
-    setTarget: (target) => set({ target }),
+    setTarget: (target) => set((s) => ({ target, targetSeq: s.targetSeq + 1 })),
     setLayer: (layer, on) => set((s) => ({ layers: { ...s.layers, [layer]: on } })),
   }));
 }

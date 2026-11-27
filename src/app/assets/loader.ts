@@ -18,3 +18,17 @@ export function loadEphemeris(): Promise<Ephemeris> {
   });
   return ephemeris;
 }
+
+let ready: Promise<Ephemeris> | null = null;
+
+/**
+ * VN-PRF-004: the ephemeris with every body's chunk for time t in memory. Started from main.tsx before React
+ * mounts, so the downloads overlap script start-up and WebGL set-up; later callers share the same promise.
+ */
+export function preloadEphemeris(t: number): Promise<Ephemeris> {
+  ready ??= loadEphemeris().then(async (e) => {
+    await e.load(t);
+    return e;
+  });
+  return ready;
+}

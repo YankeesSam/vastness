@@ -1,6 +1,6 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useState } from "react";
-import { loadEphemeris } from "../app/assets/loader";
+import { preloadEphemeris } from "../app/assets/loader";
 import { viewStore } from "../app/store/view";
 import type { Ephemeris } from "../core/ephem/ephemeris";
 import { Bodies, createBodyFrame, type BodyFrame } from "./bodies/Bodies";
@@ -50,9 +50,8 @@ export function SceneView() {
 
   useEffect(() => {
     let live = true;
-    loadEphemeris()
-      .then(async (e) => {
-        await e.load(viewStore.getState().t);
+    preloadEphemeris(viewStore.getState().t)
+      .then((e) => {
         if (live) setEph(e);
       })
       .catch((err: unknown) => {

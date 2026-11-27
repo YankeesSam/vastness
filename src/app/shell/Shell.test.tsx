@@ -95,4 +95,29 @@ describe("app shell", () => {
     expect(bar.textContent).toContain("Paused");
     act(() => viewStore.getState().setPaused(false));
   });
+
+  it("VN-CAM-002: choosing an object in the list selects it and asks the camera to fly there", () => {
+    render(<App />);
+    const objects = screen.getByRole("region", { name: "Objects" });
+    const names = [...objects.querySelectorAll("button")].map((b) => b.textContent);
+    expect(names).toEqual([
+      "Sun",
+      "Mercury",
+      "Venus",
+      "Earth",
+      "Moon",
+      "Mars",
+      "Jupiter",
+      "Saturn",
+      "Uranus",
+      "Neptune",
+    ]);
+    const seq = viewStore.getState().targetSeq;
+    const mars = screen.getByRole("button", { name: "Mars" });
+    fireEvent.click(mars);
+    expect(viewStore.getState().selection).toBe(499);
+    expect(viewStore.getState().target).toBe(499);
+    expect(viewStore.getState().targetSeq).toBe(seq + 1);
+    expect(mars.getAttribute("aria-current")).toBe("true");
+  });
 });
