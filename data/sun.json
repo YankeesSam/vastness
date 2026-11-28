@@ -1,0 +1,730 @@
+{
+  "credit": "Courtesy of NASA/SDO and the AIA, EVE, and HMI science teams; Sun images rendered by Helioviewer.org (The Helioviewer Project)",
+  "imageScale": 9.6,
+  "images": [
+    {
+      "bytes": 68878,
+      "diskFraction": 0.781,
+      "file": "20100701-0000.png",
+      "imageDate": "2010-07-01T00:00:11Z",
+      "requested": "2010-07-01T00:00Z",
+      "sha256": "cf50ae42ac06a70cd6de1cbc651ac9da7d502607dd262d9ab18e9c657f07820d",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 78095,
+      "diskFraction": 0.7808,
+      "file": "20101001-0000.png",
+      "imageDate": "2010-09-30T23:54:36Z",
+      "requested": "2010-10-01T00:00Z",
+      "sha256": "a94cf21bb5b25663538b9f30c54cfa3aea9a235037f4ed70a715dbc3078e2485",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 71660,
+      "diskFraction": 0.7822,
+      "file": "20110101-0000.png",
+      "imageDate": "2010-12-31T23:59:48Z",
+      "requested": "2011-01-01T00:00Z",
+      "sha256": "dbffffb025041d06c5c520953eb83d49e223148f0c1b45c92d06b3ee30f151a7",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 75563,
+      "diskFraction": 0.7822,
+      "file": "20110401-0000.png",
+      "imageDate": "2011-03-31T23:59:48Z",
+      "requested": "2011-04-01T00:00Z",
+      "sha256": "cccbf21ff4209dd8d6c882744d8fb703ddfde64c4e1acb27a8661cfc70622f64",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 76804,
+      "diskFraction": 0.7822,
+      "file": "20110701-0000.png",
+      "imageDate": "2011-07-01T00:00:00Z",
+      "requested": "2011-07-01T00:00Z",
+      "sha256": "de1a02662701c3ca3bbc5e64edbdac11c48c499e624a4bbd908d396a9294bebb",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 80445,
+      "diskFraction": 0.7822,
+      "file": "20110804-0410.png",
+      "imageDate": "2011-08-04T04:10:15Z",
+      "requested": "2011-08-04T04:10Z",
+      "sha256": "4b3ed56c3c91bf09df3c84e5ff3cc514fce7e70b1892d17fea69293f21bcfd4a",
+      "why": "eruption before the Kp 8 storm of 2011-08-05"
+    },
+    {
+      "bytes": 84619,
+      "diskFraction": 0.7822,
+      "file": "20111001-0000.png",
+      "imageDate": "2011-10-01T00:00:00Z",
+      "requested": "2011-10-01T00:00Z",
+      "sha256": "3fd71045f5d5fd16a89bef67b9c8b623e63cf31560dd6838f13003d950a34159",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 78291,
+      "diskFraction": 0.781,
+      "file": "20120101-0000.png",
+      "imageDate": "2012-01-01T00:00:12Z",
+      "requested": "2012-01-01T00:00Z",
+      "sha256": "42b65ac9c5d0069a7886a93d82d30eca7ef7405e1bb9000bc79b80aa81b2a8de",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 76841,
+      "diskFraction": 0.781,
+      "file": "20120401-0000.png",
+      "imageDate": "2012-04-01T00:00:00Z",
+      "requested": "2012-04-01T00:00Z",
+      "sha256": "6bd620fcbb6db3e79e1d83478dce0169ce624fad5aa5bb2d800d7e9136b7bebf",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 79271,
+      "diskFraction": 0.7822,
+      "file": "20120701-0000.png",
+      "imageDate": "2012-07-01T00:00:00Z",
+      "requested": "2012-07-01T00:00Z",
+      "sha256": "fa5fcc44cd71ec49eb52d8838dfc2246e9be11419098d714343da2f6453e76c9",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 83400,
+      "diskFraction": 0.7816,
+      "file": "20121001-0000.png",
+      "imageDate": "2012-09-30T23:59:49Z",
+      "requested": "2012-10-01T00:00Z",
+      "sha256": "63c0329da3906fe506496a69b0058825b8cd2e4563edd1c1042c898d4028c02b",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 75572,
+      "diskFraction": 0.7816,
+      "file": "20130101-0000.png",
+      "imageDate": "2012-12-31T23:59:47Z",
+      "requested": "2013-01-01T00:00Z",
+      "sha256": "166a652b75f166779dc161769369c8ec7b1eee5f778a5730871de78a0b2ae2ea",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 72339,
+      "diskFraction": 0.7816,
+      "file": "20130401-0000.png",
+      "imageDate": "2013-04-01T00:00:11Z",
+      "requested": "2013-04-01T00:00Z",
+      "sha256": "ff48802f4ecc72346458b627943ab98b5cca496b24a42cbc87a0ed8b94d0c678",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 76767,
+      "diskFraction": 0.7816,
+      "file": "20130701-0000.png",
+      "imageDate": "2013-07-01T00:00:11Z",
+      "requested": "2013-07-01T00:00Z",
+      "sha256": "165a3e90a33c572a4c645891bf967f55a53c37486bdfc044896039172c92fcd8",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 78673,
+      "diskFraction": 0.7816,
+      "file": "20131001-0000.png",
+      "imageDate": "2013-09-30T23:59:59Z",
+      "requested": "2013-10-01T00:00Z",
+      "sha256": "112e5b0e03b4c0c46107658cf8a76bfe63826d34e0ec261a9c50f12d94d02f1f",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 77015,
+      "diskFraction": 0.7816,
+      "file": "20140101-0000.png",
+      "imageDate": "2014-01-01T00:00:11Z",
+      "requested": "2014-01-01T00:00Z",
+      "sha256": "942c451c35b233cc2335ebf8ba1650f00c00ba9d2ee56e1310dce1fd6f491336",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 77421,
+      "diskFraction": 0.7816,
+      "file": "20140401-0000.png",
+      "imageDate": "2014-04-01T00:00:11Z",
+      "requested": "2014-04-01T00:00Z",
+      "sha256": "4156bcebeea99c9aa04a3cd5a30d5a6a094c9eb22a053d3f1aaaad78ecbffaef",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 81948,
+      "diskFraction": 0.7816,
+      "file": "20140701-0000.png",
+      "imageDate": "2014-06-30T23:59:59Z",
+      "requested": "2014-07-01T00:00Z",
+      "sha256": "f6f787f44be64b8a8e786695527ecdc1cf997ba61b9bcbb4ddafa01a421a418e",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 82883,
+      "diskFraction": 0.7816,
+      "file": "20141001-0000.png",
+      "imageDate": "2014-09-30T23:59:59Z",
+      "requested": "2014-10-01T00:00Z",
+      "sha256": "28b7146c5c49c3e8f5c54b78159efd306b6526256f521591a7bcbc1fc4d031d7",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 75420,
+      "diskFraction": 0.7816,
+      "file": "20150101-0000.png",
+      "imageDate": "2015-01-01T00:00:11Z",
+      "requested": "2015-01-01T00:00Z",
+      "sha256": "e3e088adc9609e8b04581727aa901773c375a3433457c1a3a16335e70edd3aa5",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 72257,
+      "diskFraction": 0.7816,
+      "file": "20150315-0200.png",
+      "imageDate": "2015-03-15T01:59:47Z",
+      "requested": "2015-03-15T02:00Z",
+      "sha256": "d02af0660a99e27e7fc1024793647e1b7ca7e9b41d826785c12841e8191c1069",
+      "why": "eruption before the Kp 8 storm of 2015-03-17"
+    },
+    {
+      "bytes": 73033,
+      "diskFraction": 0.7816,
+      "file": "20150401-0000.png",
+      "imageDate": "2015-04-01T00:00:11Z",
+      "requested": "2015-04-01T00:00Z",
+      "sha256": "fcfbf71afc25e8b841ebeb2bca3b961650ae5b1575b36a47795f05dff16f1780",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 78445,
+      "diskFraction": 0.7816,
+      "file": "20150621-0248.png",
+      "imageDate": "2015-06-21T02:47:59Z",
+      "requested": "2015-06-21T02:48Z",
+      "sha256": "e7e27e5454d015da36f9a8ba7704345a582fa536cf024990ad6797ad3960eb40",
+      "why": "eruption before the Kp 8 storm of 2015-06-22"
+    },
+    {
+      "bytes": 78054,
+      "diskFraction": 0.7816,
+      "file": "20150701-0000.png",
+      "imageDate": "2015-07-01T00:00:10Z",
+      "requested": "2015-07-01T00:00Z",
+      "sha256": "1c7e7ea0f3ad0ee03147f8769cee09d072f59aa34b7c6a401c305ae231e87d67",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 76653,
+      "diskFraction": 0.7816,
+      "file": "20151001-0000.png",
+      "imageDate": "2015-10-01T00:00:10Z",
+      "requested": "2015-10-01T00:00Z",
+      "sha256": "0716c25317b33ac4f73d078a07656727af663e3d90d67fe78c711fe4f2b827bb",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 70572,
+      "diskFraction": 0.7816,
+      "file": "20160101-0000.png",
+      "imageDate": "2015-12-31T23:59:58Z",
+      "requested": "2016-01-01T00:00Z",
+      "sha256": "843bed65dcd5c2781d34cc50651c83e3bac19c99004c44dbb4c2e7548eb805f0",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 66059,
+      "diskFraction": 0.7816,
+      "file": "20160401-0000.png",
+      "imageDate": "2016-03-31T23:59:58Z",
+      "requested": "2016-04-01T00:00Z",
+      "sha256": "2dc06ea4499797d18e3c6e1ef89f53c7d27edf06259bf3e4d62398e6dd5ad7c2",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 70534,
+      "diskFraction": 0.7816,
+      "file": "20160701-0000.png",
+      "imageDate": "2016-06-30T23:59:46Z",
+      "requested": "2016-07-01T00:00Z",
+      "sha256": "54814c4156c9f17d8e4357e0c4e7df0d0da11bd4d03591736ff2d756194849bb",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 71388,
+      "diskFraction": 0.7816,
+      "file": "20161001-0000.png",
+      "imageDate": "2016-09-30T23:59:46Z",
+      "requested": "2016-10-01T00:00Z",
+      "sha256": "19d73cfafaccc477ea011c567dc1b605f4d0095ab438b10efab405c11b9dbbab",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 65299,
+      "diskFraction": 0.781,
+      "file": "20170101-0000.png",
+      "imageDate": "2016-12-31T23:59:58Z",
+      "requested": "2017-01-01T00:00Z",
+      "sha256": "e8429dbb424eb8f6c6080c851ed2fe6851c11a031149d7f10f5fffd0ea746711",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 62799,
+      "diskFraction": 0.781,
+      "file": "20170401-0000.png",
+      "imageDate": "2017-03-31T23:59:57Z",
+      "requested": "2017-04-01T00:00Z",
+      "sha256": "f85b873fbe4056a9c59d052fdc8b78f66d278cc8b1b8c21499e6d1e3c1c956fd",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 68337,
+      "diskFraction": 0.781,
+      "file": "20170701-0000.png",
+      "imageDate": "2017-07-01T00:00:09Z",
+      "requested": "2017-07-01T00:00Z",
+      "sha256": "0a4a027b78b1771713e67ec5c5c4231c23eece8d38a112b5c45ab114fdb52e1a",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 71241,
+      "diskFraction": 0.781,
+      "file": "20170906-1224.png",
+      "imageDate": "2017-09-06T12:23:45Z",
+      "requested": "2017-09-06T12:24Z",
+      "sha256": "2458de1c5efaa16cf1848fbddf338148557d3f2a65930bef39bbe526eb6026b9",
+      "why": "eruption before the Kp 8 storm of 2017-09-07"
+    },
+    {
+      "bytes": 70836,
+      "diskFraction": 0.781,
+      "file": "20171001-0000.png",
+      "imageDate": "2017-09-30T23:59:57Z",
+      "requested": "2017-10-01T00:00Z",
+      "sha256": "bd68c31034994ca31409fc83c1f3f605df3696f54cce3d3299f4174a04d81c03",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 62895,
+      "diskFraction": 0.781,
+      "file": "20180101-0000.png",
+      "imageDate": "2017-12-31T23:59:45Z",
+      "requested": "2018-01-01T00:00Z",
+      "sha256": "1327db780f80faf4d71061e0e94ed320119d7fe776c9490a1e281421d952d262",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 60154,
+      "diskFraction": 0.781,
+      "file": "20180401-0000.png",
+      "imageDate": "2018-03-31T23:59:57Z",
+      "requested": "2018-04-01T00:00Z",
+      "sha256": "8fced9e3ba4652c62debaf6720f73416640797ac902a73d57136640cd1e28233",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 67308,
+      "diskFraction": 0.7816,
+      "file": "20180701-0000.png",
+      "imageDate": "2018-06-30T23:59:45Z",
+      "requested": "2018-07-01T00:00Z",
+      "sha256": "c5390640ddff99d640ad250acee90c116ebd1c822f8fca096ef91555de081a1c",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 66033,
+      "diskFraction": 0.7816,
+      "file": "20181001-0000.png",
+      "imageDate": "2018-10-01T00:00:09Z",
+      "requested": "2018-10-01T00:00Z",
+      "sha256": "bec9d9417c8a9ecf4edb70db72fe14de8009443c110b9ec56de245bc460ef27b",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 61926,
+      "diskFraction": 0.7816,
+      "file": "20190101-0000.png",
+      "imageDate": "2018-12-31T23:59:45Z",
+      "requested": "2019-01-01T00:00Z",
+      "sha256": "b3e561c48adb9c139a1d4671642470b34bffb45458a7fd33fd682dea6e6f4881",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 59330,
+      "diskFraction": 0.7816,
+      "file": "20190401-0000.png",
+      "imageDate": "2019-03-31T23:59:45Z",
+      "requested": "2019-04-01T00:00Z",
+      "sha256": "4e0ce950587378e35ee71571761a59740774b19e8f687b7be06aea6f9a9bc8a7",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 66493,
+      "diskFraction": 0.781,
+      "file": "20190701-0000.png",
+      "imageDate": "2019-06-30T23:59:57Z",
+      "requested": "2019-07-01T00:00Z",
+      "sha256": "9f409351a4daac9a483f6612b53ea3b192b5663e72c796e51468cdabc1738a86",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 65777,
+      "diskFraction": 0.781,
+      "file": "20191001-0000.png",
+      "imageDate": "2019-10-01T00:00:09Z",
+      "requested": "2019-10-01T00:00Z",
+      "sha256": "96d0708cc3d7435de71bb0ba632e049e5179ed2edfc56a3fe5ce666902d63c58",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 61252,
+      "diskFraction": 0.781,
+      "file": "20200101-0000.png",
+      "imageDate": "2020-01-01T00:00:09Z",
+      "requested": "2020-01-01T00:00Z",
+      "sha256": "9078d28e305e8ef8e8a22c13b014123d7d111a356a4db1cefe29a7db456ef41b",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 59791,
+      "diskFraction": 0.781,
+      "file": "20200401-0000.png",
+      "imageDate": "2020-04-01T00:00:09Z",
+      "requested": "2020-04-01T00:00Z",
+      "sha256": "22b20236cfdef777a872e714dc5cb4764e386b9136554ac16d9e6adb3028100f",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 66609,
+      "diskFraction": 0.781,
+      "file": "20200701-0000.png",
+      "imageDate": "2020-06-30T23:59:45Z",
+      "requested": "2020-07-01T00:00Z",
+      "sha256": "f5456c92d8b8a803a98b72f9673417f4f75a963e6ff7c60ac4dc4d5c413d339a",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 67526,
+      "diskFraction": 0.781,
+      "file": "20201001-0000.png",
+      "imageDate": "2020-10-01T00:00:09Z",
+      "requested": "2020-10-01T00:00Z",
+      "sha256": "1957f1eed1e72d74f44e96b7a4a5835fcb2e5c8f47e0793c05b098e8ecbfd4a1",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 64999,
+      "diskFraction": 0.781,
+      "file": "20210101-0000.png",
+      "imageDate": "2021-01-01T00:00:09Z",
+      "requested": "2021-01-01T00:00Z",
+      "sha256": "e482eaf27157a391d351ec54b929f868b31b1c19b38304bd1cb9e98bfa8b22c6",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 61799,
+      "diskFraction": 0.781,
+      "file": "20210401-0000.png",
+      "imageDate": "2021-04-01T00:00:09Z",
+      "requested": "2021-04-01T00:00Z",
+      "sha256": "bf3868daf1044151ed6373a9384e62518fcc9d82ce74dc41bd659a47a16e27ac",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 70741,
+      "diskFraction": 0.781,
+      "file": "20210701-0000.png",
+      "imageDate": "2021-07-01T00:00:09Z",
+      "requested": "2021-07-01T00:00Z",
+      "sha256": "7f06bc5cc04ac06ae787d88f5b308f45a9a81df938e1c2d17734ce27ef9ae09d",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 72620,
+      "diskFraction": 0.781,
+      "file": "20211001-0000.png",
+      "imageDate": "2021-09-30T21:53:45Z",
+      "requested": "2021-10-01T00:00Z",
+      "sha256": "0dde3f6c0e6f387077cf236d7c9d4d345e6e75b36638fa0bd8cb4b2d6b958398",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 68281,
+      "diskFraction": 0.781,
+      "file": "20220101-0000.png",
+      "imageDate": "2022-01-01T00:04:57Z",
+      "requested": "2022-01-01T00:00Z",
+      "sha256": "0fde423ffb6b265af054ef3a80806d1c1c6e4b2481d1235ff2a6f2ea0fa03424",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 70074,
+      "diskFraction": 0.781,
+      "file": "20220401-0000.png",
+      "imageDate": "2022-04-01T00:00:09Z",
+      "requested": "2022-04-01T00:00Z",
+      "sha256": "b4a386e4068b847ee90741f78a80d23c2c054e8843ed875a744ee77b39f735c8",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 75178,
+      "diskFraction": 0.781,
+      "file": "20220701-0000.png",
+      "imageDate": "2022-06-30T23:59:45Z",
+      "requested": "2022-07-01T00:00Z",
+      "sha256": "a6dc1143d54f92518a7810d65fe24f695b3c9c4ec1c9f6d895e1616184dcdcee",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 76594,
+      "diskFraction": 0.781,
+      "file": "20221001-0000.png",
+      "imageDate": "2022-10-01T00:00:09Z",
+      "requested": "2022-10-01T00:00Z",
+      "sha256": "7bac96ed6bc11cb8a007248d4be1d2aeee6e95bc5bb8cadc55655d7bf7da3852",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 75532,
+      "diskFraction": 0.781,
+      "file": "20230101-0000.png",
+      "imageDate": "2023-01-01T00:00:09Z",
+      "requested": "2023-01-01T00:00Z",
+      "sha256": "1d27abc04258d74a3756f3d7749817c7b8393ca3a420cfbc864e828d5d4edfe0",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 75896,
+      "diskFraction": 0.781,
+      "file": "20230320-1442.png",
+      "imageDate": "2023-03-20T14:42:09Z",
+      "requested": "2023-03-20T14:42Z",
+      "sha256": "1eeda41db13a2396ece0da03ae2403bae7a767057f753425836e3e782ea1a5c4",
+      "why": "eruption before the Kp 8 storm of 2023-03-23"
+    },
+    {
+      "bytes": 73562,
+      "diskFraction": 0.781,
+      "file": "20230401-0000.png",
+      "imageDate": "2023-04-01T00:00:09Z",
+      "requested": "2023-04-01T00:00Z",
+      "sha256": "e460784c1019824beb63a1751abec2dcdd210a1ae4285f722615dbfc6419ce7c",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 79463,
+      "diskFraction": 0.781,
+      "file": "20230421-1812.png",
+      "imageDate": "2023-04-21T18:11:45Z",
+      "requested": "2023-04-21T18:12Z",
+      "sha256": "385a6a465391868d2d4b9357c0c72682f604c1e639dc24d4b4512ef0fc351fbd",
+      "why": "eruption before the Kp 8 storm of 2023-04-23"
+    },
+    {
+      "bytes": 79597,
+      "diskFraction": 0.781,
+      "file": "20230701-0000.png",
+      "imageDate": "2023-07-01T00:00:09Z",
+      "requested": "2023-07-01T00:00Z",
+      "sha256": "42abcb781b5c5e9f59b1c238339e0fd6e0dcf42c7e86c93991f165ef45bb9c67",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 80681,
+      "diskFraction": 0.781,
+      "file": "20231001-0000.png",
+      "imageDate": "2023-10-01T00:00:09Z",
+      "requested": "2023-10-01T00:00Z",
+      "sha256": "7e188e4186f80e28f675aaa215ab5ed22fd432d9dcdf78a7964b812b8b88accf",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 74507,
+      "diskFraction": 0.781,
+      "file": "20240101-0000.png",
+      "imageDate": "2024-01-01T00:00:09Z",
+      "requested": "2024-01-01T00:00Z",
+      "sha256": "775016cdaee13c86f0887971b566f262fa94d88befe7bfbbe662da605c336583",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 76235,
+      "diskFraction": 0.781,
+      "file": "20240323-0148.png",
+      "imageDate": "2024-03-23T01:48:09Z",
+      "requested": "2024-03-23T01:48Z",
+      "sha256": "a417455d532a53f29c3ce39abbdf13fdb6ba05502db2dfa8bddb56e6e1ceac82",
+      "why": "eruption before the Kp 8 storm of 2024-03-24"
+    },
+    {
+      "bytes": 74547,
+      "diskFraction": 0.781,
+      "file": "20240401-0000.png",
+      "imageDate": "2024-04-01T00:00:09Z",
+      "requested": "2024-04-01T00:00Z",
+      "sha256": "bd0e2702ad4745be95e3440ac4c0147e3763b0e8a4f03c619478f8ce1fe2d35a",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 82312,
+      "diskFraction": 0.781,
+      "file": "20240509-0924.png",
+      "imageDate": "2024-05-09T09:24:09Z",
+      "requested": "2024-05-09T09:24Z",
+      "sha256": "94261126ad7c5e80e45d2dec3b031b9aeacdf6ae1c1c55f55be3d7b15cd3f4f1",
+      "why": "eruption before the Kp 9 storm of 2024-05-10"
+    },
+    {
+      "bytes": 84272,
+      "diskFraction": 0.781,
+      "file": "20240701-0000.png",
+      "imageDate": "2024-07-01T00:00:09Z",
+      "requested": "2024-07-01T00:00Z",
+      "sha256": "1f67e6409004d85d25dd9c08cea8ce5b456cfc17b1ca3c4dbd5e2c34e8084e1f",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 83984,
+      "diskFraction": 0.781,
+      "file": "20240808-2000.png",
+      "imageDate": "2024-08-08T20:00:09Z",
+      "requested": "2024-08-08T20:00Z",
+      "sha256": "d7b67f47e3bcb9199c7d05b326f591ad70555bc6986acb0b7b46e400361600b9",
+      "why": "eruption before the Kp 8 storm of 2024-08-12"
+    },
+    {
+      "bytes": 82497,
+      "diskFraction": 0.781,
+      "file": "20241001-0000.png",
+      "imageDate": "2024-09-30T23:59:57Z",
+      "requested": "2024-10-01T00:00Z",
+      "sha256": "a7b6f174c5297a7f027936f7cf7c7f54f35dcaed596be745dc6b260ab0765f76",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 75195,
+      "diskFraction": 0.781,
+      "file": "20241009-0212.png",
+      "imageDate": "2024-10-09T02:12:09Z",
+      "requested": "2024-10-09T02:12Z",
+      "sha256": "d86eb5ab211890c3e41f9a5d22fa0f08803968e16c86151225323befa4670ead",
+      "why": "eruption before the Kp 8.67 storm of 2024-10-10"
+    },
+    {
+      "bytes": 76400,
+      "diskFraction": 0.781,
+      "file": "20241229-0624.png",
+      "imageDate": "2024-12-29T06:24:09Z",
+      "requested": "2024-12-29T06:24Z",
+      "sha256": "dae5f81f820e4198986e9871627670f2bd016cdcc394f1e9a27dc3832bee2026",
+      "why": "eruption before the Kp 8 storm of 2025-01-01"
+    },
+    {
+      "bytes": 78159,
+      "diskFraction": 0.781,
+      "file": "20250101-0000.png",
+      "imageDate": "2025-01-01T00:00:09Z",
+      "requested": "2025-01-01T00:00Z",
+      "sha256": "82601db3bb7bee15a47e33f3b6e228e56185cfcd98737d042c17650e05ef1df4",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 70448,
+      "diskFraction": 0.781,
+      "file": "20250401-0000.png",
+      "imageDate": "2025-03-31T23:59:57Z",
+      "requested": "2025-04-01T00:00Z",
+      "sha256": "79aadecd452fc01490add5d6bb4aad808622874146f34334baa053364152fd4f",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 73394,
+      "diskFraction": 0.781,
+      "file": "20250531-1423.png",
+      "imageDate": "2025-05-31T14:22:45Z",
+      "requested": "2025-05-31T14:23Z",
+      "sha256": "eb2808cafd44b5e7935951e809f5db2fddea43b57fb3e261f4dc75a3a6d6cc1b",
+      "why": "eruption before the Kp 8 storm of 2025-06-01"
+    },
+    {
+      "bytes": 75046,
+      "diskFraction": 0.781,
+      "file": "20250701-0000.png",
+      "imageDate": "2025-07-01T00:00:09Z",
+      "requested": "2025-07-01T00:00Z",
+      "sha256": "7b9c973b6029df09fab3f8abcb5d86a6f9fbee7e8d30ea18990fa9850a1a0607",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 77485,
+      "diskFraction": 0.781,
+      "file": "20251001-0000.png",
+      "imageDate": "2025-10-01T00:00:09Z",
+      "requested": "2025-10-01T00:00Z",
+      "sha256": "5da739ffe2d7a149b4e06f480b1fff46a977160be50a217e6cf075ec0a16c8d9",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 71578,
+      "diskFraction": 0.781,
+      "file": "20251110-0936.png",
+      "imageDate": "2025-11-10T09:35:57Z",
+      "requested": "2025-11-10T09:36Z",
+      "sha256": "bc21b5c71e44348fd03a8197ae4ae9f59835c653370033faddba7c1431e34974",
+      "why": "eruption before the Kp 8.67 storm of 2025-11-12"
+    },
+    {
+      "bytes": 73212,
+      "diskFraction": 0.781,
+      "file": "20260101-0000.png",
+      "imageDate": "2026-01-01T00:00:09Z",
+      "requested": "2026-01-01T00:00Z",
+      "sha256": "649af1853dc9bd4dd67ae51545c577718f7c37542ff2e36ddf353dc1d2835d69",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 72997,
+      "diskFraction": 0.781,
+      "file": "20260118-1809.png",
+      "imageDate": "2026-01-18T18:08:45Z",
+      "requested": "2026-01-18T18:09Z",
+      "sha256": "b2410f7873ab23edd3ac3cc7f238f60c75b98b2e5aa053e785bbf1adc2061d32",
+      "why": "eruption before the Kp 8.67 storm of 2026-01-19"
+    },
+    {
+      "bytes": 69122,
+      "diskFraction": 0.781,
+      "file": "20260401-0000.png",
+      "imageDate": "2026-03-31T23:59:45Z",
+      "requested": "2026-04-01T00:00Z",
+      "sha256": "40f49c3deef9efdfccaf97f3d53fe3a47e3c01f13583c51c6c294bf6537f3a47",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 74777,
+      "diskFraction": 0.781,
+      "file": "20260701-0000.png",
+      "imageDate": "2026-06-30T23:59:57Z",
+      "requested": "2026-07-01T00:00Z",
+      "sha256": "706e64ac527f69949762500fb5caf112b60489d3cd59fc0035f874ca314b9b11",
+      "why": "quarterly series"
+    },
+    {
+      "bytes": 70572,
+      "diskFraction": 0.781,
+      "file": "20261001-0000.png",
+      "imageDate": "2026-10-01T00:00:09Z",
+      "requested": "2026-10-01T00:00Z",
+      "sha256": "0951213586b5a2f94c6e6efadaed2e79200ae217158c8cb59f69199f9aa8893c",
+      "why": "quarterly series"
+    }
+  ],
+  "layer": "[SDO,AIA,AIA,171,1,100] (SDO AIA 171 Angstrom)",
+  "retrieved": "2026-11-28",
+  "sizePx": 256,
+  "source": "https://api.helioviewer.org/v2 (takeScreenshot, getClosestImage)"
+}

@@ -52,6 +52,7 @@ describe("url sync", () => {
           trails: true,
           callouts: true,
           stars: true,
+          spaceweather: false,
         },
       }),
     );
@@ -74,6 +75,7 @@ describe("url sync", () => {
       trails: false,
       callouts: false,
       stars: false,
+      spaceweather: false,
     });
     expect(s.cameraSeq).toBe(1);
     expect(s.cameraRequest!.target).toBe(899);

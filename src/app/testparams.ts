@@ -30,7 +30,17 @@ export interface TestParams {
   stats?: boolean;
 }
 
-const LAYERS: readonly Layer[] = ["bodies", "textures", "labels", "markers", "orbits", "trails", "callouts", "stars"];
+const LAYERS: readonly Layer[] = [
+  "bodies",
+  "textures",
+  "labels",
+  "markers",
+  "orbits",
+  "trails",
+  "callouts",
+  "stars",
+  "spaceweather",
+];
 const DEG = Math.PI / 180;
 
 export function parseTestParams(search: string): TestParams {
@@ -61,6 +71,7 @@ export function parseTestParams(search: string): TestParams {
       trails: false,
       callouts: false,
       stars: false,
+      spaceweather: false,
     };
     for (const l of layers) if ((LAYERS as readonly string[]).includes(l)) out.layers[l as Layer] = true;
   }

@@ -50,6 +50,7 @@ const LAYERS: readonly [Layer, string][] = [
   ["trails", "Trails"],
   ["callouts", "Distances to the Sun and Earth"],
   ["stars", "Stars"],
+  ["spaceweather", "Space weather (CMEs, flares, solar wind)"],
 ];
 
 /** VN-SCL-001, VN-SCN-003: each layer can be turned off. */

@@ -12,6 +12,7 @@ import { SceneView } from "../../scene/SceneView";
 import { About } from "../about/About";
 import { LoadingIndicator } from "../assets/LoadingIndicator";
 import { InfoPanel } from "../info/InfoPanel";
+import { SpaceWeatherPanel } from "../info/SpaceWeatherPanel";
 import { PulseControl } from "../scale/PulseControl";
 import { ScaleBar } from "../scale/ScaleBar";
 import { LayerSwitches, ScaleNote, ScaleSelect } from "../scale/ScaleControls";
@@ -91,6 +92,7 @@ export function Shell() {
   const [aboutOpen, setAboutOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const selection = useView((s) => s.selection);
+  const spaceWeather = useView((s) => s.layers.spaceweather);
 
   // VN-ACC-001: app shortcuts (the camera's keys are in the scene's Controls).
   useShortcuts({
@@ -266,6 +268,12 @@ export function Shell() {
           <h2>Trails</h2>
           <TrailRangeSelect />
         </section>
+        {spaceWeather && (
+          <section aria-label="Space weather">
+            <h2>Space weather</h2>
+            <SpaceWeatherPanel />
+          </section>
+        )}
         <section aria-label="Info">
           <h2>Info</h2>
           {selection === null ? (

@@ -91,8 +91,10 @@ describe("data sources (T-024)", () => {
     return false;
   };
 
-  it("VN-DOC-002: every file under data/, testdata/, public/ephem/ and public/textures/ is listed", () => {
-    const all = ["data", "testdata", "public/ephem", "public/textures"].flatMap(files);
+  it("VN-DOC-002: every file under data/, testdata/, public/ephem/, public/textures/ and public/spaceweather/ is listed", () => {
+    const all = ["data", "testdata", "public/ephem", "public/textures", "public/spaceweather", "public/sun"].flatMap(
+      files,
+    );
     expect(all.length).toBeGreaterThan(0);
     expect(all.filter((f) => !listed(f))).toEqual([]);
   });

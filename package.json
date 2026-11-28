@@ -29,7 +29,11 @@
     "bench": "vitest bench --run",
     "ephem:check-ids": "node --experimental-strip-types --no-warnings tools/ephem/check-ids.ts",
     "gp": "node --experimental-strip-types --no-warnings tools/gp/gp.ts",
-    "stars": "node --experimental-strip-types --no-warnings tools/stars/build.ts"
+    "stars": "node --experimental-strip-types --no-warnings tools/stars/build.ts",
+    "donki": "node --experimental-strip-types --no-warnings tools/donki/build.ts",
+    "cdaw": "node --experimental-strip-types --no-warnings tools/cdaw/build.ts",
+    "swpc": "node --experimental-strip-types --no-warnings tools/swpc/build.ts",
+    "sun": "node --experimental-strip-types --no-warnings tools/helioviewer/build.ts"
   },
   "dependencies": {
     "@react-three/fiber": "^9.8.2",

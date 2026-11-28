@@ -14,6 +14,8 @@ async function shot(page: Page, cam: string, layers: string, t = T): Promise<Buf
   await expect(canvas).toHaveAttribute("data-scene-ready", "1", { timeout: 20_000 });
   if (layers.includes("stars")) await expect(canvas).toHaveAttribute("data-stars", STAR_COUNT, { timeout: 10_000 });
   if (layers.includes("orbits")) await expect(canvas).toHaveAttribute("data-orbits", "9", { timeout: 10_000 });
+  if (layers.includes("spaceweather"))
+    await expect(canvas).toHaveAttribute("data-space-weather", /^[1-9]/, { timeout: 10_000 });
   await page.evaluate(
     () =>
       new Promise<void>((r) =>
@@ -69,6 +71,14 @@ test.describe("visual baselines", () => {
       "solar-eclipse-2024.png",
       { maxDiffPixelRatio: 0.002 },
     );
+  });
+
+  // T-101 (VN-EXT-005): the 2024-05-10 Gannon storm from above the ecliptic: the May 8-9 CMEs from AR 13664 as
+  // shells on their DONKI directions, coloured by speed class, opacity from CDAW mass; arrival rings at Earth.
+  test("VN-EXT-005: the 2024-05-10 Gannon storm, CME shells reaching Earth", async ({ page }) => {
+    expect(
+      await shot(page, "10,4e8,0,60", "bodies,orbits,markers,spaceweather", "2024-05-10T12:00:00Z"),
+    ).toMatchSnapshot("gannon-storm-2024.png", { maxDiffPixelRatio: 0.002 });
   });
 
   test("VN-SCN-007: the stars layer can be turned off from the side panel", async ({ page }) => {

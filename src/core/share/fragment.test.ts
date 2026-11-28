@@ -22,6 +22,7 @@ const view: ViewFragment = {
     trails: false,
     callouts: false,
     stars: true,
+    spaceweather: false,
   },
 };
 
@@ -70,6 +71,7 @@ describe("view fragment", () => {
         trails: false,
         callouts: false,
         stars: false,
+        spaceweather: false,
       },
     });
     expect(decodeFragment("v=1&s=499&c=999,1e6,0,0", known)).toEqual({ selection: 499 });
@@ -85,7 +87,16 @@ describe("view fragment", () => {
       trails: false,
       callouts: false,
       stars: false,
+      spaceweather: false,
     });
+  });
+
+  it("VN-EXT-005: the space weather layer is w; links made before it open with it off", () => {
+    const on = { ...view, layers: { ...view.layers, spaceweather: true } };
+    const text = encodeFragment(on);
+    expect(text).toMatch(/&l=[a-z]*w/);
+    expect(decodeFragment(text, known).layers!.spaceweather).toBe(true);
+    expect(decodeFragment("v=1&l=bmo", known).layers!.spaceweather).toBe(false);
   });
 
   it("VN-UI-002: an unknown version, a missing version or junk gives nothing", () => {

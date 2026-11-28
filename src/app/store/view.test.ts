@@ -65,6 +65,7 @@ describe("view store", () => {
       trails: true,
       callouts: true,
       stars: true,
+      spaceweather: false,
     });
     s.setLayer("orbits", false);
     expect(store.getState().layers.orbits).toBe(false);

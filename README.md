@@ -27,7 +27,7 @@ Status: **early development (M0, bootstrap).** See [docs/ROADMAP.md](docs/ROADMA
 
 ## Data
 
-Ephemerides: NASA/JPL Solar System Dynamics, Horizons. Every source and its terms: [docs/DATA_SOURCES.md](docs/DATA_SOURCES.md).
+Ephemerides: NASA/JPL Solar System Dynamics, Horizons. Space weather (an optional layer): NASA DONKI, the CDAW SOHO/LASCO CME catalog, NOAA SWPC and SDO images via Helioviewer, rebuilt with `npm run donki`, `npm run cdaw`, `npm run swpc` and `npm run sun` (DONKI needs a free NASA API key in `NASA_API_KEY` or `.env`). Every source and its terms: [docs/DATA_SOURCES.md](docs/DATA_SOURCES.md).
 
 ## Licence
 

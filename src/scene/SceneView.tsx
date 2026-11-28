@@ -30,6 +30,9 @@ import { SpacecraftModels } from "./spacecraft/Model";
 import { SaturnRings } from "./bodies/Rings";
 import { Stars } from "./stars/Stars";
 import { SunGlow } from "./sun/SunGlow";
+import { SunImage } from "./sun/SunImage";
+import { L1Marker } from "./spaceweather/L1";
+import { Storms } from "./spaceweather/Storms";
 import { Trails } from "./trails/Trails";
 import { Picker } from "./Picker";
 import { RenderStatsProbe } from "./stats/RenderStatsProbe";
@@ -186,7 +189,10 @@ export function SceneView() {
           <Stars />
           <Bodies frame={frame} />
           <SaturnRings frame={frame} />
+          <SunImage frame={frame} />
           <SunGlow frame={frame} />
+          <Storms frame={frame} />
+          <L1Marker frame={frame} />
           <Orbits eph={eph} frame={frame} />
           <Trails eph={eph} frame={frame} />
           <SpacecraftModels frame={frame} />

@@ -7,6 +7,8 @@ Open then closed. Do not delete rows.
 - [ ] D-001 sev:low type:env task:unplanned src:test  npm audit: vitest 3.2.7 (matched to Escapement per ADR-0001) pulls tinypool <=2.1.1 with two critical advisories (GHSA-5gmw-xhrv-c9v3, GHSA-85c8-ppgw-ccpr); dev-only, nothing ships; fix is vitest 5 (breaking), best done with Escapement
 - [ ] D-005 sev:low type:test task:unplanned src:session-19  e2e camera.spec VN-CAM-006 (reduced-motion cut to Mars) takes ~1.70-1.75 s locally against its 1.5 s bound; reproduces at the session-start commit d0f5a97 (worktree build) and with textures off, on a quiet machine, while the same spec passed at 918 ms at session start, so it is not this batch's code; suspect the default "now" start time or the environment. User (session 19): within 250 ms of the bound, revisit later; not a requirement change
 
+- [ ] D-006 sev:low type:data task:unplanned src:T-086  NASA DONKI's flare list (api.nasa.gov/DONKI/FLR) answers HTTP 404 for every range (2026-11-27; the CCMC host kauai.ccmc.gsfc.nasa.gov timed out), so flares come only from CME links, with time and source but no GOES class or peak; tools/donki/build.ts probes FLR each run and the file's flareNote says so; when it answers, parse FLR (classType, peakTime, endTime)
+
 ## Closed
 
 - [x] D-003 sev:low type:ui task:T-099 src:T-063  Saturn's shadow on its rings (and the rings' shadow on Saturn) is not drawn; at the 2017 solstice view the night-side ring arc is as bright as the lit one  fixed s19 by T-099: analytic Saturn shadow on the rings (Rings.tsx) and ring shadow on Saturn; saturn.png baseline updated

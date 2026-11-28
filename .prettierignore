@@ -8,6 +8,8 @@ THIRD_PARTY_NOTICES.txt
 package-lock.json
 testdata/
 public/ephem/
+public/spaceweather/
+public/sun/
 nightly/
 dist/
 release/

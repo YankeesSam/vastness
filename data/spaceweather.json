@@ -1,0 +1,4 @@
+{
+  "donki": { "start": "2010-01-01", "end": "2026-11-27" },
+  "note": "Span of the space weather pipeline (tools/donki, tools/cdaw, tools/swpc). DONKI's archive starts in 2010; the end date is the last refresh, moved on by hand or by the refresh job."
+}

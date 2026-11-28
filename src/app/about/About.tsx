@@ -64,6 +64,12 @@ export function About({ onClose }: { onClose: () => void }) {
           (solarsystemscope.com), <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, based on NASA
           data. Body orientation from the IAU WGCCRE 2015 rotation models (Archinal et al. 2018).
         </p>
+        <p>
+          Space weather: CMEs, storms and shocks from NASA DONKI (Community Coordinated Modeling Center, NASA GSFC); CME
+          mass and energy from the SOHO/LASCO CME catalog (CDAW Data Center, NASA and The Catholic University of
+          America, with the Naval Research Laboratory; SOHO is an ESA and NASA project); solar wind and Kp from NOAA
+          SWPC. Sun images courtesy of NASA/SDO and the AIA, EVE, and HMI science teams, rendered by Helioviewer.org.
+        </p>
         <button ref={closeRef} type="button" className={styles.close} onClick={onClose}>
           Close
         </button>

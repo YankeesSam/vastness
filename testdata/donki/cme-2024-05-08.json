@@ -1,0 +1,485 @@
+[
+ {
+  "activityID": "2024-05-08T05:36:00-CME-001",
+  "catalog": "M2M_CATALOG",
+  "startTime": "2024-05-08T05:36Z",
+  "instruments": [
+   {
+    "displayName": "SOHO: LASCO/C2"
+   },
+   {
+    "displayName": "SOHO: LASCO/C3"
+   },
+   {
+    "displayName": "STEREO A: SECCHI/COR2"
+   }
+  ],
+  "sourceLocation": "S22W10",
+  "activeRegionNum": 13664,
+  "note": "(trimmed)",
+  "morphologyKeywords": [
+   "Flux Rope and Shock Candidate"
+  ],
+  "sourceSignatureKeywords": [
+   "Flare",
+   "Double ribbon flare",
+   "Moving/Opening field lines",
+   "Brightening",
+   "Dimming",
+   "EUV Wave"
+  ],
+  "generalNoteKeywords": [
+   "Possible collision with previous CME",
+   "Likely deflection of the event within the FOV",
+   "CME exhibits dimpled front",
+   "Front Bright front; may be evidence of pileup",
+   "Bright emission (likely H-alpha emission)",
+   "Halo CME",
+   "Outflowing material at the back of the CME",
+   "Event partially overlaps with another CME"
+  ],
+  "cmeAnalyses": [
+   {
+    "isMostAccurate": true,
+    "levelOfData": 0,
+    "time21_5": "2024-05-08T09:30Z",
+    "latitude": -7,
+    "longitude": 9,
+    "halfAngle": 43,
+    "speed": 870,
+    "type": "C",
+    "featureCode": "LE",
+    "imageType": "running difference",
+    "measurementTechnique": "SWPC_CAT",
+    "note": "(trimmed)",
+    "minorHalfWidth": null,
+    "speedMeasuredAtHeight": 21.3,
+    "tilt": null,
+    "submissionTime": "2025-03-12T16:52Z",
+    "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CMEAnalysis/30590/-1",
+    "enlilList": [
+     {
+      "modelCompletionTime": "2024-05-09T20:28Z",
+      "au": 2,
+      "estimatedShockArrivalTime": "2024-05-10T13:03Z",
+      "isEarthGB": false,
+      "isEarthMinorImpact": false,
+      "rmin_re": 4.1,
+      "kp_18": null,
+      "kp_90": 8,
+      "kp_135": 9,
+      "kp_180": 9,
+      "estimatedDuration": 22.4,
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/WSA-ENLIL/30651/-1",
+      "impactList": [
+       {
+        "location": "Lucy",
+        "arrivalTime": "2024-05-12T04:05Z",
+        "isGlancingBlow": false,
+        "isMinorImpact": false
+       },
+       {
+        "location": "STEREO A",
+        "arrivalTime": "2024-05-10T07:53Z",
+        "isGlancingBlow": false,
+        "isMinorImpact": false
+       }
+      ],
+      "cmeIDs": [
+       "2024-05-08T12:24:00-CME-001",
+       "2024-05-08T05:36:00-CME-001",
+       "2024-05-08T19:12:00-CME-001",
+       "2024-05-09T09:24:00-CME-001",
+       "2024-05-08T22:24:00-CME-001"
+      ]
+     },
+     {
+      "modelCompletionTime": "2024-05-09T20:46Z",
+      "au": 5.5,
+      "estimatedShockArrivalTime": "2024-05-10T12:50Z",
+      "isEarthGB": false,
+      "isEarthMinorImpact": false,
+      "rmin_re": 4.1,
+      "kp_18": null,
+      "kp_90": 8,
+      "kp_135": 9,
+      "kp_180": 9,
+      "estimatedDuration": 22.1,
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/WSA-ENLIL/30652/-1",
+      "impactList": [
+       {
+        "location": "Lucy",
+        "arrivalTime": "2024-05-12T04:00Z",
+        "isGlancingBlow": false,
+        "isMinorImpact": false
+       },
+       {
+        "location": "Psyche",
+        "arrivalTime": "2024-05-16T00:00Z",
+        "isGlancingBlow": true,
+        "isMinorImpact": false
+       },
+       {
+        "location": "STEREO A",
+        "arrivalTime": "2024-05-10T07:47Z",
+        "isGlancingBlow": false,
+        "isMinorImpact": false
+       }
+      ],
+      "cmeIDs": [
+       "2024-05-08T12:24:00-CME-001",
+       "2024-05-08T05:36:00-CME-001",
+       "2024-05-08T19:12:00-CME-001",
+       "2024-05-09T09:24:00-CME-001",
+       "2024-05-08T22:24:00-CME-001"
+      ]
+     }
+    ]
+   },
+   {
+    "isMostAccurate": true,
+    "levelOfData": 0,
+    "time21_5": "2024-05-08T09:47Z",
+    "latitude": -15,
+    "longitude": 15,
+    "halfAngle": 45,
+    "speed": 729,
+    "type": "C",
+    "featureCode": "SH",
+    "imageType": "running difference",
+    "measurementTechnique": "SWPC_CAT",
+    "note": "(trimmed)",
+    "minorHalfWidth": null,
+    "speedMeasuredAtHeight": 17,
+    "tilt": null,
+    "submissionTime": "2024-05-08T19:50Z",
+    "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CMEAnalysis/30597/-1",
+    "enlilList": [
+     {
+      "modelCompletionTime": "2024-05-08T19:56Z",
+      "au": 2,
+      "estimatedShockArrivalTime": "2024-05-10T18:29Z",
+      "isEarthGB": false,
+      "isEarthMinorImpact": false,
+      "rmin_re": 5.6,
+      "kp_18": null,
+      "kp_90": 5,
+      "kp_135": 7,
+      "kp_180": 7,
+      "estimatedDuration": 21.5,
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/WSA-ENLIL/30645/-1",
+      "impactList": [
+       {
+        "location": "Lucy",
+        "arrivalTime": "2024-05-12T18:06Z",
+        "isGlancingBlow": false,
+        "isMinorImpact": false
+       },
+       {
+        "location": "STEREO A",
+        "arrivalTime": "2024-05-10T12:58Z",
+        "isGlancingBlow": false,
+        "isMinorImpact": false
+       }
+      ],
+      "cmeIDs": [
+       "2024-05-08T05:36:00-CME-001"
+      ]
+     }
+    ]
+   }
+  ],
+  "linkedEvents": [
+   {
+    "activityID": "2024-05-08T04:20:00-FLR-001"
+   },
+   {
+    "activityID": "2024-05-08T04:37:00-FLR-001"
+   },
+   {
+    "activityID": "2024-05-10T13:35:00-SEP-001"
+   },
+   {
+    "activityID": "2024-05-10T14:00:00-IPS-001"
+   },
+   {
+    "activityID": "2024-05-10T15:00:00-GST-001"
+   },
+   {
+    "activityID": "2024-05-10T16:36:00-IPS-001"
+   },
+   {
+    "activityID": "2024-05-10T18:01:00-MPC-001"
+   },
+   {
+    "activityID": "2024-05-15T13:55:00-RBE-001"
+   }
+  ],
+  "sentNotifications": [],
+  "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/30589/-1",
+  "submissionTime": "2024-05-08T18:22Z",
+  "versionId": 2
+ },
+ {
+  "activityID": "2024-05-08T19:12:00-CME-001",
+  "catalog": "M2M_CATALOG",
+  "startTime": "2024-05-08T19:12Z",
+  "instruments": [
+   {
+    "displayName": "SOHO: LASCO/C2"
+   },
+   {
+    "displayName": "SOHO: LASCO/C3"
+   },
+   {
+    "displayName": "STEREO A: SECCHI/COR2"
+   }
+  ],
+  "sourceLocation": "N10E20",
+  "activeRegionNum": 13667,
+  "note": "(trimmed)",
+  "morphologyKeywords": [
+   "Flux Rope"
+  ],
+  "sourceSignatureKeywords": [
+   "Post eruption arcade",
+   "Filament eruption",
+   "Moving/Opening field lines",
+   "Brightening",
+   "Dimming"
+  ],
+  "generalNoteKeywords": [
+   "CME exhibits dimpled front"
+  ],
+  "cmeAnalyses": [
+   {
+    "isMostAccurate": true,
+    "levelOfData": 0,
+    "time21_5": "2024-05-08T23:27Z",
+    "latitude": 3,
+    "longitude": -23,
+    "halfAngle": 38,
+    "speed": 828,
+    "type": "C",
+    "featureCode": "LE",
+    "imageType": "running difference",
+    "measurementTechnique": "SWPC_CAT",
+    "note": "(trimmed)",
+    "minorHalfWidth": null,
+    "speedMeasuredAtHeight": 15,
+    "tilt": null,
+    "submissionTime": "2024-05-09T16:10Z",
+    "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CMEAnalysis/30613/-1",
+    "enlilList": [
+     {
+      "modelCompletionTime": "2024-05-09T20:28Z",
+      "au": 2,
+      "estimatedShockArrivalTime": "2024-05-10T13:03Z",
+      "isEarthGB": false,
+      "isEarthMinorImpact": false,
+      "rmin_re": 4.1,
+      "kp_18": null,
+      "kp_90": 8,
+      "kp_135": 9,
+      "kp_180": 9,
+      "estimatedDuration": 22.4,
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/WSA-ENLIL/30651/-1",
+      "impactList": [
+       {
+        "location": "Lucy",
+        "arrivalTime": "2024-05-12T04:05Z",
+        "isGlancingBlow": false,
+        "isMinorImpact": false
+       },
+       {
+        "location": "STEREO A",
+        "arrivalTime": "2024-05-10T07:53Z",
+        "isGlancingBlow": false,
+        "isMinorImpact": false
+       }
+      ],
+      "cmeIDs": [
+       "2024-05-08T12:24:00-CME-001",
+       "2024-05-08T05:36:00-CME-001",
+       "2024-05-08T19:12:00-CME-001",
+       "2024-05-09T09:24:00-CME-001",
+       "2024-05-08T22:24:00-CME-001"
+      ]
+     },
+     {
+      "modelCompletionTime": "2024-05-09T20:46Z",
+      "au": 5.5,
+      "estimatedShockArrivalTime": "2024-05-10T12:50Z",
+      "isEarthGB": false,
+      "isEarthMinorImpact": false,
+      "rmin_re": 4.1,
+      "kp_18": null,
+      "kp_90": 8,
+      "kp_135": 9,
+      "kp_180": 9,
+      "estimatedDuration": 22.1,
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/WSA-ENLIL/30652/-1",
+      "impactList": [
+       {
+        "location": "Lucy",
+        "arrivalTime": "2024-05-12T04:00Z",
+        "isGlancingBlow": false,
+        "isMinorImpact": false
+       },
+       {
+        "location": "Psyche",
+        "arrivalTime": "2024-05-16T00:00Z",
+        "isGlancingBlow": true,
+        "isMinorImpact": false
+       },
+       {
+        "location": "STEREO A",
+        "arrivalTime": "2024-05-10T07:47Z",
+        "isGlancingBlow": false,
+        "isMinorImpact": false
+       }
+      ],
+      "cmeIDs": [
+       "2024-05-08T12:24:00-CME-001",
+       "2024-05-08T05:36:00-CME-001",
+       "2024-05-08T19:12:00-CME-001",
+       "2024-05-09T09:24:00-CME-001",
+       "2024-05-08T22:24:00-CME-001"
+      ]
+     }
+    ]
+   }
+  ],
+  "linkedEvents": [
+   {
+    "activityID": "2024-05-10T14:00:00-IPS-001"
+   },
+   {
+    "activityID": "2024-05-10T15:00:00-GST-001"
+   },
+   {
+    "activityID": "2024-05-10T16:36:00-IPS-001"
+   },
+   {
+    "activityID": "2024-05-10T18:01:00-MPC-001"
+   },
+   {
+    "activityID": "2024-05-15T13:55:00-RBE-001"
+   }
+  ],
+  "sentNotifications": [],
+  "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/30612/-1",
+  "submissionTime": "2024-05-12T20:38Z",
+  "versionId": 2
+ },
+ {
+  "activityID": "2024-05-10T02:12:00-CME-001",
+  "catalog": "M2M_CATALOG",
+  "startTime": "2024-05-10T02:12Z",
+  "instruments": [
+   {
+    "displayName": "SOHO: LASCO/C2"
+   },
+   {
+    "displayName": "SOHO: LASCO/C3"
+   },
+   {
+    "displayName": "STEREO A: SECCHI/COR2"
+   }
+  ],
+  "sourceLocation": "N30E90",
+  "activeRegionNum": null,
+  "note": "(trimmed)",
+  "morphologyKeywords": [
+   "Flux Rope and Shock Candidate"
+  ],
+  "sourceSignatureKeywords": [
+   "Post eruption arcade",
+   "Moving/Opening field lines"
+  ],
+  "generalNoteKeywords": [
+   "Faint event; may affect type assignment",
+   "Outflowing material at the back of the CME",
+   "Prominence material (filamentary structures)"
+  ],
+  "cmeAnalyses": [
+   {
+    "isMostAccurate": true,
+    "levelOfData": 0,
+    "time21_5": "2024-05-10T22:51Z",
+    "latitude": 44,
+    "longitude": -90,
+    "halfAngle": 41,
+    "speed": 232,
+    "type": "S",
+    "featureCode": "LE",
+    "imageType": "running difference",
+    "measurementTechnique": "SWPC_CAT",
+    "note": "(trimmed)",
+    "minorHalfWidth": null,
+    "speedMeasuredAtHeight": null,
+    "tilt": null,
+    "submissionTime": "2024-05-12T20:22Z",
+    "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CMEAnalysis/30789/-1",
+    "enlilList": []
+   }
+  ],
+  "linkedEvents": null,
+  "sentNotifications": [],
+  "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/30788/-1",
+  "submissionTime": "2024-05-12T20:20Z",
+  "versionId": 1
+ },
+ {
+  "activityID": "2024-05-10T16:36:00-CME-001",
+  "catalog": "M2M_CATALOG",
+  "startTime": "2024-05-10T16:36Z",
+  "instruments": [
+   {
+    "displayName": "SOHO: LASCO/C2"
+   },
+   {
+    "displayName": "SOHO: LASCO/C3"
+   }
+  ],
+  "sourceLocation": "",
+  "activeRegionNum": null,
+  "note": "(trimmed)",
+  "morphologyKeywords": [
+   "Loop"
+  ],
+  "sourceSignatureKeywords": [],
+  "generalNoteKeywords": [
+   "Faint event; may affect type assignment",
+   "Event fails/disappears before exiting COR2",
+   "Halo CME"
+  ],
+  "cmeAnalyses": [
+   {
+    "isMostAccurate": true,
+    "levelOfData": 0,
+    "time21_5": "2024-05-11T02:02Z",
+    "latitude": -41,
+    "longitude": null,
+    "halfAngle": 45,
+    "speed": 393,
+    "type": "S",
+    "featureCode": "LE",
+    "imageType": "running difference",
+    "measurementTechnique": "Plane-of-sky",
+    "note": "(trimmed)",
+    "minorHalfWidth": null,
+    "speedMeasuredAtHeight": null,
+    "tilt": null,
+    "submissionTime": "2024-05-12T20:12Z",
+    "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CMEAnalysis/30787/-1",
+    "enlilList": []
+   }
+  ],
+  "linkedEvents": null,
+  "sentNotifications": [],
+  "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/30786/-1",
+  "submissionTime": "2024-05-12T20:10Z",
+  "versionId": 1
+ }
+]
