@@ -18,7 +18,7 @@ do_not_read:
   - docs/architecture/VASTNESS_ARCHITECTURE.md
   - public/ephem, public/spaceweather, public/sun, public/stars.bin, public/textures, testdata, .cache, dist
 tests: pass (vitest 552; e2e chromium 72/72 at 4 workers, D-005 passed this run at 1.6 s; typecheck, prettier, check-deps, check-size 405 KB clean)
-commit: (see STATE.last_commit)
+commit: 95ef70b
 push: ok
 notes:
   - Session 20 batch at the user's request, space weather: T-086 DONKI, T-100 CDAW, T-102 SWPC, T-101 storms in the scene, T-104 Helioviewer. T-097 still stashed ("T-097 WIP").
@@ -29,4 +29,5 @@ notes:
   - Scene: shells are pooled (24, newest kept); opacity from CDAW mass with r^-0.7 spread, fade over the last 0.5 AU before 2 AU, rim brightening so the camera inside a storm is not washed out. The grey wash near the Sun at a few million km is the existing glow, not the storms.
   - Helioviewer terms: SDO images not copyrighted, credit "Courtesy of NASA/SDO and the AIA, EVE, and HMI science teams"; Helioviewer states no licence (helioviewer.org redirects to a NASA host, not followed). Watermark off.
   - New baseline gannon-storm-2024.png (new test, VN-EXT-005); no existing baseline changed.
+  - nightly 95ef70b-nightly ok; LAN http://192.168.1.166:8770/ (200)
   - Refresh (T-047) should also run donki, cdaw, swpc --refresh and sun when it lands; data/spaceweather.json holds the DONKI end date.
