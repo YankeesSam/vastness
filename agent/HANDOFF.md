@@ -18,8 +18,8 @@ do_not_read:
   - docs/architecture/VASTNESS_ARCHITECTURE.md
   - public/ephem, public/spaceweather, public/sun, public/stars.bin, public/textures, testdata, .cache, dist
 tests: pass (vitest 567; e2e chromium 74/74; ephem:check 40/40; typecheck, prettier, check-deps, check-size 410 KB clean)
-commit: pending
-push: pending
+commit: 6335194
+push: ok
 notes:
   - Session 21 batch at the user's request, the Horizons pipeline: T-097 part (format v3 non-singular elements, the stash applied and dropped), T-085 ended missions, T-107 comets with tails, T-084 dwarf planets (moons split to T-112). T-097 stays NOW.
   - LRO: non-singular elements nearly hold 2010-2011 (5 and 14 misses, max 11.8 km) but lose to positions on the misses rule; 2026 seams still need positions (1.8 MB). Mixing kinds within a part would bring the whole mission to about 3.9 MB.
@@ -28,3 +28,4 @@ notes:
   - New layers off by default: comets (fragment k), dwarfs (f); no baseline changed. Comets and dwarfs load after the first frame with the spacecraft (SMALL_BODY_MIN_ID).
   - Per-body initial_intervals (512) in data/bodies.json: slow small bodies are about 85-100 KB per 200 years; public/ephem now 22 MB.
   - e2e budget low tier once drew 34 calls against 32 for high (passed in the full run); watch it.
+  - nightly 6335194-nightly ok; LAN http://192.168.1.166:8770/ (200)
