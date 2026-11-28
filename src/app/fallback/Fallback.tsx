@@ -27,7 +27,8 @@ export function distancesAt(eph: Ephemeris, ids: readonly number[], t: number): 
   const earthOk = eph.state(EARTH, t, earth) === "ok";
   const out = new Map<number, Distances>();
   for (const id of ids) {
-    const ok = eph.state(id, t, s) === "ok";
+    // D-007: an object without an ephemeris in this build (Cassini, held out) has no distances
+    const ok = eph.has(id) && eph.state(id, t, s) === "ok";
     const d = (o: Float64Array) => Math.hypot(s[0]! - o[0]!, s[1]! - o[1]!, s[2]! - o[2]!);
     out.set(id, {
       sun: ok && sunOk && id !== SUN ? d(sun) : null,

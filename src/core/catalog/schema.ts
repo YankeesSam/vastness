@@ -3,7 +3,7 @@
 // science goals, source links, colour and marker priority. `validateCatalog` collects every problem it finds and
 // throws them together, so a bad edit shows all its faults at once. Pure: no I/O.
 
-export const OBJECT_TYPES = ["star", "planet", "moon", "spacecraft", "satellite"] as const;
+export const OBJECT_TYPES = ["star", "planet", "dwarf", "moon", "comet", "spacecraft", "satellite"] as const;
 export type ObjectType = (typeof OBJECT_TYPES)[number];
 
 /** Mission state. "unclear" when public sources disagree; the note says why. */
@@ -70,6 +70,8 @@ export interface CatalogObject {
   colour: string;
   /** Marker and label priority: higher wins declutter and pick ties. */
   priority: number;
+  /** Dwarf planets only (T-084): mean radius, km, for the camera's closest approach. */
+  radius_km?: number;
 }
 
 export interface Catalog {
@@ -115,6 +117,7 @@ const KEYS = new Set([
   "sources",
   "colour",
   "priority",
+  "radius_km",
 ]);
 
 /** VN-TIM-005: dated, known kind, labelled, in order, between launch and the status check (no planned events). */
@@ -165,6 +168,7 @@ export function validateCatalog(json: unknown): Catalog {
     if (o.type === "star") {
       if (o.parent !== undefined) bad("the star has no parent");
     } else if (!Number.isInteger(o.parent)) bad("parent missing");
+    if ((o.type === "comet" || o.type === "dwarf") && o.parent !== 10) bad(`a ${o.type}'s parent is the Sun (10)`); // T-107, T-084
     const craft = o.type === "spacecraft" || o.type === "satellite";
     if (o.type === "satellite") {
       if (!Number.isInteger(o.norad) || (o.norad as number) <= 0 || (o.norad as number) > 99999) {
@@ -205,6 +209,10 @@ export function validateCatalog(json: unknown): Catalog {
         if (!isSafeUrl(s?.url)) bad(`sources[${j}].url must be an https URL`);
       });
     if (typeof o.colour !== "string" || !COLOUR.test(o.colour)) bad("colour must be #rrggbb (lower case)");
+    if (o.radius_km !== undefined && (o.type !== "dwarf" || !(typeof o.radius_km === "number" && o.radius_km > 0))) {
+      bad("radius_km must be a positive number, on a dwarf planet");
+    }
+    if (o.type === "dwarf" && o.radius_km === undefined) bad("a dwarf planet needs radius_km");
     if (!Number.isInteger(o.priority) || (o.priority as number) < 0 || (o.priority as number) > 100) {
       bad("priority must be an integer 0..100");
     }

@@ -40,6 +40,8 @@ const LAYERS: readonly Layer[] = [
   "callouts",
   "stars",
   "spaceweather",
+  "comets",
+  "dwarfs",
 ];
 const DEG = Math.PI / 180;
 
@@ -72,6 +74,8 @@ export function parseTestParams(search: string): TestParams {
       callouts: false,
       stars: false,
       spaceweather: false,
+      comets: false,
+      dwarfs: false,
     };
     for (const l of layers) if ((LAYERS as readonly string[]).includes(l)) out.layers[l as Layer] = true;
   }

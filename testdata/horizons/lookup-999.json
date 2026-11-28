@@ -1,0 +1,1 @@
+{"signature":{"source":"NASA/JPL Horizons Lookup API","version":"1.1"},"count":2,"result":[{"type":"planet","spkid":"999","name":"Pluto","pdes":"134340","alias":[]},{"spkid":"20000999","type":"asteroid (integrated barycenter)","alias":["1972 CG","1957 SH","1940 RH","1939 HA","A915 VC","2000999","J23P00E"],"name":"999 Zachia","pdes":"A923 PE"}]}

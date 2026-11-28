@@ -51,6 +51,8 @@ const LAYERS: readonly [Layer, string][] = [
   ["callouts", "Distances to the Sun and Earth"],
   ["stars", "Stars"],
   ["spaceweather", "Space weather (CMEs, flares, solar wind)"],
+  ["comets", "Comets and their tails"],
+  ["dwarfs", "Dwarf planets"],
 ];
 
 /** VN-SCL-001, VN-SCN-003: each layer can be turned off. */

@@ -120,7 +120,9 @@ describe("app shell", () => {
       "Neptune",
     ]);
     expect(group("Moons")).toEqual(["Moon"]);
-    expect(group("Spacecraft")).toHaveLength(13);
+    expect(group("Spacecraft")).toHaveLength(18); // T-085: Cassini, Galileo, Rosetta, Pioneer 10 and 11
+    expect(group("Comets")).toHaveLength(9); // T-107
+    expect(group("Dwarf planets")).toEqual(["Ceres", "Pluto", "Haumea", "Makemake", "Eris"]); // T-084, from the Sun outwards
     const seq = viewStore.getState().targetSeq;
     const mars = screen.getByRole("button", { name: "Mars" });
     fireEvent.click(mars);

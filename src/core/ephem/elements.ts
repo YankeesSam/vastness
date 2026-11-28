@@ -1,11 +1,16 @@
 import { fitChebyshev } from "./chebyshev.ts";
-import { KIND_ELEMENTS, type EphemerisFile } from "./format.ts";
+import { KIND_ELEMENTS, KIND_ELEMENTS_NS, isElementKind, type ElementKind, type EphemerisFile } from "./format.ts";
 
 // VN-EPH-011: element segments. An orbiter's osculating elements relative to its parent, fitted per segment with
 // Chebyshev polynomials: a (km), e, i, node, argument of periapsis (rad, unwrapped), and L = M - n t (rad), where n
 // is the file's reference mean motion and t TDB seconds since J2000. Position and velocity come from Kepler's
 // equation and the two-body relations with the parent's GM, which for osculating elements is the true velocity.
 // Elliptic orbits only (0 <= e < 1, a > 0).
+// T-097: the non-singular kind (KIND_ELEMENTS_NS) stores a, k = e cos(w), h = e sin(w), i, node and
+// lambda - n t with lambda = w + M, the mean argument of latitude. Near e = 0 the periapsis w and M each swing through
+// whole turns while k, h and lambda stay smooth: that is what made LRO's near-circular years need position segments.
+// Evaluation recovers e = hypot(k, h), w = atan2(h, k), M = lambda - w; the position depends on w + true anomaly,
+// which stays continuous as e -> 0, so the noise in w cancels.
 
 /** Component order in an element segment. */
 export const ELEMENT_A = 0;
@@ -14,6 +19,9 @@ export const ELEMENT_I = 2;
 export const ELEMENT_NODE = 3;
 export const ELEMENT_PERI = 4;
 export const ELEMENT_L = 5;
+/** Non-singular kind: components 1 and 2 are k = e cos(w) and h = e sin(w); 5 is (w + M) - n t. */
+export const ELEMENT_K = 1;
+export const ELEMENT_H = 4;
 
 const TWO_PI = 2 * Math.PI;
 const KEPLER_ITERATIONS = 30;
@@ -163,7 +171,15 @@ export function evaluateElementSegment(
     }
     el[c] = coeffs[base]! + tau * b1 - b2;
   }
-  el[ELEMENT_L] = el[ELEMENT_L]! + f.meanMotion * t; // now M
+  if (f.kind === KIND_ELEMENTS_NS) {
+    // Stored a, k, i, node, h, lambda - n t (k and h where e and periapsis sit in the classic kind).
+    const k = el[ELEMENT_E]!;
+    const h = el[ELEMENT_PERI]!;
+    const w = Math.atan2(h, k);
+    el[ELEMENT_E] = Math.sqrt(k * k + h * h);
+    el[ELEMENT_PERI] = w;
+    el[ELEMENT_L] = el[ELEMENT_L]! + f.meanMotion * t - w; // now M
+  } else el[ELEMENT_L] = el[ELEMENT_L]! + f.meanMotion * t; // now M
   el[6] = f.mu;
   stateFromElements(el, out, o);
 }
@@ -186,21 +202,31 @@ export function unwrapAngles(values: Float64Array): Float64Array {
 
 /**
  * Element series for fitting from states sampled at ascending TDB `times`: per sample a, e, i, node, periapsis
- * and L = M - meanMotion t, with the angles unwrapped across the series. Returns six arrays.
+ * and L = M - meanMotion t, with the angles unwrapped across the series. Returns six arrays. With KIND_ELEMENTS_NS
+ * the columns are a, k = e cos(w), i, node, h = e sin(w), (w + M) - meanMotion t (T-097).
  */
 export function elementSeries(
   times: ArrayLike<number>,
   states: ArrayLike<ArrayLike<number>>,
   mu: number,
   meanMotion: number,
+  kind: ElementKind = KIND_ELEMENTS,
 ): Float64Array[] {
   const m = times.length;
   const cols = Array.from({ length: 6 }, () => new Float64Array(m));
+  const ns = kind === KIND_ELEMENTS_NS;
   for (let k = 0; k < m; k++) {
     const e = stateToElements(states[k]!, mu);
     for (let c = 0; c < 6; c++) cols[c]![k] = e[c]!;
+    if (ns) {
+      const ecc = e[ELEMENT_E]!;
+      const w = e[ELEMENT_PERI]!;
+      cols[ELEMENT_K]![k] = ecc * Math.cos(w);
+      cols[ELEMENT_H]![k] = ecc * Math.sin(w);
+      cols[ELEMENT_L]![k] = w + e[ELEMENT_L]!;
+    }
   }
-  for (const c of [ELEMENT_NODE, ELEMENT_PERI, ELEMENT_L]) unwrapAngles(cols[c]!);
+  for (const c of ns ? [ELEMENT_NODE, ELEMENT_L] : [ELEMENT_NODE, ELEMENT_PERI, ELEMENT_L]) unwrapAngles(cols[c]!);
   for (let k = 0; k < m; k++) cols[ELEMENT_L]![k] = cols[ELEMENT_L]![k]! - meanMotion * times[k]!;
   return cols;
 }
@@ -225,4 +251,4 @@ export function fitElementSegment(
 }
 
 /** True when the file holds element segments. */
-export const isElementFile = (f: EphemerisFile): boolean => f.kind === KIND_ELEMENTS;
+export const isElementFile = (f: EphemerisFile): boolean => isElementKind(f.kind);

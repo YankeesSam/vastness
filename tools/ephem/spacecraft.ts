@@ -351,7 +351,7 @@ async function fitWindow(
  * at most 64 sample intervals of `step` each, halved while a segment is over `targetKm` at its points and both halves
  * still have enough points for the degree.
  */
-function fitPoints(
+export function fitPoints(
   points: readonly Sample[],
   t0: number,
   t1: number,
@@ -360,20 +360,29 @@ function fitPoints(
   targetKm: number,
 ): SegmentInput[] {
   const enough = (n: number): boolean => 2 * n >= degree + 1;
-  const one = (a: number, b: number, pts: readonly Sample[]): SegmentInput => ({
-    t0: a,
-    t1: b,
-    coeffs: fitSegment(
+  const one = (a: number, b: number, pts: readonly Sample[], d = degree): SegmentInput => {
+    const c = fitSegment(
       a,
       b,
       pts.map((p) => p.t),
       pts.map((p) => [p.x, p.y, p.z]),
       pts.map((p) => [p.vx, p.vy, p.vz]),
-      degree,
-    ),
-  });
+      d,
+    );
+    if (d === degree) return { t0: a, t1: b, coeffs: c };
+    const coeffs = new Float64Array(3 * (degree + 1));
+    for (let axis = 0; axis < 3; axis++)
+      coeffs.set(c.subarray(axis * (d + 1), (axis + 1) * (d + 1)), axis * (degree + 1));
+    return { t0: a, t1: b, coeffs };
+  };
   const work = (a: number, b: number, out: SegmentInput[]): void => {
     const pts = points.filter((p) => p.t >= a && p.t <= b);
+    if (!enough(pts.length) && pts.length > 0 && b - a <= step) {
+      // A seam just before the window's last sample leaves a piece shorter than one step (Rosetta 2010: 1 s, one
+      // point): fitted at the degree its positions and velocities determine, the higher coefficients zero.
+      const low = one(a, b, pts.slice(0, Math.ceil((degree + 1) / 2)), 2 * pts.length - 1);
+      return void out.push(low);
+    }
     if (!enough(pts.length)) throw new RangeError(`too few points (${pts.length}) for a segment ${a}..${b}`);
     const seg = one(a, b, pts);
     const m = (a + b) / 2;

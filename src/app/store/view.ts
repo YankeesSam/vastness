@@ -18,9 +18,21 @@ export { advanceTime, MAX_FRAME_DT_S };
 /**
  * callouts: VN-SCL-005 distance lines from the selection to the Sun and Earth. stars: VN-SCN-007 background stars.
  * spaceweather: VN-EXT-005 CME storms, flares, arrivals and the L1 solar wind (off by default).
+ * comets: VN-EXT-015 comets with their tails, markers, labels and trails (off by default).
+ * dwarfs: VN-SCN-008 dwarf planets, markers, labels and trails (off by default).
  */
 export type Layer =
-  "bodies" | "textures" | "labels" | "markers" | "orbits" | "trails" | "callouts" | "stars" | "spaceweather";
+  | "bodies"
+  | "textures"
+  | "labels"
+  | "markers"
+  | "orbits"
+  | "trails"
+  | "callouts"
+  | "stars"
+  | "spaceweather"
+  | "comets"
+  | "dwarfs";
 
 /** VN-SCN-005, VN-SCN-007: the sky and Sun settings, each 0 (off) to 1 (full) or a size factor. */
 export interface SkySettings {
@@ -118,6 +130,8 @@ export function createViewStore(init: ViewInit = {}): StoreApi<ViewState> {
       callouts: true,
       stars: true,
       spaceweather: false,
+      comets: false,
+      dwarfs: false,
     },
     sky: { ...DEFAULT_SKY },
     quality: "high",

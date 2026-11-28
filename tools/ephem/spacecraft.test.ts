@@ -9,6 +9,7 @@ import {
   STEP_LADDER_MIN,
   chunkBounds,
   discoverCoverage,
+  fitPoints,
   generateSpacecraft,
   missRuns,
   parseCoverageEdge,
@@ -193,6 +194,28 @@ describe("tiling and chunks", () => {
   });
 });
 
+describe("fitPoints", () => {
+  it("VN-EPH-003: a piece shorter than a step after a seam on the window's last sample is fitted at a lower degree, padded", () => {
+    // Rosetta 2010: a seam one second before the window's last 1 min sample leaves a 1 s piece with one point.
+    const p = { t: 1001, x: 7e7, y: -3e7, z: 1e5, vx: 12, vy: 25, vz: -0.5 };
+    const segs = fitPoints([p], 1000, 1001, 11, 60, 25);
+    expect(segs).toHaveLength(1);
+    expect(segs[0]!.coeffs.length).toBe(3 * 12);
+    const out = new Float64Array(6);
+    for (const [t, k] of [
+      [1001, 0],
+      [1000, -1],
+    ] as const) {
+      evaluateSegment(segs[0]!.coeffs as Float64Array, 0, 12, 1000, 1001, t, out, 0);
+      expect(out[0]).toBeCloseTo(p.x + k * p.vx, 6);
+      expect(out[1]).toBeCloseTo(p.y + k * p.vy, 6);
+      expect(out[2]).toBeCloseTo(p.z + k * p.vz, 6);
+    }
+    // A long piece with too few points is still an error.
+    expect(() => fitPoints([p], 0, 1001, 11, 60, 25)).toThrow(/too few points/);
+  });
+});
+
 describe("generateSpacecraft", () => {
   const run = (craft: Craft, maxIntervals?: number) => {
     const client = new FakeHorizons({ [-9]: craft });
@@ -309,7 +332,7 @@ describe("pipeline wiring", () => {
     const { heliocentricSpacecraft } = await import("./main.ts");
     const catalog = JSON.parse(readFileSync(new URL("../../data/catalog.json", import.meta.url), "utf8"));
     const ids = heliocentricSpacecraft(catalog).map((s) => s.id);
-    expect(ids).toEqual([-255, -170, -159, -98, -96, -64, -49, -32, -31, -28]);
+    expect(ids).toEqual([-255, -226, -170, -159, -98, -96, -64, -49, -32, -31, -28, -24, -23]); // T-085: Rosetta, Pioneer 10 and 11
   });
 
   it("VN-EPH-008: spacecraft reference epochs lie inside coverage, off the grid, and visit refined windows", async () => {

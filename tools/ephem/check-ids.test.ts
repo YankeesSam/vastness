@@ -99,6 +99,27 @@ describe("check-ids (VN-DAT-008)", () => {
     expect(c.filter((x) => x.source === "data/bodies.json").length).toBe(bodies.bodies.length);
   });
 
+  it("T-107, VN-DAT-008: a comet matches by name and must carry the designation we query by", () => {
+    const hb = [
+      { name: "Hale-Bopp (C/1995 O1)", spkid: "1000132", type: "comet", alias: ["J95O010"], pdes: "C/1995 O1" },
+    ];
+    expect(judge({ id: 1000132, name: "Hale-Bopp", designation: "C/1995 O1", source: "t" }, hb, "q").pass).toBe(true);
+    const wrong = judge({ id: 1000132, name: "Hale-Bopp", designation: "C/1995 O2", source: "t" }, hb, "q");
+    expect(wrong.pass).toBe(false);
+    expect(wrong.note).toMatch(/designated C\/1995 O1, not C\/1995 O2/);
+  });
+
+  it("T-084, VN-DAT-008: a numbered dwarf planet matches by its numbered name; Eris's barycentre entry does not confuse it", () => {
+    const eris = [
+      { name: "Eris (system barycenter)", spkid: "20136199", type: "asteroid barycenter", alias: [], pdes: null },
+      { name: "136199 Eris", spkid: "20136199", type: "asteroid", alias: ["2136199"], pdes: "2003 UB313" },
+    ];
+    const ok = judge({ id: 20136199, name: "Eris", designation: "136199", source: "t" }, eris, "q");
+    expect(ok.pass).toBe(true);
+    expect(ok.found).toBe("136199 Eris");
+    expect(judge({ id: 20136199, name: "Eris", designation: "136108", source: "t" }, eris, "q").pass).toBe(false);
+  });
+
   it("the recorded fixtures cover every ID in data/bodies.json", () => {
     for (const b of bodies.bodies) expect(LOOKUP_FIXTURES).toContain(String(b.id));
   });

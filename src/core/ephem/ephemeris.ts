@@ -1,6 +1,6 @@
 import { evaluateElementSegment } from "./elements.ts";
 import { evaluateSegment } from "./chebyshev.ts";
-import { findSegment, KIND_ELEMENTS, readEphemeris, type EphemerisFile } from "./format.ts";
+import { findSegment, isElementKind, readEphemeris, type EphemerisFile } from "./format.ts";
 import { edgeFor, illustrativeState, type Illustrative, type IllustrativeEdge } from "./illustrative.ts";
 
 // VN-EPH-005, VN-EPH-009, VN-EPH-010: the runtime ephemeris. It reads the manifest's chunk index, loads chunk files
@@ -115,7 +115,7 @@ const fileClock = new Float64Array(1);
 export function evaluateFile(f: EphemerisFile, t: number, out: Float64Array, o = 0): boolean {
   const s = findSegment(f, t);
   if (s < 0) return false;
-  if (f.kind === KIND_ELEMENTS) {
+  if (isElementKind(f.kind)) {
     fileClock[0] = t;
     evaluateElementSegment(f, s, fileClock, out, o);
   } else {
@@ -260,7 +260,7 @@ export function createEphemeris(manifest: EphemerisManifest, loader: ChunkLoader
       if (t0[mid]! <= t) s = mid;
       else e = mid - 1;
     }
-    if (f.kind === KIND_ELEMENTS) {
+    if (isElementKind(f.kind)) {
       evaluateElementSegment(f, s, clock, out, o);
       return "ok";
     }

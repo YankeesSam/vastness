@@ -14,14 +14,15 @@ test.describe("spacecraft", () => {
     const canvas = page.locator("canvas");
     await expect(canvas).toHaveAttribute("data-scene-ready", "1", { timeout: 20_000 });
     // Voyager 1 and 2, New Horizons, Parker, Europa Clipper, JUICE, Lucy, Psyche, OSIRIS-APEX, JWST; and the
-    // orbiters (T-089): Juno and CAPSTONE exact, LRO on its illustrative orbit before its stored window (T-090).
-    await expect(canvas).toHaveAttribute("data-spacecraft", "13");
+    // orbiters (T-089): Juno and CAPSTONE exact, LRO on its illustrative orbit before its stored window (T-090);
+    // Pioneer 10 and 11 still coasting (T-085). Galileo (into Jupiter 2003) and Rosetta (onto 67P 2016) are not drawn.
+    await expect(canvas).toHaveAttribute("data-spacecraft", "15");
     // VN-CAT-007: every satellite has been launched by 2026; their elements are from November 2026, more than 14 days
     // away, so all 13 are on illustrative orbits.
     await expect(canvas).toHaveAttribute("data-satellites", "13");
     const illustrative = /^LRO(,[^,]+){13}$/;
     await expect(canvas).toHaveAttribute("data-illustrative", illustrative, { timeout: 10_000 });
-    await expect(canvas).toHaveAttribute("data-trails", "12", { timeout: 15_000 }); // no trail on an illustrative orbit
+    await expect(canvas).toHaveAttribute("data-trails", "14", { timeout: 15_000 }); // no trail on an illustrative orbit
     expect(errors).toEqual([]);
   });
 
@@ -43,7 +44,7 @@ test.describe("spacecraft", () => {
     await page.goto("./?t=2000-01-01T00:00:00Z");
     const canvas = page.locator("canvas");
     await expect(canvas).toHaveAttribute("data-scene-ready", "1", { timeout: 20_000 });
-    await expect(canvas).toHaveAttribute("data-spacecraft", "2"); // the Voyagers
+    await expect(canvas).toHaveAttribute("data-spacecraft", "5"); // the Voyagers, the Pioneers and Galileo (T-085)
     // VN-CAT-007: of the satellites, only the ISS and Hubble were in orbit, both on illustrative orbits.
     await expect(canvas).toHaveAttribute("data-satellites", "2");
     await page.getByRole("button", { name: "James Webb Space Telescope" }).click();

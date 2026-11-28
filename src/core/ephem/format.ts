@@ -3,13 +3,15 @@
 
 export const MAGIC = "VNEP";
 /** Highest format version this code reads and writes. */
-export const FORMAT_VERSION = 2;
+export const FORMAT_VERSION = 3;
 /**
  * Position files keep the version-1 layout (64-byte header, no kind field), so files written before version 2
  * stay byte-identical; element files (VN-EPH-011) are version 2 with an 80-byte header.
  */
 export const POSITION_FILE_VERSION = 1;
 export const ELEMENTS_FILE_VERSION = 2;
+/** Non-singular element files (T-097): the version-2 layout with kind 2. */
+export const ELEMENTS_NS_FILE_VERSION = 3;
 export const HEADER_BYTES = 64;
 export const HEADER_BYTES_V2 = 80;
 export const SEGMENT_ENTRY_BYTES = 16;
@@ -17,9 +19,27 @@ export const SEGMENT_ENTRY_BYTES = 16;
 /** Segment kinds: Chebyshev positions (x, y, z) or Chebyshev osculating elements (VN-EPH-011). */
 export const KIND_POSITION = 0;
 export const KIND_ELEMENTS = 1;
-export type SegmentKind = typeof KIND_POSITION | typeof KIND_ELEMENTS;
-/** Components per segment by kind: x, y, z; or a, e, i, node, argument of periapsis, M - n t. */
-export const COMPONENTS: Record<SegmentKind, number> = { [KIND_POSITION]: 3, [KIND_ELEMENTS]: 6 };
+/**
+ * Non-singular elements (T-097): a, e cos(periapsis), e sin(periapsis), i, node, and the mean argument of latitude
+ * (periapsis + M) - n t. Smooth through near-circular orbits, where periapsis and M each swing wildly.
+ */
+export const KIND_ELEMENTS_NS = 2;
+export type SegmentKind = typeof KIND_POSITION | typeof KIND_ELEMENTS | typeof KIND_ELEMENTS_NS;
+export type ElementKind = typeof KIND_ELEMENTS | typeof KIND_ELEMENTS_NS;
+/** Components per segment by kind: x, y, z; or six elements. */
+export const COMPONENTS: Record<SegmentKind, number> = {
+  [KIND_POSITION]: 3,
+  [KIND_ELEMENTS]: 6,
+  [KIND_ELEMENTS_NS]: 6,
+};
+
+/** True for either element kind. */
+export const isElementKind = (k: number): k is ElementKind => k === KIND_ELEMENTS || k === KIND_ELEMENTS_NS;
+const VERSION_OF: Record<SegmentKind, number> = {
+  [KIND_POSITION]: POSITION_FILE_VERSION,
+  [KIND_ELEMENTS]: ELEMENTS_FILE_VERSION,
+  [KIND_ELEMENTS_NS]: ELEMENTS_NS_FILE_VERSION,
+};
 
 export interface SegmentInput {
   /** TDB seconds since J2000. */
@@ -72,7 +92,7 @@ function checkSegments(t0: ArrayLike<number>, t1: ArrayLike<number>, count: numb
 export function writeEphemeris(input: EphemerisInput): Uint8Array {
   const { degree, segments } = input;
   const kind = input.kind ?? KIND_POSITION;
-  const elements = kind === KIND_ELEMENTS;
+  const elements = isElementKind(kind);
   if (kind !== KIND_POSITION && !elements) throw new RangeError(`unknown segment kind ${String(kind)}`);
   const components = COMPONENTS[kind];
   const n = degree + 1;
@@ -99,7 +119,7 @@ export function writeEphemeris(input: EphemerisInput): Uint8Array {
   const bytes = new Uint8Array(total);
   const dv = new DataView(bytes.buffer);
   for (let i = 0; i < 4; i++) bytes[i] = MAGIC.charCodeAt(i);
-  dv.setUint16(4, elements ? ELEMENTS_FILE_VERSION : POSITION_FILE_VERSION, true);
+  dv.setUint16(4, VERSION_OF[kind], true);
   dv.setUint16(6, header, true);
   dv.setInt32(8, input.objectId, true);
   dv.setInt32(12, input.centerId, true);
@@ -110,7 +130,7 @@ export function writeEphemeris(input: EphemerisInput): Uint8Array {
   dv.setFloat64(32, segments[count - 1]!.t1, true);
   dv.setUint32(40, tableOffset, true);
   dv.setUint32(44, coeffOffset, true);
-  // Version 1: 48..63 reserved, zero. Version 2: kind at 48, mu at 56, mean motion at 64, 50..55 and 72..79 zero.
+  // Version 1: 48..63 reserved, zero. Versions 2 and 3: kind at 48, mu at 56, mean motion at 64, 50..55 and 72..79 zero.
   if (elements) {
     dv.setUint16(48, kind, true);
     dv.setFloat64(56, input.mu!, true);
@@ -134,7 +154,7 @@ export function readEphemeris(buffer: ArrayBufferLike, byteOffset = 0, byteLengt
     if (dv.getUint8(i) !== MAGIC.charCodeAt(i)) throw new RangeError("not an ephemeris file (bad magic)");
   }
   const version = dv.getUint16(4, true);
-  if (version !== POSITION_FILE_VERSION && version !== ELEMENTS_FILE_VERSION) {
+  if (version !== POSITION_FILE_VERSION && version !== ELEMENTS_FILE_VERSION && version !== ELEMENTS_NS_FILE_VERSION) {
     throw new RangeError(`ephemeris format version ${version} is not supported (1 to ${FORMAT_VERSION})`);
   }
   const header = dv.getUint16(6, true);
@@ -143,8 +163,11 @@ export function readEphemeris(buffer: ArrayBufferLike, byteOffset = 0, byteLengt
     throw new RangeError(`ephemeris header is ${header} bytes, expected ${expectedHeader} for version ${version}`);
   }
   const kindField = version === 1 ? KIND_POSITION : dv.getUint16(48, true);
-  if (kindField !== KIND_POSITION && kindField !== KIND_ELEMENTS) {
+  if (kindField !== KIND_POSITION && !isElementKind(kindField)) {
     throw new RangeError(`unknown segment kind ${kindField}`);
+  }
+  if (version !== 1 && VERSION_OF[kindField as SegmentKind] !== version) {
+    throw new RangeError(`segment kind ${kindField} is not valid in version ${version}`);
   }
   const kind: SegmentKind = kindField;
   const degree = dv.getUint16(16, true);
@@ -154,7 +177,7 @@ export function readEphemeris(buffer: ArrayBufferLike, byteOffset = 0, byteLengt
   }
   const mu = version === 1 ? 0 : dv.getFloat64(56, true);
   const meanMotion = version === 1 ? 0 : dv.getFloat64(64, true);
-  if (kind === KIND_ELEMENTS && !(mu > 0 && Number.isFinite(meanMotion))) {
+  if (isElementKind(kind) && !(mu > 0 && Number.isFinite(meanMotion))) {
     throw new RangeError("element file has no valid mu or mean motion");
   }
   const count = dv.getUint32(20, true);

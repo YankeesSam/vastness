@@ -13,7 +13,7 @@ import { evaluateFile } from "../../src/core/ephem/ephemeris.ts";
 import { fitSegment } from "../../src/core/ephem/chebyshev.ts";
 import { elementSeries, fitElementSegment } from "../../src/core/ephem/elements.ts";
 import {
-  KIND_ELEMENTS,
+  KIND_ELEMENTS_NS,
   KIND_POSITION,
   findSegment,
   readEphemeris,
@@ -37,12 +37,20 @@ import {
   type Seam,
 } from "./spacecraft.ts";
 
+/**
+ * The element kind the pipeline fits (T-097): non-singular elements, which hold through near-circular orbits (LRO
+ * 2009-2011) where the classic set (periapsis, M) breaks down, and fit eccentric ones (CAPSTONE) as well.
+ */
+export const ELEMENT_KIND: typeof KIND_ELEMENTS_NS = KIND_ELEMENTS_NS;
+
 export interface OrbiterSpec {
   id: number;
   name: string;
   /** The parent body (599 Jupiter, 301 the Moon). */
   center: number;
   tolerance: keyof typeof TOLERANCE_KM;
+  /** T-085: the mission ended by entering the parent (Galileo into Jupiter): no illustrative orbit after it. */
+  ends_in_parent?: boolean;
 }
 
 export interface OrbitersFile {
@@ -106,7 +114,7 @@ export function referenceMeanMotion(samples: readonly Sample[], mu: number): num
 }
 
 interface Piece {
-  kind: typeof KIND_POSITION | typeof KIND_ELEMENTS;
+  kind: typeof KIND_POSITION | typeof ELEMENT_KIND;
   degree: number;
   segments: SegmentInput[];
   meanMotion: number;
@@ -125,7 +133,7 @@ const fileOf = (o: OrbiterSpec, p: Piece, mu: number, segments = p.segments): Ui
     centerId: o.center,
     degree: p.degree,
     segments,
-    ...(p.kind === KIND_ELEMENTS ? { kind: KIND_ELEMENTS, mu, meanMotion: p.meanMotion } : {}),
+    ...(p.kind === ELEMENT_KIND ? { kind: ELEMENT_KIND, mu, meanMotion: p.meanMotion } : {}),
   });
 
 const parse = (b: Uint8Array): EphemerisFile => readEphemeris(b.buffer, b.byteOffset, b.byteLength);
@@ -189,12 +197,13 @@ export function jumpIndices(s: readonly Sample[], km: number): number[] {
 /** One least-squares segment of the piece's kind and degree over [t0, t1] from all of `pts` (no held-out points). */
 function fitOne(piece: Piece, pts: readonly Sample[], t0: number, t1: number, mu: number): SegmentInput {
   const times = pts.map((p) => p.t);
-  if (piece.kind === KIND_ELEMENTS) {
+  if (piece.kind === ELEMENT_KIND) {
     const series = elementSeries(
       times,
       pts.map((p) => [p.x, p.y, p.z, p.vx, p.vy, p.vz]),
       mu,
       piece.meanMotion,
+      ELEMENT_KIND,
     );
     if (pts.length < piece.degree + 1) throw new RangeError(`too few points (${pts.length}) for a segment`);
     return { t0, t1, coeffs: fitElementSegment(t0, t1, times, series, piece.degree) };
@@ -227,7 +236,7 @@ function fitAcrossSeams(
 ): SegmentInput[] {
   // Points a segment needs: elements have no velocity rows, so twice the coefficients for a well-posed fit (with only
   // degree + 1 the polynomial interpolates and swings between them: 1,600 km in LRO's 2026 seams).
-  const need = piece.kind === KIND_ELEMENTS ? 2 * (piece.degree + 1) : piece.degree + 1;
+  const need = piece.kind === ELEMENT_KIND ? 2 * (piece.degree + 1) : piece.degree + 1;
   const out: SegmentInput[] = [];
   const work = (side: readonly Sample[], a: number, b: number): void => {
     const seg = fitOne(piece, side, a, b, mu);
@@ -240,7 +249,7 @@ function fitAcrossSeams(
         centerId: 0,
         degree: piece.degree,
         segments: [seg],
-        ...(piece.kind === KIND_ELEMENTS ? { kind: KIND_ELEMENTS, mu, meanMotion: piece.meanMotion } : {}),
+        ...(piece.kind === ELEMENT_KIND ? { kind: ELEMENT_KIND, mu, meanMotion: piece.meanMotion } : {}),
       }),
     );
     if (perSegmentMax(fileErrors(f, side, Infinity)) > targetKm && left.length >= need && right.length >= need) {
@@ -278,8 +287,8 @@ async function fitKind(
   const tol = TOLERANCE_KM[o.tolerance];
   const target = tol * oo.targetFraction;
   const base = oo.initialIntervals ?? INITIAL_INTERVALS;
-  const meanMotion = kind === KIND_ELEMENTS ? referenceMeanMotion(samples, mu) : 0;
-  const elements = kind === KIND_ELEMENTS ? { mu, meanMotion } : undefined;
+  const meanMotion = kind === ELEMENT_KIND ? referenceMeanMotion(samples, mu) : 0;
+  const elements = kind === ELEMENT_KIND ? { mu, meanMotion, kind: ELEMENT_KIND } : undefined;
   const opts = (n: number, degrees?: readonly number[]) => ({
     toleranceKm: tol,
     targetKm: target,
@@ -446,7 +455,7 @@ export async function generateOrbiters(
         const pos = await fitKind(oo, o, KIND_POSITION, part, acc);
         if (pos) candidates.push(pos);
         if (bound) {
-          const el = await fitKind(oo, o, KIND_ELEMENTS, part, acc).catch((e: unknown) => {
+          const el = await fitKind(oo, o, ELEMENT_KIND, part, acc).catch((e: unknown) => {
             if (e instanceof RangeError && /elliptic/.test(e.message)) return undefined;
             throw e;
           });
@@ -476,8 +485,8 @@ export async function generateOrbiters(
       // the transfer is taken to end after the last of those and both parts are fitted again.
       for (let tries = 0; tries < 3 && fitted.length === 2; tries++) {
         const bound = fitted[1]!.sized;
-        const el = bound.find((z) => z.c.kind === KIND_ELEMENTS);
-        if (!el || bound[0]!.c.kind === KIND_ELEMENTS) break;
+        const el = bound.find((z) => z.c.kind === ELEMENT_KIND);
+        if (!el || bound[0]!.c.kind === ELEMENT_KIND) break;
         const early = el.c.misses.filter((x) => x.t0 < samples[split]!.t + SETTLE_S);
         if (early.length === 0) break;
         const m = Math.max(...early.map((x) => x.t1));
@@ -494,7 +503,7 @@ export async function generateOrbiters(
           t0: s[0]!.t,
           t1: s.at(-1)!.t,
           candidates: sized.map((z) => ({
-            kind: z.c.kind === KIND_ELEMENTS ? "elements" : "position",
+            kind: z.c.kind === ELEMENT_KIND ? "elements" : "position",
             bytes: z.bytes,
             degree: z.c.degree,
             segments: z.c.segments.length,
@@ -507,11 +516,11 @@ export async function generateOrbiters(
             sized
               .map(
                 (z) =>
-                  `${z.c.kind === KIND_ELEMENTS ? "elements" : "position"} ${z.bytes} B, max ${z.err.km.toFixed(3)} km, ` +
+                  `${z.c.kind === ELEMENT_KIND ? "elements" : "position"} ${z.bytes} B, max ${z.err.km.toFixed(3)} km, ` +
                   `${z.c.misses.length} misses`,
               )
               .join("; ") +
-            ` -> ${best.kind === KIND_ELEMENTS ? "elements" : "position"}`,
+            ` -> ${best.kind === ELEMENT_KIND ? "elements" : "position"}`,
         );
       }
       allSamples = allSamples.concat(acc.samples.filter((p) => p.t >= a && p.t <= b));
@@ -553,7 +562,7 @@ export async function generateOrbiters(
         },
         bytes: bytes.byteLength,
         sha256: createHash("sha256").update(bytes).digest("hex"),
-        segment_kind: p.kind === KIND_ELEMENTS ? "elements" : "position",
+        segment_kind: p.kind === ELEMENT_KIND ? "elements" : "position",
         degree: p.degree,
         segments: segs.length,
         max_error_km: round(e.km, 4),
@@ -604,11 +613,12 @@ export async function generateOrbiters(
         parts: pieces.map((p) => ({
           start_tdb: tdbText(Math.round(p.t0 / MIN) * MIN),
           end_tdb: tdbText(Math.round(p.t1 / MIN) * MIN),
-          kept: p.kind === KIND_ELEMENTS ? "elements" : "position",
+          kept: p.kind === ELEMENT_KIND ? "elements" : "position",
           candidates: p.candidates,
         })),
       },
       stored: whole ? "mission" : "window",
+      ...(o.ends_in_parent ? { ends_in_parent: true } : {}),
       ...(whole ? {} : { window: { build_date: cfg.build_date, days: cfg.window_days } }),
       coverage: {
         start: first,

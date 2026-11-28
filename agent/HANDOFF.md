@@ -1,33 +1,30 @@
 schema: 1
-from_session: 20
-to_session: 21
-completed: [T-086, T-100, T-102, T-101, T-104]
+from_session: 21
+to_session: 22
+completed: [T-085, T-107, T-084]
 failed: []
 next_task_id: T-097
-next_task: "T-097 LRO whole mission under 5 MB (non-singular elements, format v3); WIP in git stash"
+next_task: "T-097 LRO whole mission under 5 MB: let a yearly part mix element and position files (format v3 landed, 5.66 MB measured)"
 next_skill: vastness-execute
 read_next:
   - agent/STATE.md
   - agent/PLAN.md
-  - src/core/ephem/elements.ts
-  - src/core/ephem/format.ts
   - tools/ephem/orbiters.ts
+  - src/core/ephem/format.ts
+  - src/core/ephem/elements.ts
   - docs/EPHEMERIS_FORMAT.md
 do_not_read:
   - docs/REQUIREMENTS.md (grep VN-* IDs instead)
   - docs/architecture/VASTNESS_ARCHITECTURE.md
   - public/ephem, public/spaceweather, public/sun, public/stars.bin, public/textures, testdata, .cache, dist
-tests: pass (vitest 552; e2e chromium 72/72 at 4 workers, D-005 passed this run at 1.6 s; typecheck, prettier, check-deps, check-size 405 KB clean)
-commit: 95ef70b
-push: ok
+tests: pass (vitest 567; e2e chromium 74/74; ephem:check 40/40; typecheck, prettier, check-deps, check-size 410 KB clean)
+commit: pending
+push: pending
 notes:
-  - Session 20 batch at the user's request, space weather: T-086 DONKI, T-100 CDAW, T-102 SWPC, T-101 storms in the scene, T-104 Helioviewer. T-097 still stashed ("T-097 WIP").
-  - Pipeline: npm run donki | cdaw | swpc | sun (in that order; each has --offline; sun has --check). Shared polite client tools/net/polite.ts (secrets kept out of URL cache keys and messages; binary bodies cached as base64). Deterministic JSON tools/net/json.ts (one record per line); public/spaceweather and public/sun are prettier-ignored.
-  - DONKI: 60-day range limit, so monthly requests (609 cached). FLR endpoint 404 -> D-006 (flares without class). Analysis rule: most accurate, LE before SH; Enlil: latest run on it. 1458 CMEs lack a longitude etc. and are listed, not drawn.
-  - CDAW server reset connections after the first download; the cache holds that response (Date header 2026-11-28T01:17:58Z), byte-exact.
-  - SWPC: products/solar-wind/*-7-day.json are gone (404); json/rtsw 1-minute files cover one day only, so the build holds 2026-11-27 01:00..2026-11-28 01:00. The panel says so outside that span.
-  - Scene: shells are pooled (24, newest kept); opacity from CDAW mass with r^-0.7 spread, fade over the last 0.5 AU before 2 AU, rim brightening so the camera inside a storm is not washed out. The grey wash near the Sun at a few million km is the existing glow, not the storms.
-  - Helioviewer terms: SDO images not copyrighted, credit "Courtesy of NASA/SDO and the AIA, EVE, and HMI science teams"; Helioviewer states no licence (helioviewer.org redirects to a NASA host, not followed). Watermark off.
-  - New baseline gannon-storm-2024.png (new test, VN-EXT-005); no existing baseline changed.
-  - nightly 95ef70b-nightly ok; LAN http://192.168.1.166:8770/ (200)
-  - Refresh (T-047) should also run donki, cdaw, swpc --refresh and sun when it lands; data/spaceweather.json holds the DONKI end date.
+  - Session 21 batch at the user's request, the Horizons pipeline: T-097 part (format v3 non-singular elements, the stash applied and dropped), T-085 ended missions, T-107 comets with tails, T-084 dwarf planets (moons split to T-112). T-097 stays NOW.
+  - LRO: non-singular elements nearly hold 2010-2011 (5 and 14 misses, max 11.8 km) but lose to positions on the misses rule; 2026 seams still need positions (1.8 MB). Mixing kinds within a part would bring the whole mission to about 3.9 MB.
+  - Cassini held out of data/orbiters.json (D-007, T-113): F2 151 km at 2017-09-15 10:30 TDB outside its listed misses. Galileo passes but lists 5 cruise misses up to 299 km.
+  - Fixes on the way: spacecraft.ts fits a sub-step piece after a seam on a window's last sample (Rosetta 2010); check-ids caught the dwarf SPK IDs (20000001, not 2000001); Pluto needs 6 h samples (12 h gave 18 km between samples near segment ends).
+  - New layers off by default: comets (fragment k), dwarfs (f); no baseline changed. Comets and dwarfs load after the first frame with the spacecraft (SMALL_BODY_MIN_ID).
+  - Per-body initial_intervals (512) in data/bodies.json: slow small bodies are about 85-100 KB per 200 years; public/ephem now 22 MB.
+  - e2e budget low tier once drew 34 calls against 32 for high (passed in the full run); watch it.

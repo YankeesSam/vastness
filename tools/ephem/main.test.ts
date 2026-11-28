@@ -7,7 +7,16 @@ import { evaluateSegment } from "../../src/core/ephem/chebyshev.ts";
 import { findSegment, readEphemeris } from "../../src/core/ephem/format.ts";
 import type { CachedResponse } from "./client.ts";
 import { canonicalQuery } from "./horizons.ts";
-import { CREDIT, generate, stableStringify, writeOutputs, yearStart, type BodiesFile, type Fetcher } from "./main.ts";
+import {
+  CREDIT,
+  generate,
+  horizonsCommand,
+  stableStringify,
+  writeOutputs,
+  yearStart,
+  type BodiesFile,
+  type Fetcher,
+} from "./main.ts";
 
 const J2000_JD = 2451545;
 const DAY = 86400;
@@ -22,7 +31,11 @@ const ORBITS: Record<number, { r: number; days: number; name: string; source: st
   301: { r: 384_400, days: 27.32, name: "Moon", source: "DE441" },
   499: { r: 1.524 * AU, days: 687, name: "Mars", source: "mar099" },
   4: { r: 1.524 * AU, days: 687, name: "Mars Barycenter", source: "DE441" },
+  // T-107: a comet, asked for by designation; Horizons names it without an ID in the header.
+  1000036: { r: 3 * AU, days: 1900, name: "1P/Halley", source: "JPL#75" },
 };
+/** Comet designations the fake knows, as the pipeline asks for them. */
+const DESIGNATIONS: Record<string, number> = { "DES=1P;CAP;NOFRAG": 1000036 };
 const NAMES: Record<number, string> = { 10: "Sun", 399: "Earth" };
 
 function truth(id: number, t: number): [number, number, number, number, number, number] {
@@ -42,7 +55,8 @@ function truth(id: number, t: number): [number, number, number, number, number, 
 const unq = (v: string): string => v.replace(/^'|'$/g, "");
 
 function fakeBody(params: Record<string, string>, refuse: (id: number, start: string) => boolean): string {
-  const id = Number(unq(params.COMMAND!));
+  const command = unq(params.COMMAND!);
+  const id = DESIGNATIONS[command] ?? Number(command);
   const center = Number(unq(params.CENTER!).split("@")[1]);
   const start = unq(params.START_TIME!);
   if (refuse(id, start)) {
@@ -62,7 +76,9 @@ function fakeBody(params: Record<string, string>, refuse: (id: number, start: st
   const o = ORBITS[id]!;
   const result = [
     "*******************************************************************************",
-    `Target body name: ${o.name} (${id})                     {source: ${o.source}}`,
+    Object.values(DESIGNATIONS).includes(id)
+      ? `Target body name: ${o.name}                       {source: ${o.source}}`
+      : `Target body name: ${o.name} (${id})                     {source: ${o.source}}`,
     `Center body name: ${NAMES[center]} (${center})          {source: DE441}`,
     "Reference frame : Ecliptic of J2000.0",
     "            JDTDB,            Calendar Date (TDB),   X,   Y,   Z,  VX,  VY,  VZ,",
@@ -128,7 +144,20 @@ describe("npm run ephem (T-018)", () => {
     expect(BODIES_JSON.coverage).toEqual({ from_year: 1900, to_year: 2100 });
     expect(BODIES_JSON.chunk_years).toBe(10);
     const by = new Map(BODIES_JSON.bodies.map((b) => [b.id, b]));
-    expect([...by.keys()].sort((a, b) => a - b)).toEqual([10, 199, 299, 301, 399, 499, 599, 699, 799, 899]);
+    const comets = [1000012, 1000025, 1000036, 1000068, 1000093, 1000107, 1000132, 1003667, 1003913]; // T-107
+    const dwarfs = [999, 20000001, 20136108, 20136199, 20136472]; // T-084
+    expect([...by.keys()].sort((a, b) => a - b)).toEqual(
+      [10, 199, 299, 301, 399, 499, 599, 699, 799, 899, ...dwarfs, ...comets].sort((a, b) => a - b),
+    );
+    for (const id of dwarfs)
+      expect(by.get(id)).toMatchObject({ center: 10, tolerance: "planet", initial_intervals: 512 });
+    expect(by.get(999)).toMatchObject({ barycenter: 9, step_hours: 6 }); // Charon swings Pluto round the barycentre
+    for (const id of comets)
+      expect(by.get(id)).toMatchObject({ center: 10, tolerance: "planet", initial_intervals: 512 });
+    // Wild 2 passed 0.006 au from Jupiter in 1974: 2 h samples follow it.
+    expect(by.get(1000107)!.step_hours).toBe(2);
+    for (const id of dwarfs.slice(1)) expect(by.get(id)!.designation).toBe(String(id - 20_000_000));
+    for (const id of comets) expect(by.get(id)!.designation).toMatch(/^(\d+P|C\/\d{4} [A-Z]\d+)$/);
     expect(by.get(10)!.origin).toBe(true);
     expect(by.get(301)).toMatchObject({ center: 399, tolerance: "moon" });
     for (const id of [199, 299, 399, 499, 599, 699, 799, 899])
@@ -244,6 +273,37 @@ describe("npm run ephem (T-018)", () => {
       },
     };
     await expect(generate({ bodies: SMALL, client: wrong, only: [301] })).rejects.toThrow(/target is not 301/);
+  });
+
+  it("T-107, VN-EXT-015: a comet is asked for by designation (apparition closest to now, no fragments) and checked by name", async () => {
+    const comet = {
+      id: 1000036,
+      name: "Halley",
+      designation: "1P",
+      center: 10,
+      step_hours: 12,
+      tolerance: "planet" as const,
+    };
+    const client = new FakeClient();
+    const files = await generate({ bodies: { ...SMALL, bodies: [comet] }, client });
+    expect(client.queries.every((q) => q.includes("COMMAND='DES%3D1P%3BCAP%3BNOFRAG'"))).toBe(true);
+    const o = manifestOf(files).objects[0]! as Manifest["objects"][number] & { kind?: string; designation?: string };
+    expect(o).toMatchObject({ id: 1000036, name: "Halley", kind: "comet", designation: "1P", source: "JPL#75" });
+    expect(o.query!.COMMAND).toBe("'DES=1P;CAP;NOFRAG'");
+    expect(o.chunks!.every((c) => c.target === 1000036)).toBe(true);
+    const f = readEphemeris(files.get("1000036/2000.bin")!.buffer as ArrayBuffer);
+    expect(f.objectId).toBe(1000036);
+    // A header naming another comet stops the run.
+    await expect(
+      generate({ bodies: { ...SMALL, bodies: [{ ...comet, name: "Encke", designation: "1P" }] }, client }),
+    ).rejects.toThrow(/target is not 1P \(Encke\)/);
+  });
+
+  it("T-084, VN-SCN-008: a dwarf planet with a minor-planet number is asked for as '<number>;'", () => {
+    expect(horizonsCommand({ id: 20000001, designation: "1" })).toBe("1;");
+    expect(horizonsCommand({ id: 20136199, designation: "136199" })).toBe("136199;");
+    expect(horizonsCommand({ id: 1000036, designation: "1P" })).toBe("DES=1P;CAP;NOFRAG");
+    expect(horizonsCommand({ id: 999 })).toBe("999");
   });
 
   it("VN-GEN-010: writeOutputs writes every file and removes stale chunks", () => {

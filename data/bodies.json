@@ -1,16 +1,208 @@
 {
-  "coverage": { "from_year": 1900, "to_year": 2100 },
+  "coverage": {
+    "from_year": 1900,
+    "to_year": 2100
+  },
   "chunk_years": 10,
   "bodies": [
-    { "id": 10, "name": "Sun", "origin": true },
-    { "id": 199, "name": "Mercury", "center": 10, "step_hours": 12, "tolerance": "planet" },
-    { "id": 299, "name": "Venus", "center": 10, "step_hours": 12, "tolerance": "planet" },
-    { "id": 399, "name": "Earth", "center": 10, "step_hours": 12, "tolerance": "planet" },
-    { "id": 301, "name": "Moon", "center": 399, "step_hours": 6, "tolerance": "moon" },
-    { "id": 499, "name": "Mars", "center": 10, "step_hours": 12, "tolerance": "planet", "barycenter": 4 },
-    { "id": 599, "name": "Jupiter", "center": 10, "step_hours": 3, "tolerance": "planet", "barycenter": 5 },
-    { "id": 699, "name": "Saturn", "center": 10, "step_hours": 6, "tolerance": "planet", "barycenter": 6 },
-    { "id": 799, "name": "Uranus", "center": 10, "step_hours": 6, "tolerance": "planet", "barycenter": 7 },
-    { "id": 899, "name": "Neptune", "center": 10, "step_hours": 6, "tolerance": "planet", "barycenter": 8 }
+    {
+      "id": 10,
+      "name": "Sun",
+      "origin": true
+    },
+    {
+      "id": 199,
+      "name": "Mercury",
+      "center": 10,
+      "step_hours": 12,
+      "tolerance": "planet"
+    },
+    {
+      "id": 299,
+      "name": "Venus",
+      "center": 10,
+      "step_hours": 12,
+      "tolerance": "planet"
+    },
+    {
+      "id": 301,
+      "name": "Moon",
+      "center": 399,
+      "step_hours": 6,
+      "tolerance": "moon"
+    },
+    {
+      "id": 399,
+      "name": "Earth",
+      "center": 10,
+      "step_hours": 12,
+      "tolerance": "planet"
+    },
+    {
+      "id": 499,
+      "name": "Mars",
+      "center": 10,
+      "step_hours": 12,
+      "tolerance": "planet",
+      "barycenter": 4
+    },
+    {
+      "id": 599,
+      "name": "Jupiter",
+      "center": 10,
+      "step_hours": 3,
+      "tolerance": "planet",
+      "barycenter": 5
+    },
+    {
+      "id": 699,
+      "name": "Saturn",
+      "center": 10,
+      "step_hours": 6,
+      "tolerance": "planet",
+      "barycenter": 6
+    },
+    {
+      "id": 799,
+      "name": "Uranus",
+      "center": 10,
+      "step_hours": 6,
+      "tolerance": "planet",
+      "barycenter": 7
+    },
+    {
+      "id": 899,
+      "name": "Neptune",
+      "center": 10,
+      "step_hours": 6,
+      "tolerance": "planet",
+      "barycenter": 8
+    },
+    {
+      "id": 999,
+      "name": "Pluto",
+      "center": 10,
+      "step_hours": 6,
+      "tolerance": "planet",
+      "barycenter": 9,
+      "initial_intervals": 512
+    },
+    {
+      "id": 1000012,
+      "name": "Churyumov-Gerasimenko",
+      "designation": "67P",
+      "center": 10,
+      "step_hours": 12,
+      "tolerance": "planet",
+      "initial_intervals": 512
+    },
+    {
+      "id": 1000025,
+      "name": "Encke",
+      "designation": "2P",
+      "center": 10,
+      "step_hours": 12,
+      "tolerance": "planet",
+      "initial_intervals": 512
+    },
+    {
+      "id": 1000036,
+      "name": "Halley",
+      "designation": "1P",
+      "center": 10,
+      "step_hours": 12,
+      "tolerance": "planet",
+      "initial_intervals": 512
+    },
+    {
+      "id": 1000068,
+      "name": "Pons-Brooks",
+      "designation": "12P",
+      "center": 10,
+      "step_hours": 12,
+      "tolerance": "planet",
+      "initial_intervals": 512
+    },
+    {
+      "id": 1000093,
+      "name": "Tempel 1",
+      "designation": "9P",
+      "center": 10,
+      "step_hours": 12,
+      "tolerance": "planet",
+      "initial_intervals": 512
+    },
+    {
+      "id": 1000107,
+      "name": "Wild 2",
+      "designation": "81P",
+      "center": 10,
+      "step_hours": 2,
+      "tolerance": "planet",
+      "initial_intervals": 512
+    },
+    {
+      "id": 1000132,
+      "name": "Hale-Bopp",
+      "designation": "C/1995 O1",
+      "center": 10,
+      "step_hours": 12,
+      "tolerance": "planet",
+      "initial_intervals": 512
+    },
+    {
+      "id": 1003667,
+      "name": "NEOWISE",
+      "designation": "C/2020 F3",
+      "center": 10,
+      "step_hours": 12,
+      "tolerance": "planet",
+      "initial_intervals": 512
+    },
+    {
+      "id": 1003913,
+      "name": "Tsuchinshan-ATLAS",
+      "designation": "C/2023 A3",
+      "center": 10,
+      "step_hours": 12,
+      "tolerance": "planet",
+      "initial_intervals": 512
+    },
+    {
+      "id": 20000001,
+      "name": "Ceres",
+      "designation": "1",
+      "center": 10,
+      "step_hours": 12,
+      "tolerance": "planet",
+      "initial_intervals": 512
+    },
+    {
+      "id": 20136108,
+      "name": "Haumea",
+      "designation": "136108",
+      "center": 10,
+      "step_hours": 12,
+      "tolerance": "planet",
+      "initial_intervals": 512
+    },
+    {
+      "id": 20136199,
+      "name": "Eris",
+      "designation": "136199",
+      "center": 10,
+      "step_hours": 12,
+      "tolerance": "planet",
+      "initial_intervals": 512
+    },
+    {
+      "id": 20136472,
+      "name": "Makemake",
+      "designation": "136472",
+      "center": 10,
+      "step_hours": 12,
+      "tolerance": "planet",
+      "initial_intervals": 512
+    }
   ]
 }

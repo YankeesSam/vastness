@@ -57,6 +57,8 @@ function compute(eph: Ephemeris, id: number, t: number, body: Float64Array, eart
       return { status: "outside", reason: edge ? `${reason} ${illustrativeText(edge)}` : reason };
     }
   }
+  // D-007: a catalog object can be without an ephemeris in this build (Cassini, held out); it has no position.
+  if (eph.has && !eph.has(id)) return { status: "none" };
   const a = eph.state(id, t, body);
   const b = eph.state(EARTH, t, earth);
   if (a === "ok" && b === "ok") return { status: "ok", r: readouts(body, earth, createReadout()) };

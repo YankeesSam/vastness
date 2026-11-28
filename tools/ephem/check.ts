@@ -14,7 +14,7 @@ import { findSegment, readEphemeris, type EphemerisFile } from "../../src/core/e
 import { J2000_JD } from "../../src/core/time/scales.ts";
 import { HorizonsClient } from "./client.ts";
 import { canonicalQuery, parseVectors, vectorParamsAt, type VectorRecord } from "./horizons.ts";
-import { stableStringify, yearStart, type BodiesFile, type Fetcher } from "./main.ts";
+import { horizonsCommand, stableStringify, yearStart, type BodiesFile, type Fetcher } from "./main.ts";
 
 /** F2 epochs per body over 1900-2100: about five per decade chunk. */
 export const REFERENCE_EPOCHS = 100;
@@ -223,14 +223,20 @@ export async function recordSpacecraftReferences(
   return files;
 }
 
-async function recordOne(id: number, center: number, jds: readonly string[], client: Fetcher): Promise<string> {
-  const params = vectorParamsAt(String(id), `500@${center}`, jds);
+async function recordOne(
+  id: number,
+  center: number,
+  jds: readonly string[],
+  client: Fetcher,
+  command = String(id),
+): Promise<string> {
+  const params = vectorParamsAt(command, `500@${center}`, jds);
   const records: VectorRecord[] = [];
   const retrieved: string[] = [];
   const sources = new Set<string>();
   for (let k = 0; k < jds.length; k += TLIST_BATCH) {
     const batch = jds.slice(k, k + TLIST_BATCH);
-    const res = await client.get(vectorParamsAt(String(id), `500@${center}`, batch));
+    const res = await client.get(vectorParamsAt(command, `500@${center}`, batch));
     const v = parseVectors(res.body, res.query);
     if (v.records.length !== batch.length || v.records.some((r, i) => r.jd !== `${batch[i]}000`)) {
       throw new Error(
@@ -263,7 +269,7 @@ export async function recordReferences(
     if (b.origin) continue;
     const jds = referenceEpochs(b.id, bodies.coverage.from_year, bodies.coverage.to_year, count);
     // At most TLIST_BATCH epochs per request: a longer GET URL is refused (HTTP 502).
-    files.set(`${b.id}.json`, await recordOne(b.id, b.center!, jds, client));
+    files.set(`${b.id}.json`, await recordOne(b.id, b.center!, jds, client, horizonsCommand(b)));
   }
   return files;
 }

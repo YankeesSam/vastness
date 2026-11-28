@@ -13,7 +13,7 @@ import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { ELEMENTS_FILE_VERSION, POSITION_FILE_VERSION, writeEphemeris } from "../../src/core/ephem/format.ts";
+import { ELEMENTS_NS_FILE_VERSION, POSITION_FILE_VERSION, writeEphemeris } from "../../src/core/ephem/format.ts";
 import { J2000_JD, SECONDS_PER_DAY, calendarToJd } from "../../src/core/time/scales.ts";
 import { HorizonsClient, type CachedResponse } from "./client.ts";
 import { TOLERANCE_KM, fitAdaptive, type FitResult } from "./fit.ts";
@@ -33,6 +33,34 @@ export interface BodySpec {
   tolerance?: keyof typeof TOLERANCE_KM;
   /** Barycentre to fall back to when Horizons has no ephemeris for the planet centre over a chunk. */
   barycenter?: number;
+  /**
+   * T-107, T-084: a small body's designation. A comet ("1P", "C/1995 O1") is asked for as
+   * `DES=<designation>;CAP;NOFRAG` (the orbit solution of the apparition closest to now, no fragments); a numbered
+   * asteroid or dwarf planet ("1" Ceres, "136199" Eris) as `<number>;`. `id` is the SPK ID, checked by check-ids.
+   */
+  designation?: string;
+  /**
+   * Sample intervals per segment before subdivision (default 64, the fitter's). Slow small bodies take more, so
+   * a segment can span months where nothing needs it shorter; subdivision still halves where the tolerance needs.
+   */
+  initial_intervals?: number;
+}
+
+/** A numbered asteroid's designation (all digits), as against a comet's. */
+const numbered = (designation: string): boolean => /^\d+$/.test(designation);
+
+/** The Horizons COMMAND for a body: its ID, or a small body's designation query (T-107, T-084). */
+export const horizonsCommand = (b: Pick<BodySpec, "id" | "designation">): string =>
+  b.designation === undefined
+    ? String(b.id)
+    : numbered(b.designation)
+      ? `${b.designation};`
+      : `DES=${b.designation};CAP;NOFRAG`;
+
+/** T-107: a small body's header names it by designation and name ("1P/Halley", "1 Ceres (A801 AA)"), no ID. */
+function namesComet(target: string, designation: string, name: string): boolean {
+  const t = target.replace(/\s+\{.*$/, "").trim();
+  return t.includes(designation) && t.includes(name);
 }
 
 export interface BodiesFile {
@@ -96,12 +124,20 @@ function headerId(name: string): number | undefined {
   return m ? Number(m[1]) : undefined;
 }
 
-function checkHeader(r: VectorResponse, command: number, center: number, query: string): void {
+function checkHeader(
+  r: VectorResponse,
+  command: number,
+  center: number,
+  query: string,
+  comet?: { designation: string; name: string },
+): void {
   const h = r.header;
   const bad = (what: string): never => {
     throw new HorizonsError("format", `header ${what} (target "${h.target}", centre "${h.center}")`, query);
   };
-  if (headerId(h.target) !== command) bad(`target is not ${command}`);
+  if (comet) {
+    if (!namesComet(h.target, comet.designation, comet.name)) bad(`target is not ${comet.designation} (${comet.name})`);
+  } else if (headerId(h.target) !== command) bad(`target is not ${command}`);
   if (headerId(h.center) !== center) bad(`centre is not ${center}`);
   if (h.frame !== "Ecliptic of J2000.0") bad(`frame is "${h.frame}"`);
   if (h.timeScale !== "TDB") bad(`time scale is "${h.timeScale}"`);
@@ -130,8 +166,9 @@ async function fetchChunk(
   const start = yearStart(year);
   const end = yearStart(endYear);
   const attempt = async (command: number) => {
+    const comet = command === body.id && body.designation !== undefined;
     const query = vectorParams({
-      command: String(command),
+      command: comet ? horizonsCommand(body) : String(command),
       center: `500@${center}`,
       start: `${year}-01-01`,
       stop: `${endYear}-01-01`,
@@ -139,7 +176,13 @@ async function fetchChunk(
     });
     const res = await o.client.get(query);
     const response = parseVectors(res.body, res.query);
-    checkHeader(response, command, center, res.query);
+    checkHeader(
+      response,
+      command,
+      center,
+      res.query,
+      comet ? { designation: body.designation!, name: body.name } : undefined,
+    );
     const recs = response.records;
     const expected = Math.round((end - start) / (step * 3600)) + 1;
     if (recs.length !== expected || recs[0]!.t !== start || recs.at(-1)!.t !== end) {
@@ -205,6 +248,7 @@ export async function generate(o: GenerateOptions): Promise<Map<string, Uint8Arr
       const fit = fitAdaptive(c.response.records, {
         toleranceKm: tolerance,
         targetKm: tolerance * FIT_TARGET_FRACTION,
+        ...(body.initial_intervals !== undefined ? { initialIntervals: body.initial_intervals } : {}),
       });
       o.log?.(
         `${body.name} ${year}: ${c.response.records.length} samples, degree ${fit.degree}, ` +
@@ -242,8 +286,11 @@ export async function generate(o: GenerateOptions): Promise<Map<string, Uint8Arr
     objects.push({
       id: body.id,
       name: body.name,
+      ...(body.designation !== undefined
+        ? { kind: numbered(body.designation) ? "asteroid" : "comet", designation: body.designation }
+        : {}),
       center: body.center,
-      query: { ...template, COMMAND: `'${body.id}'` },
+      query: { ...template, COMMAND: `'${horizonsCommand(body)}'` },
       retrieved: chunks
         .map((c) => c.retrieved)
         .sort()
@@ -301,8 +348,8 @@ export async function generate(o: GenerateOptions): Promise<Map<string, Uint8Arr
   // VN-EPH-011: the osculating elements at each orbiter's span edges, for the illustrative orbit outside it.
   addIllustrativeEdges(objects, files);
   const manifest = {
-    // The highest file version written: 2 once any orbiter is stored as element segments (VN-EPH-011).
-    format_version: elementFiles ? ELEMENTS_FILE_VERSION : POSITION_FILE_VERSION,
+    // The highest file version written: 3 once any orbiter is stored as (non-singular) element segments (VN-EPH-011, T-097).
+    format_version: elementFiles ? ELEMENTS_NS_FILE_VERSION : POSITION_FILE_VERSION,
     frame: "ecliptic J2000 (Horizons REF_PLANE=ECLIPTIC, REF_SYSTEM=ICRF), geometric; km; TDB seconds since J2000",
     credit: CREDIT,
     chunk_years: span,

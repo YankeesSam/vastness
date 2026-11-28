@@ -13,6 +13,9 @@ import { viewWidthKm } from "../core/scale/indicator";
 import { viewReadout } from "../app/scale/readout";
 import { DRAWN_BODIES, drawnPositions, SCENE_OBJECTS, worldPositions } from "./bodies/positions";
 
+/** Indices of the spacecraft in SCENE_OBJECTS (not the dwarf planets or comets, T-084, T-107). */
+const SPACECRAFT = SCENE_OBJECTS.flatMap((o, i) => (o.kind === "spacecraft" ? [i] : []));
+
 /** Satellites come last in SCENE_OBJECTS. */
 const FIRST_SATELLITE = (() => {
   const i = SCENE_OBJECTS.findIndex((o) => o.kind === "satellite");
@@ -33,6 +36,7 @@ import { SunGlow } from "./sun/SunGlow";
 import { SunImage } from "./sun/SunImage";
 import { L1Marker } from "./spaceweather/L1";
 import { Storms } from "./spaceweather/Storms";
+import { CometTails } from "./comets/Tails";
 import { Trails } from "./trails/Trails";
 import { Picker } from "./Picker";
 import { RenderStatsProbe } from "./stats/RenderStatsProbe";
@@ -117,8 +121,10 @@ function ReadyMarker({ frame, failed, onFirstFrame }: { frame: BodyFrame; failed
     for (let i = 0; i < DRAWN_BODIES.length; i++) b += frame.ok[i]!;
     let sats = 0;
     for (let i = FIRST_SATELLITE; i < frame.ok.length; i++) sats += frame.ok[i]!;
+    let c = 0;
+    for (const i of SPACECRAFT) c += frame.ok[i]!;
     const bodies = String(b);
-    const craft = String(n - b - sats);
+    const craft = String(c);
     const satellites = String(sats);
     if (canvas.dataset.bodies !== bodies) canvas.dataset.bodies = bodies;
     if (canvas.dataset.spacecraft !== craft) canvas.dataset.spacecraft = craft;
@@ -192,6 +198,7 @@ export function SceneView() {
           <SunImage frame={frame} />
           <SunGlow frame={frame} />
           <Storms frame={frame} />
+          <CometTails eph={eph} frame={frame} />
           <L1Marker frame={frame} />
           <Orbits eph={eph} frame={frame} />
           <Trails eph={eph} frame={frame} />

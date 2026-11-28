@@ -1,0 +1,1 @@
+{"result":[{"alias":[],"name":null,"pdes":null,"spkid":"1000107","type":"comet"},{"spkid":"1000107","type":"comet (integrated barycenter)","alias":["1983 S1","1978 A2","1990 XXVIII","1989t","1984 XIV","1983s","1978b","1978 XI","4000081"],"pdes":"81P","name":"Wild 2"}],"count":2,"signature":{"source":"NASA/JPL Horizons Lookup API","version":"1.1"}}

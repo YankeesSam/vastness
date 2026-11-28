@@ -42,7 +42,8 @@ test.describe("keyboard", () => {
 
   test("VN-ACC-001: Tab reaches the top bar, side panel and time bar", async ({ page }) => {
     const seen = new Set<string>();
-    for (let i = 0; i < 80; i++) {
+    // 160: the side panel lists every object (comets and dwarf planets since T-107, T-084)
+    for (let i = 0; i < 160; i++) {
       await page.keyboard.press("Tab");
       const where = await page.evaluate(() => {
         const a = document.activeElement;

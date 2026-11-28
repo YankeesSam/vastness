@@ -135,6 +135,9 @@ export function Markers({ frame, screen }: { frame: BodyFrame; screen: ScreenFra
       if (!frame.ok[i]) continue;
       const b = SCENE_OBJECTS[i]!;
       if (b.kind === "satellite" && !satelliteShown(toEarth, st.selection === b.id)) continue;
+      // VN-EXT-015: comets are a layer; a selected comet is shown anyway
+      if (b.kind === "comet" && !st.layers.comets && st.selection !== b.id) continue;
+      if (b.kind === "dwarf" && !st.layers.dwarfs && st.selection !== b.id) continue; // VN-SCN-008
       toCamera(frame.world, rig.cam, rel, 3 * i, 3 * i);
       const x = rel[3 * i]!;
       const y = rel[3 * i + 1]!;

@@ -138,6 +138,16 @@ describe("catalog schema", () => {
     expect(check(planet)).toThrow(/only spacecraft have events/);
   });
 
+  it("T-107, T-084: comets and dwarf planets go around the Sun; a dwarf planet carries its radius, nothing else does", () => {
+    const comet = { ...sun, id: 1000036, name: "Halley", type: "comet", parent: 10 };
+    const dwarf = { ...sun, id: 20000001, name: "Ceres", type: "dwarf", parent: 10, radius_km: 469.7 };
+    expect(check(comet, dwarf)).not.toThrow();
+    expect(check({ ...comet, parent: 599 })).toThrow(/a comet's parent is the Sun/);
+    expect(check({ ...dwarf, radius_km: undefined })).toThrow(/a dwarf planet needs radius_km/);
+    expect(check({ ...dwarf, radius_km: -1 })).toThrow(/radius_km must be a positive number/);
+    expect(check({ ...comet, radius_km: 5 })).toThrow(/radius_km must be a positive number, on a dwarf planet/);
+  });
+
   it("rejects a launch date on a planet", () => {
     const planet = { ...sun, id: 399, name: "Earth", type: "planet", parent: 10, launch: "2000-01-01" };
     expect(check(planet)).toThrow(/only spacecraft and satellites have a launch date/);

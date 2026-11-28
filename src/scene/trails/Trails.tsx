@@ -61,6 +61,8 @@ const RETRY_FRAMES = 10;
 
 interface Trail {
   index: number;
+  /** VN-EXT-015, VN-SCN-008: comets and dwarf planets show only with their layer. */
+  layer: "comets" | "dwarfs" | null;
   id: number;
   coverage: { start: number; end: number } | null;
   range: TrailRange;
@@ -103,7 +105,8 @@ export function Trails({ eph, frame }: { eph: Ephemeris | null; frame: BodyFrame
     if (!eph) return [];
     const out: Trail[] = [];
     SCENE_OBJECTS.forEach((o, index) => {
-      if (o.kind !== "spacecraft" || !eph.has(o.id)) return;
+      // VN-EXT-015: comets have trails too, shown with the comets layer
+      if ((o.kind !== "spacecraft" && o.kind !== "comet" && o.kind !== "dwarf") || !eph.has(o.id)) return;
       const samples = createTrailSamples(points);
       const high = new Float32Array(3 * samples.capacity);
       const low = new Float32Array(3 * samples.capacity);
@@ -141,6 +144,7 @@ export function Trails({ eph, frame }: { eph: Ephemeris | null; frame: BodyFrame
       out.push({
         index,
         id: o.id,
+        layer: o.kind === "comet" ? "comets" : o.kind === "dwarf" ? "dwarfs" : null,
         coverage: eph.coverage(o.id),
         range: { t0: 0, now: 0, t1: 0 },
         samples,
@@ -228,7 +232,12 @@ export function Trails({ eph, frame }: { eph: Ephemeris | null; frame: BodyFrame
     let gap = 0;
     for (const tr of trails) {
       const cov = tr.coverage;
-      if (!st.layers.trails || !cov || !trailRange(st.t, st.trailDays, st.trailDays, cov, tr.range)) {
+      if (
+        !st.layers.trails ||
+        (tr.layer !== null && !st.layers[tr.layer]) ||
+        !cov ||
+        !trailRange(st.t, st.trailDays, st.trailDays, cov, tr.range)
+      ) {
         tr.line.visible = false;
         continue;
       }

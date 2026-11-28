@@ -4,10 +4,10 @@ milestone: M7
 phase: 7
 status: ready
 active_task_id: T-097
-active_task: "T-097 LRO whole mission under 5 MB (non-singular elements, format v3); WIP in git stash"
+active_task: "T-097 LRO whole mission under 5 MB: let a yearly part mix element and position files (format v3 landed, 5.66 MB measured)"
 next_skill: vastness-execute
-session: 20
-updated: 2026-11-27T21:20:00-05:00
+session: 21
+updated: 2026-11-28T01:30:00-05:00
 branch: main
 last_commit: 95ef70b
 push: ok

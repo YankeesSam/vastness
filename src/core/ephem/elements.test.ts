@@ -10,7 +10,16 @@ import {
   stateToElements,
   unwrapAngles,
 } from "./elements";
-import { ELEMENTS_FILE_VERSION, HEADER_BYTES_V2, KIND_ELEMENTS, readEphemeris, writeEphemeris } from "./format";
+import {
+  ELEMENTS_FILE_VERSION,
+  ELEMENTS_NS_FILE_VERSION,
+  HEADER_BYTES_V2,
+  KIND_ELEMENTS,
+  KIND_ELEMENTS_NS,
+  readEphemeris,
+  writeEphemeris,
+  type ElementKind,
+} from "./format";
 
 // The reference is a numerical integration of perturbed two-body motion (RK4, 5 s steps), independent of the
 // element code: element segments are fitted to its samples and checked at held-out times against it.
@@ -106,7 +115,7 @@ function sampleOrbit(accel: Accel, s0: Float64Array, t0: number, every: number, 
  * Fits element segments of `segSeconds` to the even-indexed samples and returns the file and the worst error at
  * the odd-indexed (held-out) samples. Also returns the position-segment error at the same size, for comparison.
  */
-function fitAndCheck(c: Case, segSeconds: number, degree: number, mu = MU_MOON) {
+function fitAndCheck(c: Case, segSeconds: number, degree: number, mu = MU_MOON, kind: ElementKind = KIND_ELEMENTS) {
   const every = c.times[1]! - c.times[0]!;
   const perSeg = Math.round(segSeconds / every);
   const a0 = stateToElements(c.states[0]!, mu)[0]!;
@@ -119,7 +128,7 @@ function fitAndCheck(c: Case, segSeconds: number, degree: number, mu = MU_MOON) 
     const states = idx.map((k) => c.states[k]!);
     const t0 = c.times[k0]!;
     const t1 = c.times[k0 + perSeg]!;
-    const series = elementSeries(times, states, mu, meanMotion);
+    const series = elementSeries(times, states, mu, meanMotion, kind);
     segments.push({ t0, t1, coeffs: fitElementSegment(t0, t1, times, series, degree) });
     posSegments.push({
       t0,
@@ -134,7 +143,7 @@ function fitAndCheck(c: Case, segSeconds: number, degree: number, mu = MU_MOON) 
       ),
     });
   }
-  const bytes = writeEphemeris({ objectId: -85, centerId: 301, degree, segments, kind: KIND_ELEMENTS, mu, meanMotion });
+  const bytes = writeEphemeris({ objectId: -85, centerId: 301, degree, segments, kind, mu, meanMotion });
   const pos = writeEphemeris({ objectId: -85, centerId: 301, degree, segments: posSegments });
   const f = readEphemeris(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   const p = readEphemeris(pos.buffer, pos.byteOffset, pos.byteLength);
@@ -283,6 +292,28 @@ describe("element segments on perturbed orbits against a numerical reference", (
     expect(r.worst).toBeLessThan(2);
     // Element segments are why VN-EPH-011 exists: at the same size, position segments miss badly.
     expect(r.worstPos).toBeGreaterThan(10 * r.worst);
+  });
+
+  it("T-097, VN-EPH-011: on a near-circular low lunar orbit non-singular elements hold where classic ones fail", () => {
+    // LRO's near-circular years: J2's short-period terms carry the osculating eccentricity vector around zero, where
+    // periapsis and M each swing through whole turns.
+    for (const e of [1e-5, 1e-4]) {
+      const s0 = initialState(R_MOON + 50, e, 89.9 * DEG, 0.4, 1.0, 0.2);
+      const c = sampleOrbit(j2Accel, s0, t0, 60, 1);
+      const classic = fitAndCheck(c, 7200, 13);
+      const ns = fitAndCheck(c, 7200, 13, MU_MOON, KIND_ELEMENTS_NS);
+      expect(ns.worst, `e = ${e}`).toBeLessThan(2); // km, the low lunar orbit tolerance
+      expect(ns.worstVel).toBeLessThan(2e-3);
+      expect(classic.worst, `e = ${e}`).toBeGreaterThan(10 * ns.worst);
+      expect(ns.file.version).toBe(ELEMENTS_NS_FILE_VERSION);
+      expect(ns.file.kind).toBe(KIND_ELEMENTS_NS);
+    }
+  });
+
+  it("T-097: non-singular elements fit the eccentric case too (e = 0.6 within 2 km)", () => {
+    const s0 = initialState(6000, 0.6, 60 * DEG, 1.0, 2.0, 0.5);
+    const c = sampleOrbit(thirdBodyAccel, s0, t0, 300, 6);
+    expect(fitAndCheck(c, 43200, 12, MU_MOON, KIND_ELEMENTS_NS).worst).toBeLessThan(2);
   });
 
   it("VN-EPH-011: L = M - n t stays slowly varying (the fitted sixth component changes far less than M)", () => {

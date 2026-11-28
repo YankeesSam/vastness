@@ -58,4 +58,19 @@ describe("illustrative edges (T-090)", () => {
     expect((windowed as { illustrative?: { before?: { from?: number } } }).illustrative?.before?.from).toBe(-5000);
     expect((helio as { illustrative?: unknown }).illustrative).toBeUndefined(); // heliocentric: never
   });
+
+  it("T-085, VN-EPH-011: a mission that ended inside its parent (Galileo into Jupiter) has no orbit after its end", () => {
+    const files = new Map([["-77/a.bin", file(0, 1200)]]);
+    const galileo = {
+      id: -77,
+      kind: "spacecraft",
+      center: 301,
+      stored: "mission",
+      ends_in_parent: true,
+      coverage: { start: 0, end: 1200 },
+      chunks: [{ file: "-77/a.bin" }],
+    };
+    addIllustrativeEdges([galileo], files);
+    expect((galileo as { illustrative?: unknown }).illustrative).toBeUndefined();
+  });
 });

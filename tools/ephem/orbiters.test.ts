@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { evaluateFile } from "../../src/core/ephem/ephemeris.ts";
-import { KIND_ELEMENTS, KIND_POSITION, readEphemeris } from "../../src/core/ephem/format.ts";
+import { KIND_POSITION, readEphemeris } from "../../src/core/ephem/format.ts";
 import type { CachedResponse } from "./client.ts";
 import { TOLERANCE_KM } from "./fit.ts";
 import { canonicalQuery } from "./horizons.ts";
 import type { Fetcher } from "./main.ts";
-import { captureIndex, generateOrbiters, jumpIndices, type OrbitersFile } from "./orbiters.ts";
+import { ELEMENT_KIND, captureIndex, generateOrbiters, jumpIndices, type OrbitersFile } from "./orbiters.ts";
 
 // The truth is closed form (own Kepler solver), never our own code's output.
 const J2000_JD = 2451545;
@@ -187,7 +187,7 @@ describe("orbiters (T-089)", () => {
     for (const c of o.chunks) {
       const f = readEphemeris(files.get(c.file)!.slice().buffer);
       expect(f.centerId).toBe(301);
-      expect(f.kind).toBe(c.segment_kind === "elements" ? KIND_ELEMENTS : KIND_POSITION);
+      expect(f.kind).toBe(c.segment_kind === "elements" ? ELEMENT_KIND : KIND_POSITION);
     }
     // VN-EPH-003: 2 km at dense epochs off every sampling grid, away from the seam's own minute.
     const parsed = o.chunks.map((c) => readEphemeris(files.get(c.file)!.slice().buffer));
@@ -242,7 +242,8 @@ describe("orbiters in the pipeline (T-089)", () => {
     const catalog = read("catalog.json") as { objects: { id: number; type: string; parent?: number }[] };
     const cfg = read("orbiters.json") as OrbitersFile;
     const want = catalog.objects
-      .filter((o) => o.type === "spacecraft" && o.parent !== 10)
+      // D-007: Cassini (-82) is held out until its Saturn-relative fit passes ephem:check (T-113).
+      .filter((o) => o.type === "spacecraft" && o.parent !== 10 && o.id !== -82)
       .map((o) => [o.id, o.parent])
       .sort();
     expect(cfg.orbiters.map((o) => [o.id, o.center]).sort()).toEqual(want);
@@ -252,7 +253,7 @@ describe("orbiters in the pipeline (T-089)", () => {
     expect(cfg.window_days).toBe(30);
   });
 
-  it("VN-EPH-011: npm run ephem writes orbiters beside the bodies; the manifest names format version 2", async () => {
+  it("VN-EPH-011: npm run ephem writes orbiters beside the bodies; the manifest names format version 3", async () => {
     const { generate } = await import("./main.ts");
     const files = await generate({
       bodies: {
@@ -267,7 +268,7 @@ describe("orbiters in the pipeline (T-089)", () => {
       format_version: number;
       objects: { id: number; center?: number }[];
     };
-    expect(m.format_version).toBe(2);
+    expect(m.format_version).toBe(3);
     expect(m.objects.map((o) => o.id)).toEqual([-999, 10]);
     expect(m.objects[0]!.center).toBe(301);
     expect([...files.keys()].filter((k) => k.startsWith("-999/"))).toHaveLength(3);

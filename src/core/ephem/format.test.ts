@@ -104,7 +104,7 @@ describe("binary ephemeris format", () => {
         b[0] = 0x58;
       }),
     ).toThrow(/magic/);
-    expect(bad((_, dv) => dv.setUint16(4, FORMAT_VERSION + 1, true))).toThrow(/version 3/);
+    expect(bad((_, dv) => dv.setUint16(4, FORMAT_VERSION + 1, true))).toThrow(/version 4/);
     expect(bad((b) => b.subarray(0, b.byteLength - 8))).toThrow(/length/);
     expect(bad((_, dv) => dv.setFloat64(HEADER_BYTES + SEGMENT_ENTRY_BYTES, 10.5, true))).toThrow(/contiguous/);
     expect(() => writeEphemeris({ ...sample(), degree: 3 })).toThrow(RangeError);

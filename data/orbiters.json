@@ -4,6 +4,7 @@
   "budget_bytes": 5000000,
   "orbiters": [
     { "id": -61, "name": "Juno", "center": 599, "tolerance": "cruise" },
+    { "id": -77, "name": "Galileo", "center": 599, "tolerance": "cruise", "ends_in_parent": true },
     { "id": -85, "name": "LRO", "center": 301, "tolerance": "lunarOrbit" },
     { "id": -1176, "name": "CAPSTONE", "center": 301, "tolerance": "lunarOrbit" }
   ]

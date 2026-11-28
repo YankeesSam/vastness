@@ -2,11 +2,20 @@ import type { CatalogObject } from "../../core/catalog/schema";
 
 // VN-CAT-003: the object list's groups and its type-ahead. Pure.
 
-export type Group = "Sun and planets" | "Moons" | "Spacecraft" | "Earth satellites";
-export const GROUPS: readonly Group[] = ["Sun and planets", "Moons", "Spacecraft", "Earth satellites"];
+export type Group = "Sun and planets" | "Dwarf planets" | "Moons" | "Comets" | "Spacecraft" | "Earth satellites";
+export const GROUPS: readonly Group[] = [
+  "Sun and planets",
+  "Dwarf planets",
+  "Moons",
+  "Comets",
+  "Spacecraft",
+  "Earth satellites",
+];
 
 export function groupOf(o: Pick<CatalogObject, "type">): Group {
   if (o.type === "satellite") return "Earth satellites";
+  if (o.type === "comet") return "Comets"; // VN-EXT-015
+  if (o.type === "dwarf") return "Dwarf planets"; // VN-SCN-008
   return o.type === "spacecraft" ? "Spacecraft" : o.type === "moon" ? "Moons" : "Sun and planets";
 }
 

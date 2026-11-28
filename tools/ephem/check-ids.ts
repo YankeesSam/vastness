@@ -19,6 +19,8 @@ export interface IdClaim {
   horizonsName?: string;
   /** Where the claim comes from, for the report (data/bodies.json, data/catalog.json). */
   source: string;
+  /** T-107: a comet's designation, which must be the entry's primary designation. */
+  designation?: string;
 }
 
 export interface LookupEntry {
@@ -95,13 +97,29 @@ export function judge(claim: IdClaim, entries: readonly LookupEntry[], query: st
     };
   }
   const want = normalizeName(claim.horizonsName ?? claim.name);
-  const e = hit.find((x) => [x.name, ...x.alias].some((n) => normalizeName(n) === want));
+  // T-084: Horizons names a numbered minor planet with its number ("1 Ceres", "136199 Eris").
+  const numbered = claim.designation !== undefined && /^\d+$/.test(claim.designation);
+  const wants = numbered ? [want, normalizeName(`${claim.designation} ${claim.name}`)] : [want];
+  const named = hit.filter((x) => [x.name, ...x.alias].some((n) => wants.includes(normalizeName(n))));
+  const isDesignated = (x: LookupEntry): boolean =>
+    x.pdes === claim.designation || (numbered && x.name.startsWith(`${claim.designation} `));
+  // Eris's SPK ID is both "Eris (system barycenter)" and "136199 Eris": prefer the entry with the designation.
+  const e = named.find(isDesignated) ?? named[0];
   if (!e) {
     return {
       claim,
       pass: false,
       found: hit.map((x) => x.name).join("; "),
       note: `ID ${claim.id} is ${hit.map((x) => `"${x.name}"`).join(", ")}, not "${claim.horizonsName ?? claim.name}"`,
+      query,
+    };
+  }
+  if (claim.designation !== undefined && !isDesignated(e)) {
+    return {
+      claim,
+      pass: false,
+      found: e.name,
+      note: `ID ${claim.id} is designated ${String(e.pdes)}, not ${claim.designation}`,
       query,
     };
   }
@@ -123,7 +141,12 @@ export function claimsFrom(
   bodies: BodiesFile,
   catalog?: { objects?: Array<{ id: number; name: string; horizons_name?: string; type?: string }> },
 ): IdClaim[] {
-  const out: IdClaim[] = bodies.bodies.map((b) => ({ id: b.id, name: b.name, source: "data/bodies.json" }));
+  const out: IdClaim[] = bodies.bodies.map((b) => ({
+    id: b.id,
+    name: b.name,
+    source: "data/bodies.json",
+    ...(b.designation !== undefined ? { designation: b.designation } : {}),
+  }));
   for (const o of catalog?.objects ?? []) {
     // Earth satellites are identified by NORAD number and checked against CelesTrak by tools/gp (ADR-0007).
     if (o.type === "satellite") continue;

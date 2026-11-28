@@ -1,0 +1,1 @@
+{"signature":{"source":"NASA/JPL Horizons Lookup API","version":"1.1"},"count":2,"result":[{"pdes":null,"name":null,"alias":[],"type":"comet","spkid":"1000012"},{"alias":["1975 P1","1969 R1","1989 VI","1988i","1982f","1982 VIII","1976 VII","1975i","1969h","1969 IV","4000067"],"name":"Churyumov-Gerasimenko","pdes":"67P","spkid":"1000012","type":"comet (integrated barycenter)"}]}

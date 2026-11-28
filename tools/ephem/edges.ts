@@ -17,6 +17,8 @@ interface Orbiter {
   coverage?: { start: number; end: number };
   chunks?: { file: string }[];
   illustrative?: unknown;
+  /** T-085: the mission ended by entering its parent (Galileo, Cassini): nothing to draw after its end. */
+  ends_in_parent?: boolean;
 }
 
 const round = (x: number, digits: number): number => Number(x.toPrecision(digits));
@@ -49,7 +51,7 @@ export function addIllustrativeEdges(objects: unknown[], files: ReadonlyMap<stri
     const last = files.get(o.chunks.at(-1)!.file);
     const first = files.get(o.chunks[0]!.file);
     if (!last || !first) throw new RangeError(`object ${o.id}: chunk files missing for the illustrative edges`);
-    const after = edgeAt(last, o.coverage.end, mu);
+    const after = o.ends_in_parent ? undefined : edgeAt(last, o.coverage.end, mu);
     const b = o.stored === "window" ? edgeAt(first, o.coverage.start, mu) : undefined;
     const before = b && o.mission?.coverage ? { ...b, from: o.mission.coverage.start } : b;
     if (after || before) o.illustrative = { ...(after ? { after } : {}), ...(before ? { before } : {}) };

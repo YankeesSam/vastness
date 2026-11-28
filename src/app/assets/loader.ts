@@ -65,21 +65,22 @@ let ready: Promise<Ephemeris> | null = null;
  * after the first frame, see streamSpacecraft). Started from main.tsx before React mounts, so the downloads overlap
  * script start-up and WebGL set-up; later callers share the same promise.
  */
+/** T-107: small-body SPK IDs (comets 1000001 and up) load with the spacecraft, after the first frame. */
+export const SMALL_BODY_MIN_ID = 1_000_000;
+const firstFrame = (id: number): boolean => id > 0 && id < SMALL_BODY_MIN_ID;
+
 export function preloadEphemeris(t: number): Promise<Ephemeris> {
   ready ??= loadEphemeris().then(async (e) => {
-    await e.load(
-      t,
-      e.ids.filter((id) => id > 0),
-    );
+    await e.load(t, e.ids.filter(firstFrame));
     return e;
   });
   return ready;
 }
 
-/** VN-UI-005: loads the spacecraft chunks for time t; the scene calls it once the first frame is up. */
+/** VN-UI-005: loads the spacecraft (and comet) chunks for time t; the scene calls it once the first frame is up. */
 export function streamSpacecraft(e: Ephemeris, t: number): Promise<void> {
   return e.load(
     t,
-    e.ids.filter((id) => id < 0),
+    e.ids.filter((id) => !firstFrame(id)),
   );
 }

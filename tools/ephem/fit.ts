@@ -6,7 +6,15 @@
 
 import { evaluateSegment, fitSegment } from "../../src/core/ephem/chebyshev.ts";
 import { elementSeries, evaluateElementSegment, fitElementSegment } from "../../src/core/ephem/elements.ts";
-import { KIND_ELEMENTS, KIND_POSITION, type EphemerisFile, type SegmentInput } from "../../src/core/ephem/format.ts";
+import {
+  KIND_ELEMENTS,
+  KIND_POSITION,
+  isElementKind,
+  type ElementKind,
+  type EphemerisFile,
+  type SegmentInput,
+  type SegmentKind,
+} from "../../src/core/ephem/format.ts";
 
 /** Position tolerances in km (VN-EPH-003). */
 export const TOLERANCE_KM = { planet: 10, moon: 10, cruise: 50, lunarOrbit: 2 } as const;
@@ -43,8 +51,9 @@ export interface FitOptions {
   /**
    * Fit osculating-element segments about a centre of GM `mu` instead of positions (VN-EPH-011); the sixth
    * component is M - meanMotion t. The error is still measured in position. Throws on a non-elliptic sample.
+   * `kind` KIND_ELEMENTS_NS fits the non-singular set (T-097); default KIND_ELEMENTS.
    */
-  elements?: { mu: number; meanMotion: number };
+  elements?: { mu: number; meanMotion: number; kind?: ElementKind };
 }
 
 export interface Miss {
@@ -54,8 +63,8 @@ export interface Miss {
 }
 
 export interface FitResult {
-  /** KIND_POSITION (x, y, z) or KIND_ELEMENTS (six element components). */
-  kind: typeof KIND_POSITION | typeof KIND_ELEMENTS;
+  /** KIND_POSITION (x, y, z) or an element kind (six element components). */
+  kind: SegmentKind;
   degree: number;
   segments: SegmentInput[];
   /** Largest error at held-out points, with its epoch. */
@@ -80,6 +89,7 @@ interface Ctx {
   series?: Float64Array[];
   mu: number;
   meanMotion: number;
+  elementKind: ElementKind;
 }
 
 const clock = new Float64Array(1);
@@ -98,7 +108,15 @@ function evaluatePiece(
     evaluateSegment(coeffs, 0, degree + 1, t0, t1, t, out, 0);
     return;
   }
-  const f = { t0: [t0], t1: [t1], degree, coeffs, mu: c.mu, meanMotion: c.meanMotion } as unknown as EphemerisFile;
+  const f = {
+    t0: [t0],
+    t1: [t1],
+    degree,
+    coeffs,
+    mu: c.mu,
+    meanMotion: c.meanMotion,
+    kind: c.elementKind,
+  } as unknown as EphemerisFile;
   clock[0] = t;
   evaluateElementSegment(f, 0, clock, out, 0);
 }
@@ -180,7 +198,7 @@ function fitDegree(c: Ctx, degree: number, o: Required<Omit<FitOptions, "element
     }
   }
   return {
-    kind: c.series ? KIND_ELEMENTS : KIND_POSITION,
+    kind: c.series ? c.elementKind : KIND_POSITION,
     degree,
     segments: pieces.map((p) => ({ t0: s[p.i0]!.t, t1: s[p.i1]!.t, coeffs: p.coeffs })),
     maxErrorKm,
@@ -190,8 +208,7 @@ function fitDegree(c: Ctx, degree: number, o: Required<Omit<FitOptions, "element
 }
 
 /** Stored coefficients: segments x components x (degree + 1). */
-export const fitSize = (r: FitResult): number =>
-  r.segments.length * (r.kind === KIND_ELEMENTS ? 6 : 3) * (r.degree + 1);
+export const fitSize = (r: FitResult): number => r.segments.length * (isElementKind(r.kind) ? 6 : 3) * (r.degree + 1);
 const size = fitSize;
 
 /**
@@ -218,13 +235,20 @@ export function fitAdaptive(samples: readonly Sample[], options: FitOptions): Fi
   for (let i = 1; i < samples.length; i++) {
     if (!(samples[i]!.t > samples[i - 1]!.t)) throw new RangeError(`samples not ascending at ${i}`);
   }
-  const c: Ctx = { s: samples, withVel: o.velocities, mu: elements?.mu ?? 0, meanMotion: elements?.meanMotion ?? 0 };
+  const c: Ctx = {
+    s: samples,
+    withVel: o.velocities,
+    mu: elements?.mu ?? 0,
+    meanMotion: elements?.meanMotion ?? 0,
+    elementKind: elements?.kind ?? KIND_ELEMENTS,
+  };
   if (elements) {
     c.series = elementSeries(
       samples.map((p) => p.t),
       samples.map((p) => [p.x, p.y, p.z, p.vx, p.vy, p.vz]),
       elements.mu,
       elements.meanMotion,
+      c.elementKind,
     );
   }
   let best: FitResult | undefined;

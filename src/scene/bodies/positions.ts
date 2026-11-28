@@ -6,7 +6,7 @@ import { mapBodies, mapSmall, scaleTable } from "../../core/scale/mapping";
 
 // VN-SCN-001, VN-CAT-006: the objects in the scene and their float64 world positions (scene frame, km) for a time.
 // Bodies come first (drawn as spheres, in DRAWN_BODIES order), then the catalog's spacecraft (markers only), then its
-// Earth satellites (markers near Earth, VN-CAT-007).
+// dwarf planets (markers, VN-SCN-008), its comets (markers and tails, VN-EXT-015), then its Earth satellites (markers near Earth, VN-CAT-007).
 
 /** Sun, planets in order from the Sun, the Moon after Earth. */
 export const DRAWN_BODIES: readonly Body[] = [10, 199, 299, 399, 301, 499, 599, 699, 799, 899].map(
@@ -19,11 +19,14 @@ export const SCALE_TABLE = scaleTable(DRAWN_BODIES.map((b) => b.horizonsId as Bo
 /** A spacecraft's nominal size for the camera (closest approach, framing), km. Models are T-044. */
 export const SPACECRAFT_RADIUS_KM = 0.005;
 
+/** A comet nucleus's nominal radius for the camera, km (nuclei are about 1 to 30 km). */
+export const COMET_RADIUS_KM = 5;
+
 export interface SceneObject {
   id: number;
   name: string;
   radiusKm: number;
-  kind: "body" | "spacecraft" | "satellite";
+  kind: "body" | "spacecraft" | "dwarf" | "comet" | "satellite";
 }
 
 export const SCENE_OBJECTS: readonly SceneObject[] = [
@@ -31,6 +34,12 @@ export const SCENE_OBJECTS: readonly SceneObject[] = [
   ...CATALOG.objects
     .filter((o) => o.type === "spacecraft")
     .map((o) => ({ id: o.id, name: o.name, radiusKm: SPACECRAFT_RADIUS_KM, kind: "spacecraft" as const })),
+  ...CATALOG.objects
+    .filter((o) => o.type === "dwarf")
+    .map((o) => ({ id: o.id, name: o.name, radiusKm: o.radius_km ?? COMET_RADIUS_KM, kind: "dwarf" as const })),
+  ...CATALOG.objects
+    .filter((o) => o.type === "comet")
+    .map((o) => ({ id: o.id, name: o.name, radiusKm: COMET_RADIUS_KM, kind: "comet" as const })),
   ...CATALOG.objects
     .filter((o) => o.type === "satellite")
     .map((o) => ({ id: o.id, name: o.name, radiusKm: SPACECRAFT_RADIUS_KM, kind: "satellite" as const })),

@@ -210,6 +210,309 @@
       "priority": 90
     },
     {
+      "id": 20000001,
+      "name": "Ceres",
+      "aliases": ["1 Ceres"],
+      "type": "dwarf",
+      "parent": 10,
+      "summary": "The largest object in the asteroid belt and the only dwarf planet in the inner solar system, Ceres was found by Giuseppe Piazzi in 1801. NASA's Dawn orbited it from 2015 to 2018 and found bright salt deposits in Occator crater, left by briny water from below the surface.",
+      "goals": [],
+      "sources": [
+        {
+          "title": "JPL Small-Body Database: 1",
+          "url": "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=1"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#b8b0a4",
+      "priority": 70,
+      "radius_km": 469.7,
+      "horizons_name": "1 Ceres"
+    },
+    {
+      "id": 999,
+      "name": "Pluto",
+      "aliases": ["134340 Pluto"],
+      "type": "dwarf",
+      "parent": 10,
+      "summary": "Counted as the ninth planet from its discovery by Clyde Tombaugh in 1930 until 2006, Pluto is the best known dwarf planet of the Kuiper Belt. New Horizons flew past it in July 2015 and found a young plain of nitrogen ice, Sputnik Planitia, mountains of water ice and a thin, layered haze.",
+      "goals": [],
+      "sources": [
+        {
+          "title": "NASA Science: Pluto",
+          "url": "https://science.nasa.gov/dwarf-planets/pluto/"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#d8c4a8",
+      "priority": 75,
+      "radius_km": 1188.3
+    },
+    {
+      "id": 20136108,
+      "name": "Haumea",
+      "aliases": ["136108 Haumea", "2003 EL61"],
+      "type": "dwarf",
+      "parent": 10,
+      "summary": "A Kuiper Belt dwarf planet that spins once every four hours, so fast that it is stretched into an elongated shape about twice as long as it is wide. It has two small moons and a thin ring, found when it passed in front of a star in 2017.",
+      "goals": [],
+      "sources": [
+        {
+          "title": "JPL Small-Body Database: 136108",
+          "url": "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=136108"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#e4e4ea",
+      "priority": 60,
+      "radius_km": 798,
+      "horizons_name": "136108 Haumea"
+    },
+    {
+      "id": 20136472,
+      "name": "Makemake",
+      "aliases": ["136472 Makemake", "2005 FY9"],
+      "type": "dwarf",
+      "parent": 10,
+      "summary": "A reddish dwarf planet of the Kuiper Belt, found in 2005 shortly after Easter and named after the creator god of the Rapa Nui. Its surface is covered with frozen methane, and it has one small, dark moon.",
+      "goals": [],
+      "sources": [
+        {
+          "title": "JPL Small-Body Database: 136472",
+          "url": "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=136472"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#d4a890",
+      "priority": 60,
+      "radius_km": 715,
+      "horizons_name": "136472 Makemake"
+    },
+    {
+      "id": 20136199,
+      "name": "Eris",
+      "aliases": ["136199 Eris", "2003 UB313"],
+      "type": "dwarf",
+      "parent": 10,
+      "summary": "Almost exactly Pluto's size but more massive, Eris was found in 2005 on a steep, eccentric orbit that takes it out to about 97 au from the Sun. Its discovery led the IAU to define planets in 2006 and create the class of dwarf planets. It has one moon, Dysnomia.",
+      "goals": [],
+      "sources": [
+        {
+          "title": "JPL Small-Body Database: 136199",
+          "url": "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=136199"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#e8e8e8",
+      "priority": 60,
+      "radius_km": 1163,
+      "horizons_name": "136199 Eris"
+    },
+    {
+      "id": 1000036,
+      "name": "Halley",
+      "aliases": ["1P", "Halley's Comet", "1P/Halley"],
+      "type": "comet",
+      "parent": 10,
+      "summary": "The best known periodic comet, Halley returns about every 76 years on a retrograde orbit that reaches beyond Neptune. Its 1986 visit was met by a fleet of spacecraft, and ESA's Giotto photographed its dark, peanut-shaped nucleus. Dust it sheds makes the Eta Aquariid and Orionid meteor showers; it is next closest to the Sun in 2061.",
+      "goals": [],
+      "sources": [
+        {
+          "title": "JPL Small-Body Database: 1P",
+          "url": "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=1P"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#bfe3ff",
+      "priority": 50
+    },
+    {
+      "id": 1000025,
+      "name": "Encke",
+      "aliases": ["2P", "Encke's Comet", "2P/Encke"],
+      "type": "comet",
+      "parent": 10,
+      "summary": "Encke has the shortest period of any well-known comet, about 3.3 years, and was the second comet found to return. Johann Franz Encke worked out its orbit in 1819. Its trail of debris is the source of the Taurid meteors.",
+      "goals": [],
+      "sources": [
+        {
+          "title": "JPL Small-Body Database: 2P",
+          "url": "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=2P"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#cfe8ff",
+      "priority": 45
+    },
+    {
+      "id": 1000093,
+      "name": "Tempel 1",
+      "aliases": ["9P", "9P/Tempel"],
+      "type": "comet",
+      "parent": 10,
+      "summary": "A Jupiter-family comet with a 5.5-year orbit, found by Wilhelm Tempel in 1867. On 4 July 2005 NASA's Deep Impact fired a copper impactor into it to dig out material from below the surface, and Stardust-NExT photographed the crater in 2011.",
+      "goals": [],
+      "sources": [
+        {
+          "title": "JPL Small-Body Database: 9P",
+          "url": "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=9P"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#d6ecff",
+      "priority": 45
+    },
+    {
+      "id": 1000068,
+      "name": "Pons-Brooks",
+      "aliases": ["12P", "12P/Pons-Brooks"],
+      "type": "comet",
+      "parent": 10,
+      "summary": "A Halley-type comet that returns about every 71 years, found by Jean-Louis Pons in 1812 and again by William Brooks in 1883. On its 2024 return its outbursts gave its coma a horned shape, and it passed closest to the Sun in April 2024.",
+      "goals": [],
+      "sources": [
+        {
+          "title": "JPL Small-Body Database: 12P",
+          "url": "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=12P"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#c6f0e0",
+      "priority": 45
+    },
+    {
+      "id": 1000012,
+      "name": "Churyumov-Gerasimenko",
+      "aliases": ["67P", "67P/Churyumov-Gerasimenko"],
+      "type": "comet",
+      "parent": 10,
+      "summary": "A Jupiter-family comet with a 6.4-year orbit, found in 1969 by Klim Churyumov and Svetlana Gerasimenko. ESA's Rosetta orbited it from 2014 to 2016 and set the lander Philae on its two-lobed, four-kilometre nucleus, the first landing on a comet.",
+      "goals": [],
+      "sources": [
+        {
+          "title": "JPL Small-Body Database: 67P",
+          "url": "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=67P"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#d0f5ec",
+      "priority": 50
+    },
+    {
+      "id": 1000107,
+      "name": "Wild 2",
+      "aliases": ["81P", "81P/Wild"],
+      "type": "comet",
+      "parent": 10,
+      "summary": "A Jupiter-family comet that a close pass by Jupiter in 1974 moved onto its present 6.4-year orbit, found by Paul Wild in 1978. NASA's Stardust flew through its coma in January 2004 and returned grains of its dust to Earth in 2006.",
+      "goals": [],
+      "sources": [
+        {
+          "title": "JPL Small-Body Database: 81P",
+          "url": "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=81P"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#e0eeff",
+      "priority": 45
+    },
+    {
+      "id": 1000132,
+      "name": "Hale-Bopp",
+      "aliases": ["C/1995 O1"],
+      "type": "comet",
+      "parent": 10,
+      "summary": "Found on 23 July 1995 by Alan Hale and Thomas Bopp far beyond Jupiter, Hale-Bopp was one of the brightest comets of the twentieth century, visible to the naked eye for about eighteen months around its perihelion on 1 April 1997. Its large nucleus, tens of kilometres across, keeps it on an orbit of about 2,500 years.",
+      "goals": [],
+      "sources": [
+        {
+          "title": "JPL Small-Body Database: C/1995 O1",
+          "url": "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=C%2F1995%20O1"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#fff0c8",
+      "priority": 50
+    },
+    {
+      "id": 1003667,
+      "name": "NEOWISE",
+      "aliases": ["C/2020 F3", "Comet NEOWISE"],
+      "type": "comet",
+      "parent": 10,
+      "summary": "Found by NASA's NEOWISE space telescope on 27 March 2020, this long-period comet passed closest to the Sun on 3 July 2020 and was the brightest comet seen from the northern hemisphere since Hale-Bopp, with a curved dust tail and a fainter blue ion tail.",
+      "goals": [],
+      "sources": [
+        {
+          "title": "JPL Small-Body Database: C/2020 F3",
+          "url": "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=C%2F2020%20F3"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#ffe6c0",
+      "priority": 45
+    },
+    {
+      "id": 1003913,
+      "name": "Tsuchinshan-ATLAS",
+      "aliases": ["C/2023 A3", "Comet Tsuchinshan-ATLAS"],
+      "type": "comet",
+      "parent": 10,
+      "summary": "Found in early 2023 by China's Purple Mountain (Tsuchinshan) Observatory and the ATLAS survey, this long-period comet passed closest to the Sun on 27 September 2024 and in October 2024 showed a long tail and a rare anti-tail pointing towards the Sun.",
+      "goals": [],
+      "sources": [
+        {
+          "title": "JPL Small-Body Database: C/2023 A3",
+          "url": "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=C%2F2023%20A3"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#ffdcc8",
+      "priority": 45
+    },
+    {
       "id": -31,
       "name": "Voyager 1",
       "aliases": [],
@@ -808,6 +1111,296 @@
       ],
       "colour": "#ffc94d",
       "priority": 60
+    },
+    {
+      "id": -23,
+      "name": "Pioneer 10",
+      "aliases": ["Pioneer F"],
+      "type": "spacecraft",
+      "parent": 10,
+      "launch": "1972-03-03",
+      "status": {
+        "state": "ended",
+        "as_of": "2026-11-27",
+        "note": "Its last, very weak signal was received on 23 January 2003; it is coasting out of the solar system."
+      },
+      "events": [
+        {
+          "date": "1973-12-04",
+          "kind": "flyby",
+          "label": "Jupiter flyby"
+        }
+      ],
+      "agency": "NASA",
+      "summary": "Pioneer 10 was the first spacecraft to cross the asteroid belt and the first to fly past Jupiter, in December 1973, sending back the first close images of the planet and measuring its intense radiation belts. It carries a plaque showing where and who sent it, and is drifting out towards the constellation Taurus.",
+      "goals": [
+        "Cross the asteroid belt",
+        "Make the first close study of Jupiter",
+        "Measure the solar wind and cosmic rays far from the Sun"
+      ],
+      "sources": [
+        {
+          "title": "NASA Science: Pioneer 10",
+          "url": "https://science.nasa.gov/mission/pioneer-10/"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#e0b48a",
+      "priority": 50
+    },
+    {
+      "id": -24,
+      "name": "Pioneer 11",
+      "aliases": ["Pioneer G"],
+      "type": "spacecraft",
+      "parent": 10,
+      "launch": "1973-04-06",
+      "status": {
+        "state": "ended",
+        "as_of": "2026-11-27",
+        "note": "NASA ended routine operations on 30 September 1995; the last contact was in November 1995."
+      },
+      "events": [
+        {
+          "date": "1974-12-03",
+          "kind": "flyby",
+          "label": "Jupiter flyby"
+        },
+        {
+          "date": "1979-09-01",
+          "kind": "flyby",
+          "label": "Saturn flyby"
+        }
+      ],
+      "agency": "NASA",
+      "summary": "Pioneer 11 used Jupiter's gravity in 1974 to swing across the solar system to Saturn, which it reached in September 1979 as the first spacecraft to visit the ringed planet. Its route through Saturn's ring plane tested the path the Voyagers would follow.",
+      "goals": [
+        "Study Jupiter's poles and radiation belts",
+        "Make the first flyby of Saturn and its rings",
+        "Measure the outer heliosphere"
+      ],
+      "sources": [
+        {
+          "title": "NASA Science: Pioneer 11",
+          "url": "https://science.nasa.gov/mission/pioneer-11/"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#c8a27a",
+      "priority": 50
+    },
+    {
+      "id": -77,
+      "name": "Galileo",
+      "aliases": [],
+      "type": "spacecraft",
+      "parent": 599,
+      "launch": "1989-10-18",
+      "status": {
+        "state": "ended",
+        "as_of": "2026-11-27",
+        "note": "Deliberately sent into Jupiter's atmosphere on 21 September 2003, so it could never contaminate Europa."
+      },
+      "events": [
+        {
+          "date": "1990-02-10",
+          "kind": "flyby",
+          "label": "Venus flyby"
+        },
+        {
+          "date": "1990-12-08",
+          "kind": "flyby",
+          "label": "Earth flyby"
+        },
+        {
+          "date": "1991-10-29",
+          "kind": "flyby",
+          "label": "Gaspra flyby"
+        },
+        {
+          "date": "1992-12-08",
+          "kind": "flyby",
+          "label": "Earth flyby"
+        },
+        {
+          "date": "1993-08-28",
+          "kind": "flyby",
+          "label": "Ida flyby"
+        },
+        {
+          "date": "1995-12-07",
+          "kind": "milestone",
+          "label": "Probe enters Jupiter's atmosphere"
+        },
+        {
+          "date": "1995-12-08",
+          "kind": "arrival",
+          "label": "Jupiter orbit insertion"
+        }
+      ],
+      "agency": "NASA",
+      "summary": "Galileo was the first spacecraft to orbit Jupiter, from 1995 to 2003. Its probe dropped into Jupiter's atmosphere, and its many flybys of the large moons found signs of a salt-water ocean under Europa's ice and volcanoes erupting on Io. On the way it made the first flyby of an asteroid and found Ida's small moon Dactyl.",
+      "goals": [
+        "Orbit Jupiter and study its atmosphere and magnetosphere",
+        "Drop a probe into Jupiter's atmosphere",
+        "Study the Galilean moons up close"
+      ],
+      "sources": [
+        {
+          "title": "NASA Science: Galileo",
+          "url": "https://science.nasa.gov/mission/galileo/"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#9fc7ff",
+      "priority": 55
+    },
+    {
+      "id": -82,
+      "name": "Cassini",
+      "aliases": ["Cassini-Huygens"],
+      "type": "spacecraft",
+      "parent": 699,
+      "launch": "1997-10-15",
+      "status": {
+        "state": "ended",
+        "as_of": "2026-11-27",
+        "note": "Its Grand Finale ended with a dive into Saturn's atmosphere on 15 September 2017."
+      },
+      "events": [
+        {
+          "date": "1998-04-26",
+          "kind": "flyby",
+          "label": "Venus flyby"
+        },
+        {
+          "date": "1999-06-24",
+          "kind": "flyby",
+          "label": "Venus flyby"
+        },
+        {
+          "date": "1999-08-18",
+          "kind": "flyby",
+          "label": "Earth flyby"
+        },
+        {
+          "date": "2000-12-30",
+          "kind": "flyby",
+          "label": "Jupiter flyby"
+        },
+        {
+          "date": "2004-07-01",
+          "kind": "arrival",
+          "label": "Saturn orbit insertion"
+        },
+        {
+          "date": "2005-01-14",
+          "kind": "milestone",
+          "label": "Huygens lands on Titan"
+        }
+      ],
+      "agency": "NASA, ESA and ASI",
+      "summary": "Cassini orbited Saturn for thirteen years from 2004, and its European probe Huygens landed on Titan in 2005, the first landing in the outer solar system. Cassini found geysers of water erupting from Enceladus, mapped Titan's methane seas, and ended by diving between Saturn and its rings before plunging into the planet.",
+      "goals": [
+        "Study Saturn, its rings and magnetosphere",
+        "Land the Huygens probe on Titan",
+        "Survey Saturn's icy moons"
+      ],
+      "sources": [
+        {
+          "title": "NASA Science: Cassini",
+          "url": "https://science.nasa.gov/mission/cassini/"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#f0d78a",
+      "priority": 55
+    },
+    {
+      "id": -226,
+      "name": "Rosetta",
+      "aliases": [],
+      "type": "spacecraft",
+      "parent": 10,
+      "launch": "2004-03-02",
+      "status": {
+        "state": "ended",
+        "as_of": "2026-11-27",
+        "note": "Ended with a controlled landing on comet 67P on 30 September 2016."
+      },
+      "events": [
+        {
+          "date": "2005-03-04",
+          "kind": "flyby",
+          "label": "Earth flyby"
+        },
+        {
+          "date": "2007-02-25",
+          "kind": "flyby",
+          "label": "Mars flyby"
+        },
+        {
+          "date": "2007-11-13",
+          "kind": "flyby",
+          "label": "Earth flyby"
+        },
+        {
+          "date": "2008-09-05",
+          "kind": "flyby",
+          "label": "Steins flyby"
+        },
+        {
+          "date": "2009-11-13",
+          "kind": "flyby",
+          "label": "Earth flyby"
+        },
+        {
+          "date": "2010-07-10",
+          "kind": "flyby",
+          "label": "Lutetia flyby"
+        },
+        {
+          "date": "2014-08-06",
+          "kind": "arrival",
+          "label": "Arrival at comet 67P"
+        },
+        {
+          "date": "2014-11-12",
+          "kind": "milestone",
+          "label": "Philae lands on 67P"
+        }
+      ],
+      "agency": "ESA",
+      "summary": "Rosetta was the first spacecraft to orbit a comet. After a ten-year chase with flybys of Earth, Mars and two asteroids, it reached comet 67P/Churyumov-Gerasimenko in 2014, set down the lander Philae, and followed the comet through its closest approach to the Sun before landing on it in 2016.",
+      "goals": [
+        "Orbit and map a comet nucleus",
+        "Land Philae on the comet's surface",
+        "Watch the comet's activity through perihelion"
+      ],
+      "sources": [
+        {
+          "title": "ESA: Rosetta",
+          "url": "https://www.esa.int/Science_Exploration/Space_Science/Rosetta"
+        },
+        {
+          "title": "JPL Horizons System",
+          "url": "https://ssd.jpl.nasa.gov/horizons/"
+        }
+      ],
+      "colour": "#8fe0d0",
+      "priority": 55
     },
     {
       "id": -125544,

@@ -23,6 +23,8 @@ const view: ViewFragment = {
     callouts: false,
     stars: true,
     spaceweather: false,
+    comets: false,
+    dwarfs: false,
   },
 };
 
@@ -72,6 +74,8 @@ describe("view fragment", () => {
         callouts: false,
         stars: false,
         spaceweather: false,
+        comets: false,
+        dwarfs: false,
       },
     });
     expect(decodeFragment("v=1&s=499&c=999,1e6,0,0", known)).toEqual({ selection: 499 });
@@ -88,7 +92,25 @@ describe("view fragment", () => {
       callouts: false,
       stars: false,
       spaceweather: false,
+      comets: false,
+      dwarfs: false,
     });
+  });
+
+  it("VN-SCN-008: the dwarf planets layer is f; links made before it open with it off", () => {
+    const on = { ...view, layers: { ...view.layers, dwarfs: true } };
+    const text = encodeFragment(on);
+    expect(text).toMatch(/&l=[a-z]*f/);
+    expect(decodeFragment(text, known).layers!.dwarfs).toBe(true);
+    expect(decodeFragment("v=1&l=bmowk", known).layers!.dwarfs).toBe(false);
+  });
+
+  it("VN-EXT-015: the comets layer is k; links made before it open with it off", () => {
+    const on = { ...view, layers: { ...view.layers, comets: true } };
+    const text = encodeFragment(on);
+    expect(text).toMatch(/&l=[a-z]*k/);
+    expect(decodeFragment(text, known).layers!.comets).toBe(true);
+    expect(decodeFragment("v=1&l=bmow", known).layers!.comets).toBe(false);
   });
 
   it("VN-EXT-005: the space weather layer is w; links made before it open with it off", () => {

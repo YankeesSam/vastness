@@ -66,6 +66,8 @@ describe("view store", () => {
       callouts: true,
       stars: true,
       spaceweather: false,
+      comets: false,
+      dwarfs: false,
     });
     s.setLayer("orbits", false);
     expect(store.getState().layers.orbits).toBe(false);
